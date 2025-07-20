@@ -42,7 +42,6 @@ export function Footer() {
             <p className="text-xs text-muted-foreground/60 mt-6">
                 &copy; {new Date().getFullYear()} {t('footer.copyright')}
                 <br />
-                {t('footer.powered_by')}
             </p>
           </div>
           <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
