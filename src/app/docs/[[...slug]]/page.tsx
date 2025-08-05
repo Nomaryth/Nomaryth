@@ -69,10 +69,11 @@ async function getDocBySlug(slug: string): Promise<Doc | undefined> {
 }
 
 
-export default async function DocPage({ params }: { params: { slug?: string[] }}) {
-  const slug = params.slug?.join('/');
+export default async function DocPage({ params }: { params: Promise<{ slug?: string[] }>}) {
+  const { slug } = await params;
+  const slugString = slug?.join('/');
   
-  if (!slug) {
+  if (!slugString) {
     const docsData = await getDocsFromFirestore();
     const firstCategory = docsData?.[0];
     const firstDoc = firstCategory?.documents?.[0];
@@ -90,7 +91,7 @@ export default async function DocPage({ params }: { params: { slug?: string[] }}
     );
   }
 
-  const doc = await getDocBySlug(slug);
+  const doc = await getDocBySlug(slugString);
 
   if (!doc) {
     notFound();

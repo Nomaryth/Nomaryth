@@ -2,10 +2,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
-
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id: factionId } = params;
+        const { id: factionId } = await params;
 
         const authHeader = req.headers.get('Authorization');
         if (!authHeader) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });

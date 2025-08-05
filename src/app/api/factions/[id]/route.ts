@@ -10,9 +10,9 @@ async function getUserProfile(uid: string) {
     return { uid, ...userSnap.data() };
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const factionRef = adminDb.collection('factions').doc(id);
         const factionSnap = await factionRef.get();
 
@@ -65,9 +65,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id: factionId } = params;
+        const { id: factionId } = await params;
 
         const authHeader = req.headers.get('Authorization');
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -105,184 +105,124 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 transaction.update(userRef, { factionId: factionId, factionTag: factionData.tag });
                 transaction.update(factionRef, { memberCount: FieldValue.increment(1) });
             });
-            return NextResponse.json({ title: 'Bem-vindo!', description: `Você agora é membro de ${factionData.name}.` }, { status: 200 });
-        } else { 
+            return NextResponse.json({ message: 'Você foi adicionado à facção com sucesso.' }, { status: 200 });
+        } else {
             const applicationRef = factionRef.collection('applications').doc(uid);
-            const applicationSnap = await applicationRef.get();
-            if (applicationSnap.exists) {
-                return NextResponse.json({ error: 'Você já tem uma aplicação pendente para esta facção.'}, { status: 400 });
+            const existingApplication = await applicationRef.get();
+            
+            if (existingApplication.exists) {
+                return NextResponse.json({ error: 'Você já tem uma aplicação pendente para esta facção.' }, { status: 400 });
             }
             
             await applicationRef.set({
                 uid: uid,
-                displayName: userProfile?.displayName || 'Desconhecido',
-                photoURL: userProfile?.photoURL || '',
-                appliedAt: FieldValue.serverTimestamp()
+                appliedAt: FieldValue.serverTimestamp(),
+                status: 'pending'
             });
-            return NextResponse.json({ title: 'Aplicação Enviada!', description: `Sua solicitação para entrar em ${factionData.name} foi enviada.` }, { status: 200 });
+            
+            return NextResponse.json({ message: 'Sua aplicação foi enviada com sucesso.' }, { status: 200 });
         }
 
     } catch (error) {
-        console.error("Error joining/applying to faction:", error);
+        console.error("Error joining faction:", error);
         const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro interno.";
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id: factionId } = params;
+        const { id: factionId } = await params;
 
         const authHeader = req.headers.get('Authorization');
-        if (!authHeader) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+        }
         const idToken = authHeader.split('Bearer ')[1];
         const decodedToken = await adminAuth.verifyIdToken(idToken);
         const ownerUid = decodedToken.uid;
-        
-        const { action, targetUid, value } = await req.json();
-        
-        if (!action) {
-            return NextResponse.json({ error: 'Ação inválida.' }, { status: 400 });
-        }
 
         const factionRef = adminDb.collection('factions').doc(factionId);
-        
         const factionDoc = await factionRef.get();
-        if (!factionDoc.exists || factionDoc.data()?.ownerUid !== ownerUid) {
-            return NextResponse.json({ error: 'Você não tem permissão para gerenciar esta facção.' }, { status: 403 });
-        }
-
-        if (action === 'kick') {
-            if (!targetUid || ownerUid === targetUid) {
-                 return NextResponse.json({ error: 'Ação de expulsão inválida.' }, { status: 400 });
-            }
-            const memberRef = factionRef.collection('members').doc(targetUid);
-            const userRef = adminDb.collection('users').doc(targetUid);
-            
-            await adminDb.runTransaction(async (transaction) => {
-                const memberDoc = await transaction.get(memberRef);
-                if (!memberDoc.exists) throw new Error("Membro não encontrado nesta facção.");
-                transaction.delete(memberRef);
-                transaction.update(userRef, { factionId: FieldValue.delete(), factionTag: FieldValue.delete() });
-                transaction.update(factionRef, { memberCount: FieldValue.increment(-1) });
-            });
-            return NextResponse.json({ message: "Membro expulso com sucesso." }, { status: 200 });
-        }
         
-        if (action === 'transfer_ownership') {
-            if (!targetUid || ownerUid === targetUid) {
-                 return NextResponse.json({ error: 'Transferência de liderança inválida.' }, { status: 400 });
+        if (!factionDoc.exists || factionDoc.data()?.ownerUid !== ownerUid) {
+            return NextResponse.json({ error: 'Você não tem permissão para editar esta facção.' }, { status: 403 });
+        }
+
+        const updateData = await req.json();
+        const allowedFields = ['name', 'description', 'tag', 'recruitmentMode', 'bannerUrl'];
+        const filteredData: any = {};
+        
+        allowedFields.forEach(field => {
+            if (updateData[field] !== undefined) {
+                filteredData[field] = updateData[field];
             }
-            const newOwnerRef = factionRef.collection('members').doc(targetUid);
-            const oldOwnerRef = factionRef.collection('members').doc(ownerUid);
-            const newOwnerProfile = await getUserProfile(targetUid);
+        });
 
-            await adminDb.runTransaction(async (transaction) => {
-                const newOwnerMemberDoc = await transaction.get(newOwnerRef);
-                if (!newOwnerMemberDoc.exists) throw new Error("Membro alvo não encontrado.");
-
-                transaction.update(factionRef, { 
-                    ownerUid: targetUid,
-                    ownerName: newOwnerProfile?.displayName || 'Desconhecido'
-                });
-                transaction.update(newOwnerRef, { role: 'owner' });
-                transaction.update(oldOwnerRef, { role: 'member' });
-            });
-            return NextResponse.json({ message: "Liderança transferida com sucesso." }, { status: 200 });
+        if (Object.keys(filteredData).length === 0) {
+            return NextResponse.json({ error: 'Nenhum campo válido para atualização.' }, { status: 400 });
         }
 
-        if (action === 'set_recruitment_mode') {
-             if (typeof value !== 'boolean') {
-                 return NextResponse.json({ error: 'Valor inválido para modo de recrutamento.' }, { status: 400 });
-             }
-             const mode = value ? 'application' : 'open';
-             await factionRef.update({ recruitmentMode: mode });
-             return NextResponse.json({ message: `Modo de recrutamento definido para ${mode}.` }, { status: 200 });
-        }
+        await factionRef.update(filteredData);
 
-        return NextResponse.json({ error: 'Ação desconhecida.' }, { status: 400 });
+        return NextResponse.json({ 
+            message: 'Facção atualizada com sucesso.',
+            updatedFields: Object.keys(filteredData)
+        }, { status: 200 });
 
     } catch (error) {
-        console.error("Error managing faction:", error);
+        console.error("Error updating faction:", error);
         const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro interno.";
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id: factionId } = params;
+        const { id: factionId } = await params;
 
         const authHeader = req.headers.get('Authorization');
-        if (!authHeader) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+        }
         const idToken = authHeader.split('Bearer ')[1];
         const decodedToken = await adminAuth.verifyIdToken(idToken);
-        const uid = decodedToken.uid;
-        
-        const factionRef = adminDb.collection('factions').doc(factionId);
-        const userRef = adminDb.collection('users').doc(uid);
-        const memberRef = factionRef.collection('members').doc(uid);
-        
-        const factionDoc = await factionRef.get();
-        if (!factionDoc.exists) {
-            return NextResponse.json({ error: 'Facção não encontrada.' }, { status: 404 });
-        }
-        const factionData = factionDoc.data();
-        const isOwner = factionData?.ownerUid === uid;
+        const ownerUid = decodedToken.uid;
 
-        if (isOwner) {
-            
+        const factionRef = adminDb.collection('factions').doc(factionId);
+        const factionDoc = await factionRef.get();
+        
+        if (!factionDoc.exists || factionDoc.data()?.ownerUid !== ownerUid) {
+            return NextResponse.json({ error: 'Você não tem permissão para deletar esta facção.' }, { status: 403 });
+        }
+
+        const factionData = factionDoc.data();
+        if (!factionData) {
+            return NextResponse.json({ error: 'Dados da facção inválidos.' }, { status: 400 });
+        }
+
+        await adminDb.runTransaction(async (transaction) => {
             const membersSnap = await factionRef.collection('members').get();
             const applicationsSnap = await factionRef.collection('applications').get();
-            const batch = adminDb.batch();
-
+            
             membersSnap.docs.forEach(doc => {
-                const memberUserRef = adminDb.collection('users').doc(doc.id);
-                batch.update(memberUserRef, {
+                const memberData = doc.data();
+                const userRef = adminDb.collection('users').doc(memberData.uid);
+                transaction.update(userRef, { 
                     factionId: FieldValue.delete(),
-                    factionTag: FieldValue.delete(),
-                });
-                batch.delete(doc.ref); 
-            });
-
-            applicationsSnap.docs.forEach(doc => {
-                batch.delete(doc.ref);
-            });
-            
-            const nameRef = adminDb.collection('faction_metadata').doc('names');
-            const tagRef = adminDb.collection('faction_metadata').doc('tags');
-            batch.update(nameRef, { [factionData.name.toLowerCase()]: FieldValue.delete() });
-            batch.update(tagRef, { [factionData.tag.toUpperCase()]: FieldValue.delete() });
-            
-            batch.delete(factionRef);
-
-            await batch.commit();
-            return NextResponse.json({ message: 'Facção dissolvida com sucesso.' }, { status: 200 });
-
-        } else {
-            
-            await adminDb.runTransaction(async (transaction) => {
-                const memberDoc = await transaction.get(memberRef);
-                if (!memberDoc.exists) {
-                    throw new Error("Você não é membro desta facção.");
-                }
-                
-                transaction.delete(memberRef);
-                
-                transaction.update(userRef, {
-                    factionId: FieldValue.delete(),
-                    factionTag: FieldValue.delete(),
-                });
-                
-                transaction.update(factionRef, {
-                    memberCount: FieldValue.increment(-1),
+                    factionTag: FieldValue.delete()
                 });
             });
+            
+            membersSnap.docs.forEach(doc => transaction.delete(doc.ref));
+            applicationsSnap.docs.forEach(doc => transaction.delete(doc.ref));
+            transaction.delete(factionRef);
+        });
 
-            return NextResponse.json({ message: 'Você saiu da facção.' }, { status: 200 });
-        }
+        return NextResponse.json({ message: 'Facção deletada com sucesso.' }, { status: 200 });
+
     } catch (error) {
-        console.error("Error leaving/disbanding faction:", error);
+        console.error("Error deleting faction:", error);
         const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro interno.";
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }

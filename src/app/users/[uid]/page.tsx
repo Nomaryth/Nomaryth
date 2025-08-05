@@ -54,12 +54,14 @@ async function fetchProfileByUid(uid: string): Promise<UserProfile | null> {
     }
 }
 
-export default async function UserPage({ params }: { params: { uid: string } }) {
-    if (!params.uid) {
+export default async function UserPage({ params }: { params: Promise<{ uid: string }> }) {
+    const { uid } = await params;
+    
+    if (!uid) {
         notFound();
     }
     
-    const profile = await fetchProfileByUid(params.uid);
+    const profile = await fetchProfileByUid(uid);
 
     if (!profile) {
         notFound();

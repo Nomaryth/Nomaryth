@@ -97,19 +97,21 @@ function ProfilePageContent() {
             const updatedBadges = [...currentBadges, ...newBadges];
             currentProfile.badges = updatedBadges;
             
-            await setDoc(doc(db, "users", user.uid), { badges: updatedBadges }, { merge: true });
-            
-            const notificationsRef = collection(db, 'users', user.uid, 'notifications');
-            for (const badgeId of newBadges) {
-                const badge = badgeRegistry[badgeId];
-                if (badge) {
-                    await addDoc(notificationsRef, {
-                        title: t('notifications.badge_unlocked', { badgeName: badge.title }),
-                        message: badge.description,
-                        type: 'badge',
-                        isRead: false,
-                        timestamp: serverTimestamp(),
-                    });
+            if (db) {
+                await setDoc(doc(db, "users", user.uid), { badges: updatedBadges }, { merge: true });
+                
+                const notificationsRef = collection(db, 'users', user.uid, 'notifications');
+                for (const badgeId of newBadges) {
+                    const badge = badgeRegistry[badgeId];
+                    if (badge) {
+                        await addDoc(notificationsRef, {
+                            title: t('notifications.badge_unlocked', { badgeName: badge.title }),
+                            message: badge.description,
+                            type: 'badge',
+                            isRead: false,
+                            timestamp: serverTimestamp(),
+                        });
+                    }
                 }
             }
          }

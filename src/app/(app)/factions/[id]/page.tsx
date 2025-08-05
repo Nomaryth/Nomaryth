@@ -119,7 +119,7 @@ export default function FactionDetailPage() {
         await fetchFactionDetails(); 
     } catch (error) {
         const actionType = faction?.recruitmentMode === 'application' ? t('factions.apply') : t('factions.join');
-        toast({ variant: 'destructive', title: t('factions.errors.action_failed_title', { action: actionType }), description: error instanceof Error ? error.message : t('factions.errors.action_failed_desc', { action: actionType.toLowerCase() }) });
+        toast({ variant: 'destructive', title: t('factions.errors.action_failed_title'), description: error instanceof Error ? error.message : t('factions.errors.action_failed_desc') });
     } finally {
         setActionLoading(false);
     }
@@ -136,7 +136,7 @@ export default function FactionDetailPage() {
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
-        toast({ title: t('factions.leave_success_title'), description: t('factions.leave_success_desc', { factionName: faction?.name || '' })});
+        toast({ title: t('factions.leave_success_title'), description: t('factions.leave_success_desc')});
         await fetchFactionDetails(); 
     } catch (error) {
         toast({ variant: 'destructive', title: t('factions.errors.leave_failed_title'), description: error instanceof Error ? error.message : t('factions.errors.leave_failed_desc') });
@@ -156,7 +156,7 @@ export default function FactionDetailPage() {
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
-        toast({ title: t('factions.disband_success_title'), description: t('factions.disband_success_desc', { factionName: faction?.name || '' })});
+        toast({ title: t('factions.disband_success_title'), description: t('factions.disband_success_desc')});
         router.push('/factions');
      } catch(error) {
         toast({ variant: 'destructive', title: t('factions.errors.disband_failed_title'), description: error instanceof Error ? error.message : t('factions.errors.disband_failed_desc') });
@@ -253,7 +253,7 @@ export default function FactionDetailPage() {
                                         <AlertDialogHeader>
                                         <AlertDialogTitle>{t('factions.leave_confirm_title')}</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                           {t('factions.leave_confirm_desc', { factionName: faction.name })}
+                                           {t('factions.leave_confirm_desc')}
                                         </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
@@ -296,7 +296,7 @@ export default function FactionDetailPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('factions.disband_confirm_title', { factionName: faction.name })}</AlertDialogTitle>
+                                    <AlertDialogTitle>{t('factions.disband_confirm_title')}</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         {t('factions.disband_confirm_desc')}
                                     </AlertDialogDescription>
