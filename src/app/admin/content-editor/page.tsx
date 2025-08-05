@@ -212,9 +212,9 @@ export default function ContentEditorPage() {
     if (!selectedItem) return null;
     const { catIndex, docIndex } = selectedItem;
     if (docIndex === null) {
-      return { type: 'category', data: data[catIndex] };
+      return { type: 'category' as const, data: data[catIndex] as Category };
     }
-    return { type: 'document', data: data[catIndex]?.documents[docIndex] };
+    return { type: 'document' as const, data: data[catIndex]?.documents[docIndex] as Doc };
   }, [selectedItem, data]);
 
   if (loading) {

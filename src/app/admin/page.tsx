@@ -13,6 +13,7 @@ interface UserData {
   displayName: string;
   photoURL: string;
   role?: string;
+  type?: 'login' | 'signup';
   createdAt?: {
     seconds: number;
     nanoseconds: number;
@@ -56,7 +57,7 @@ function AdminPage() {
           .sort((a, b) => (b.lastLoginAt?.seconds ?? 0) - (a.lastLoginAt?.seconds ?? 0))
           .slice(0, 5);
 
-        const recentActivity = [...recentSignups.map(u => ({...u, type: 'signup'})), ...recentLogins.map(u => ({...u, type: 'login'}))]
+        const recentActivity: UserData[] = [...recentSignups.map(u => ({...u, type: 'signup' as const})), ...recentLogins.map(u => ({...u, type: 'login' as const}))]
           
           .sort((a, b) => ((b.lastLoginAt?.seconds || b.createdAt?.seconds) ?? 0) - ((a.lastLoginAt?.seconds || a.createdAt?.seconds) ?? 0))
           .slice(0, 5);

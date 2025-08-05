@@ -105,7 +105,7 @@ function ProfilePageContent() {
                     const badge = badgeRegistry[badgeId];
                     if (badge) {
                         await addDoc(notificationsRef, {
-                            title: t('notifications.badge_unlocked', { badgeName: badge.title }),
+                            title: t('notifications.badge_unlocked'),
                             message: badge.description,
                             type: 'badge',
                             isRead: false,
@@ -145,7 +145,7 @@ function ProfilePageContent() {
   }
 
   const handleAvatarSelect = async (url: string) => {
-     if (!auth.currentUser || !db) return;
+     if (!auth?.currentUser || !db) return;
      try {
         const userRef = doc(db, "users", auth.currentUser.uid);
         const updateData = { photoURL: url };
@@ -169,7 +169,7 @@ function ProfilePageContent() {
   }
 
   const handleSave = async () => {
-    if (!auth.currentUser || !db) return;
+    if (!auth?.currentUser || !db) return;
     setIsSaving(true);
     try {
         const userRef = doc(db, "users", auth.currentUser.uid);

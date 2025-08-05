@@ -104,10 +104,10 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
 
       if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(!open);
       } else if (e.key.toLowerCase() === 'k' && !isInputFocused) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(!open);
       }
     };
     document.addEventListener('keydown', down);

@@ -69,7 +69,7 @@ async function getDocBySlug(slug: string): Promise<Doc | undefined> {
 }
 
 
-export default async function DocPage({ params }: { params: Promise<{ slug?: string[] }>}) {
+export default async function DocPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
   const slugString = slug?.join('/');
   
@@ -103,11 +103,4 @@ export default async function DocPage({ params }: { params: Promise<{ slug?: str
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{doc.content}</ReactMarkdown>
     </article>
   );
-}
-
-export async function generateStaticParams() {
-  const allDocs = await getAllDocs();
-  return allDocs.map(doc => ({
-    slug: doc.slug.split('/'),
-  }));
 }

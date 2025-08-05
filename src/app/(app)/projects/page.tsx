@@ -27,6 +27,7 @@ export interface Repo {
   description: string;
   stargazers_count: number;
   language: string;
+  languages_url: string;
   languages_data: LanguageData;
   topics: string[];
   owner: {

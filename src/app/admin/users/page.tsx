@@ -95,7 +95,7 @@ function EditUserDialog({ user, isOpen, onOpenChange, onUserUpdate }: { user: Us
     };
 
     const handleSave = async () => {
-        if (!user || !auth.currentUser) return;
+        if (!user || !auth || !auth.currentUser) return;
         setIsSaving(true);
         try {
             const idToken = await auth.currentUser.getIdToken();
@@ -144,7 +144,7 @@ function EditUserDialog({ user, isOpen, onOpenChange, onUserUpdate }: { user: Us
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>{t('admin.users.edit_dialog.title', { userName: user.displayName })}</DialogTitle>
+                    <DialogTitle>{t('admin.users.edit_dialog.title')}</DialogTitle>
                     <DialogDescription>{t('admin.users.edit_dialog.description')}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4 overflow-y-auto pr-4 -mr-2">

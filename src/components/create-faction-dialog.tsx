@@ -88,7 +88,7 @@ export function CreateFactionDialog({ isOpen, onOpenChange, onFactionCreated }: 
 
         toast({
             title: t('factions.create_success_title'),
-            description: t('factions.create_success_desc', { factionName: values.name }),
+            description: t('factions.create_success_desc'),
         });
         onFactionCreated(result.faction);
         onOpenChange(false);

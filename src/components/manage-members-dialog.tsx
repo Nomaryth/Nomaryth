@@ -111,7 +111,7 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
             
             {applications.length > 0 && (
                 <div className="space-y-3">
-                    <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.pending_applications', { count: applications.length })}</h4>
+                    <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.pending_applications')}</h4>
                      {applications.map(app => (
                         <div key={app.uid} className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
                             <div className="flex items-center gap-3">
@@ -137,7 +137,7 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
             )}
             
             <div className="space-y-3">
-                <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.members_title', { count: membersToManage.length })}</h4>
+                <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.members_title')}</h4>
                 {membersToManage.length > 0 ? membersToManage.map(member => (
                     <div key={member.uid} className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
                         <div className="flex items-center gap-3">
@@ -161,7 +161,7 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
                                     <AlertDialogHeader>
                                     <AlertDialogTitle>{t('factions.manage_dialog.transfer_confirm_title')}</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        {t('factions.manage_dialog.transfer_confirm_desc', { memberName: member.displayName })}
+                                        {t('factions.manage_dialog.transfer_confirm_desc')}
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -178,7 +178,7 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('factions.manage_dialog.kick_confirm_title', { memberName: member.displayName })}</AlertDialogTitle>
+                                    <AlertDialogTitle>{t('factions.manage_dialog.kick_confirm_title')}</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         {t('factions.manage_dialog.kick_confirm_desc')}
                                     </AlertDialogDescription>
