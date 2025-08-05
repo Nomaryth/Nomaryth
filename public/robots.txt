@@ -1,0 +1,44 @@
+# Nomaryth - Robots.txt
+# https://gghorizon.com
+
+User-agent: *
+Crawl-delay: 1
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+Disallow: /dashboard/
+Disallow: /settings/
+
+Allow: /docs/
+Allow: /factions/
+Allow: /profile/
+Allow: /login/
+Allow: /register/
+
+Sitemap: https://gghorizon.com/sitemap.xml
+
+User-agent: Cloudflare-Healthchecks
+Allow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: ia_archiver
+Disallow: /

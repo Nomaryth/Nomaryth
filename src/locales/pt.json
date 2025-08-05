@@ -1,0 +1,435 @@
+
+{
+  "nav": {
+    "home": "Início",
+    "docs": "Documentação",
+    "projects": "Projetos",
+    "map": "Mapa",
+    "factions": "Facções"
+  },
+  "header": {
+    "search_docs": "Buscar...",
+    "search_results_title": "Resultados da busca para",
+    "no_results": "Nenhum documento encontrado.",
+    "view_all_results": "Ver todos os resultados",
+    "language_switcher_alt": "Mudar idioma",
+    "login_alt": "Entrar",
+    "menu_alt": "Alternar Menu",
+    "profile": "Perfil",
+    "logout": "Sair",
+    "notifications": {
+      "title": "Notificações",
+      "tooltip": "Ver notificações",
+      "no_notifications": "Nenhuma notificação nova.",
+      "mark_as_read": "Marcar como lida",
+      "clear_read": "Limpar notificações lidas",
+      "clearing": "Limpando..."
+    }
+  },
+  "home": {
+    "tagline": "Determine seu destino em um mundo envolto de crueldade e conflitos.",
+    "explore_lore": "Explore a História",
+    "discover_projects": "Descubra nossos Projetos",
+    "download_launcher": "Baixar Launcher do Jogo",
+    "explore_title": "Entenda os elementos que definem este continente à beira do colapso.",
+    "explore_subtitle": "Nomaryth é definido por regras imutáveis, onde cada escolha esconde uma consequência e cada passo molda como será seu fim.",
+    "timeline": {
+      "title": "Uma História Viva",
+      "subtitle": "Eventos chave que moldaram o mundo de Nomaryth como ele é hoje."
+    }
+  },
+  "features": {
+    "magic": {
+      "title": "Poder Sem Nome",
+      "description": "Não existem classes. Apenas combinações. Habilidades se acumulam com o uso. O que surge disso define o papel, a função e o fim de cada jogador."
+    },
+    "factions": {
+      "title": "Facções e Caminhos",
+      "description": "Alie-se ou fique isolado. Em Nomaryth, todos são nômades por natureza — em clãs, vilas ou sozinhos na floresta."
+    },
+    "aetherium": {
+      "title": "O Contágio",
+      "description": "O mundo quebrou. Não há nada que impeça que ele desmorone de vez. Esta é a última linha de defesa. Perder aqui significa não haver um amanhã."
+    }
+  },
+   "map": {
+    "title": "Mapa do Mundo",
+    "subtitle": "Explore os reinos de Nomaryth. Clique em um marcador para aprender mais sobre um local."
+  },
+  "login": {
+    "title": "Entrar",
+    "description": "Insira suas credenciais para acessar sua conta.",
+    "google_signin": "Entrar com Google",
+    "or_continue_with": "Ou continue com",
+    "email_label": "E-mail",
+    "password_label": "Senha",
+    "signin_button": "Entrar",
+    "signing_in_button": "Entrando...",
+    "no_account": "Não tem uma conta?",
+    "signup_link": "Cadastre-se",
+    "error_title": "Falha no Login",
+    "generic_error": "Ocorreu um erro inesperado. Por favor, tente novamente.",
+    "success_title": "Login bem-sucedido",
+    "success_description": "Bem-vindo de volta, explorador!"
+  },
+  "signup": {
+    "title": "Cadastre-se",
+    "description": "Crie uma nova conta para começar sua jornada.",
+    "signup_button": "Cadastrar",
+    "signing_up_button": "Cadastrando...",
+    "have_account": "Já tem uma conta?",
+    "login_link": "Entrar",
+    "error_title": "Falha no Cadastro",
+    "password_too_short": "A senha deve ter pelo menos 6 caracteres.",
+    "generic_error": "Algo deu errado. Tente novamente.",
+    "success_title": "Conta Criada",
+    "success_description": "Bem-vindo a Nomaryth. A parte difícil já passou.",
+    "verification_email_sent": "Um e-mail de verificação foi enviado. Por favor, cheque sua caixa de entrada."
+  },
+  "profile": {
+    "title": "Perfil de Usuário",
+    "username_value": "Aether-Walker",
+    "user_bio": "Um explorador experiente das verdades ocultas de Nomaryth.",
+    "public_bio_placeholder": "Um explorador silencioso dos caminhos esquecidos de Nomaryth.",
+    "account_info_title": "Informações da Conta",
+    "account_info_desc": "Esta informação é pública. Tenha cuidado com o que você compartilha.",
+    "username_label": "Nome de usuário",
+    "bio_label": "Biografia",
+    "bio_placeholder": "Conte-nos um pouco sobre você...",
+    "email_label": "E-mail",
+    "settings_title": "Configurações",
+    "settings_desc": "Gerencie suas preferências do site.",
+    "location_label": "Localização",
+    "location_placeholder": "Selecione sua localização",
+    "locations": {
+      "br": "Brasil",
+      "us": "Estados Unidos",
+      "es": "Espanha"
+    },
+    "language_label": "Idioma",
+    "language_placeholder": "Selecione o idioma",
+    "languages": {
+      "en": "Inglês (USA)",
+      "pt": "Português (BR)"
+    },
+    "theme_label": "Tema",
+    "theme_placeholder": "Selecione o tema",
+    "themes": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    },
+    "save_button": "Salvar Mudanças",
+    "saving_button": "Salvando...",
+    "logout_button": "Sair",
+    "save_success_title": "Perfil Atualizado",
+    "save_success_description": "Alterações salvas com sucesso.",
+    "save_error_title": "Falha ao Salvar",
+    "save_error_description": "Não rolou salvar. Tente de novo.",
+    "avatar_selector": {
+      "title": "Escolha Seu Avatar",
+      "description": "Pegue um avatar que combine com você.",
+      "confirm_button": "Confirmar",
+      "generate_new": "Gerar Novos",
+      "generating": "Gerando..."
+    },
+    "avatar_success_title": "Avatar Atualizado",
+    "avatar_success_description": "Seu novo avatar está no ar.",
+    "badges_title": "Conquistas",
+    "public_badges_desc": "Conquistas obtidas por este usuário.",
+    "no_badges_yet": "Este usuário ainda não desbloqueou nenhuma conquista.",
+    "badges": {
+      "verified": {
+        "title": "Usuário Verificado",
+        "description": "Confirmação de e-mail feita."
+      },
+      "complete": {
+        "title": "Perfil Completo",
+        "description": "Perfil preenchido até o fim. Parabéns."
+      }
+    },
+    "admin": {
+      "title": "Painel do Admin",
+      "description": "Acesse o painel do administrador.",
+      "button": "Ir para o Painel",
+      "role": "Admin"
+    },
+    "world": {
+      "title": "Mundo",
+      "description": "Interaja com os sistemas do jogo.",
+      "view_factions": "Ver Facções"
+    }
+  },
+  "projects": {
+    "title": "Projetos Open Source que Sustentam Nomaryth",
+    "subtitle": "Confira alguns projetos caóticos que fizemos enquanto havia café.",
+    "load_error_title": "Não rolou carregar os projetos",
+    "load_error_desc": "Não foi possível carregar. Tente mais tarde.",
+    "by": "Autor",
+    "no_description": "Sem descrição. Mistério ou preguiça?",
+    "stars": "estrelas",
+    "forks": "forks",
+    "github_link": "GitHub"
+  },
+  "docs": {
+    "nav": {
+      "introduction": "Introdução",
+      "getting_started": "Começando",
+      "core_concepts": "Conceitos Principais",
+      "api_reference": "Referência da API",
+      "error_pages": "Páginas de Erro"
+    }
+  },
+  "footer": {
+    "bio": "Nada aqui é estável. Magia colapsa, alianças falham. E tudo isso foi criado por mãos que sabiam exatamente o que estavam fazendo.",
+    "headings": {
+      "chronicles": "Documentação",
+      "community": "Comunidade",
+      "legal": "Legal"
+    },
+    "links": {
+      "lore": "História",
+      "concepts": "Conceitos",
+      "projects": "Projetos",
+      "discord": "Discord",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "privacy": "Política de Privacidade",
+      "terms": "Termos de Serviço"
+    },
+    "copyright": "Nomaryth. Todos os direitos reservados."
+  },
+  "error_pages": {
+    "buttons": {
+      "go_home": "Voltar ao Início",
+      "explore_docs": "Explorar Documentação"
+    },
+    "404": {
+      "title": "Página Perdida no Aether",
+      "description": "A página que você procurava evaporou. Talvez nunca tenha existido, mas vai explicar isso pro suporte."
+    },
+    "403": {
+      "title": "A porta está trancada. A chave não é sua.",
+      "description": "Sem acesso. Esta parte é restrita, e os guardiões têm ordens claras: manter curiosos longe.",
+      "details_title": "Informações de Acesso",
+      "required_level": "Nível de Acesso Necessário",
+      "account_status": "Status da Conta",
+      "not_authorized": "Não Autorizado",
+      "not_logged_in": "Não Autenticado",
+      "last_attempt": "Última Tentativa",
+      "contact_admin": "Quer entrar? Primeiro convença os administradores preguiçosos."
+    }
+  },
+  "firebase": {
+    "not_configured_title": "Firebase não configurado",
+    "not_configured_description": "Por favor, configure suas variáveis de ambiente do Firebase em .env.local para habilitar a autenticação."
+  },
+  "firebase_errors": {
+    "auth/invalid-email": "E-mail inválido. Checa isso direito.",
+    "auth/user-disabled": "Conta desativada. Fim da linha.",
+    "auth/user-not-found": "Usuário não achado. Tenta outro e-mail.",
+    "auth/wrong-password": "Senha errada. Capricha aí.",
+    "auth/email-already-in-use": "E-mail em uso. Procura outro.",
+    "auth/weak-password": "Senha fraca. Capricha mais.",
+    "auth/account-exists-with-different-credential": "Conta existe, mas com outra credencial.",
+    "auth/popup-closed-by-user": "Você fechou a janela. Recomeça aí.",
+    "auth/unauthorized-domain": "Domínio não autorizado. Ajusta no Firebase.",
+    "auth/invalid-credential": "Credencial inválida. Confere e tenta de novo.",
+    "storage/unauthorized": "Sem permissão para acessar o arquivo.",
+    "storage/canceled": "Operação cancelada. Parou no meio.",
+    "storage/unknown": "Erro desconhecido. Tenta outra vez."
+  },
+  "status": {
+    "build": "Build",
+    "weather_error": "Clima indisponível"
+  },
+  "common": {
+    "error": "Erro",
+    "success": "Sucesso!",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "save": "Salvar Alterações",
+    "saving": "Salvando...",
+    "edit": "Editar",
+    "delete": "Deletar",
+    "not_authenticated": "Não autenticado",
+    "not_authorized": "Não autorizado",
+    "sending": "Enviando..."
+  },
+  "notifications": {
+    "badge_unlocked": "Conquista Desbloqueada: {{badgeName}}"
+  },
+  "factions": {
+    "page_title": "Facções",
+    "page_subtitle": "Forje alianças ou esmague seus inimigos. O destino está em suas mãos.",
+    "create_button": "Criar Facção",
+    "no_factions_title": "Nenhuma facção foi forjada ainda.",
+    "no_factions_desc": "Seja o primeiro a deixar sua marca neste mundo.",
+    "members": "Membros",
+    "members_count": "Membros",
+    "founder": "Fundador",
+    "no_description": "Uma facção misteriosa com objetivos desconhecidos.",
+    "not_found_title": "Facção não encontrada",
+    "not_found_desc": "Esta facção pode ter sido dissolvida.",
+    "apply": "aplicar",
+    "join": "entrar",
+    "apply_button": "Solicitar Entrada",
+    "join_button": "Entrar na Facção",
+    "actions_title": "Ações",
+    "leave_faction_button": "Sair da Facção",
+    "leave_confirm_title": "Tem certeza que deseja sair?",
+    "leave_confirm_desc": "Você perderá sua afiliação com {{factionName}}. Esta ação não pode ser desfeita, mas você pode se juntar novamente mais tarde.",
+    "confirm_leave_button": "Confirmar Saída",
+    "application_sent_button": "Aplicação Enviada",
+    "already_in_faction_button": "Você já está em outra facção",
+    "login_to_interact": "Faça login para interagir",
+    "manage_faction_button": "Gerenciar Facção",
+    "disband_faction_button": "Disbandar Facção",
+    "disband_confirm_title": "Disbandar {{factionName}}?",
+    "disband_confirm_desc": "Esta ação é <span class=\"font-bold text-destructive\">permanente</span> e não pode ser desfeita. Todos os membros serão removidos e a facção será excluída para sempre.",
+    "confirm_disband_button": "Confirmar Dissolução",
+    "leave_success_title": "Você saiu.",
+    "leave_success_desc": "Você não é mais membro de {{factionName}}.",
+    "disband_success_title": "Facção dissolvida",
+    "disband_success_desc": "{{factionName}} não existe mais.",
+    "roles": {
+      "owner": "Dono",
+      "member": "Membro",
+      "officer": "Oficial"
+    },
+    "create_form": {
+      "title": "Forjar uma Nova Facção",
+      "description": "Defina o nome, a tag e o propósito da sua aliança. Escolha com sabedoria, pois este nome será temido ou reverenciado.",
+      "name_label": "Nome da Facção",
+      "name_placeholder": "Ex: Guardiões do Aether",
+      "tag_label": "Tag (2-4 caracteres)",
+      "tag_placeholder": "Ex: GRDN",
+      "desc_label": "Descrição Curta",
+      "desc_placeholder": "Descreva o propósito e os ideais da sua facção...",
+      "submitting_button": "Forjando...",
+      "validation": {
+        "name_min": "O nome deve ter pelo menos 3 caracteres.",
+        "name_max": "O nome não pode ter mais de 20 caracteres.",
+        "tag_min": "A tag deve ter de 2 a 4 caracteres.",
+        "tag_max": "A tag não pode ter mais de 4 caracteres.",
+        "tag_regex": "A tag só pode conter letras e números.",
+        "desc_max": "A descrição não pode ter mais de 150 caracteres."
+      }
+    },
+    "manage_dialog": {
+      "title": "Gerenciar Facção",
+      "description": "Gerencie membros, aplicações e as configurações da sua facção.",
+      "pending_applications": "Aplicações Pendentes ({{count}})",
+      "members_title": "Membros ({{count}})",
+      "no_other_members": "Não há outros membros para gerenciar.",
+      "transfer_confirm_title": "Transferir Liderança?",
+      "transfer_confirm_desc": "Você tem certeza que quer fazer de {{memberName}} o novo líder? <span class=\"font-bold text-destructive\">Esta ação é irreversível.</span> Você se tornará um membro comum.",
+      "confirm_transfer_button": "Confirmar Transferência",
+      "kick_confirm_title": "Expulsar {{memberName}}?",
+      "kick_confirm_desc": "Esta ação não pode ser desfeita. O membro será removido permanentemente da facção.",
+      "confirm_kick_button": "Confirmar Expulsão",
+      "recruitment_title": "Configurações de Recrutamento",
+      "recruitment_by_application": "Recrutamento por Aplicação",
+      "recruitment_desc": "Se ativado, novos membros precisarão ser aprovados por você antes de entrar. Se desativado, qualquer um pode entrar."
+    },
+    "create_success_title": "Facção Forjada!",
+    "create_success_desc": "A facção \"{{factionName}}\" foi criada com sucesso.",
+    "errors": {
+      "error_title": "Erro",
+      "fetch_details_failed": "Não foi possível carregar os detalhes da facção.",
+      "action_failed_title": "Falha ao {{action}}",
+      "action_failed_desc": "Não foi possível {{action}} na facção.",
+      "leave_failed_title": "Falha ao sair",
+      "leave_failed_desc": "Não foi possível sair da facção.",
+      "disband_failed_title": "Falha ao dissolver",
+      "disband_failed_desc": "Não foi possível dissolver a facção.",
+      "login_required_create": "Você precisa estar logado para criar uma facção.",
+      "generic_create_failed": "Falha ao criar a facção.",
+      "create_failed_title": "Erro ao Criar Facção",
+      "generic_action_failed": "Falha ao executar ação."
+    }
+  },
+  "admin": {
+    "settings": {
+      "title": "Configurações do Admin",
+      "description": "Configure as definições globais para o painel de administração e a aplicação.",
+      "wip_title": "Em Construção",
+      "wip_desc": "Esta seção para configurações de administrador estará disponível em breve."
+    },
+    "announcements": {
+      "title": "Enviar Anúncio",
+      "description": "Crie e envie uma notificação para todos os usuários ou um usuário específico.",
+      "form": {
+        "title_label": "Título",
+        "title_placeholder": "Ex: Manutenção do Servidor",
+        "message_label": "Mensagem",
+        "message_placeholder": "Sua mensagem detalhada do anúncio vai aqui.",
+        "target_label": "Público Alvo",
+        "target_global": "Global (Todos os Usuários)",
+        "target_specific": "Usuário Específico",
+        "select_user_placeholder": "Selecione um usuário...",
+        "search_user_placeholder": "Buscar usuário...",
+        "no_user_found": "Nenhum usuário encontrado.",
+        "send_button": "Enviar Anúncio"
+      },
+      "success_desc": "O anúncio foi enviado.",
+      "errors": {
+        "fetch_users_failed": "Falha ao buscar usuários",
+        "fetch_users_failed_desc": "Não foi possível carregar a lista de usuários para direcionamento.",
+        "missing_fields_title": "Campos Faltando",
+        "missing_fields_desc": "Por favor, forneça um título e uma mensagem.",
+        "no_user_selected_title": "Nenhum Usuário Selecionado",
+        "no_user_selected_desc": "Por favor, selecione um usuário para enviar o anúncio.",
+        "not_authenticated_desc": "Você deve estar logado para enviar anúncios.",
+        "send_failed": "Falha ao enviar anúncio",
+        "send_failed_title": "Falha no Envio",
+        "send_failed_desc": "Não foi possível enviar o anúncio."
+      }
+    },
+    "users": {
+      "title": "Usuários",
+      "description": "Uma lista de todos os usuários registrados no sistema. Mudanças de papéis exigem que o usuário saia e entre novamente.",
+      "permission_denied_title": "Permissão Negada",
+      "permission_denied_desc": "Suas regras de segurança atuais do Firestore não permitem listar usuários. Isso é esperado se você estiver usando regras que permitem aos usuários acessar apenas seus próprios dados. A lista de usuários estará vazia.",
+      "no_data_permission": "Os dados do usuário não podem ser exibidos.",
+      "no_users_found": "Nenhum usuário encontrado.",
+      "unnamed_user": "Usuário sem nome",
+      "table": {
+        "image": "Imagem",
+        "name": "Nome",
+        "role": "Papel",
+        "badges": "Conquistas",
+        "actions": "Ações",
+        "toggle_menu": "Alternar menu"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "Usuário"
+      },
+      "edit_dialog": {
+        "title": "Editar Usuário: {{userName}}",
+        "description": "Modifique os detalhes deste usuário. Mudanças de papel exigem que o usuário saia e entre novamente para ter efeito.",
+        "name_label": "Nome",
+        "role_label": "Papel",
+        "role_placeholder": "Selecione um papel",
+        "bio_label": "Bio",
+        "location_label": "Localização",
+        "badge_title": "Gerenciamento de Conquistas",
+        "badge_desc": "Conceda ou revogue conquistas manualmente para este usuário."
+      },
+      "delete_confirm_title": "Você tem certeza absoluta?",
+      "delete_confirm_desc": "Por segurança, esta ação está desabilitada na interface. Por favor, exclua usuários diretamente do console do Firebase.",
+      "delete_understood_button": "Entendido",
+      "delete_disabled_title": "Exclusão Desabilitada",
+      "delete_disabled_desc": "Por segurança, a exclusão direta de usuários pelo painel de administração está desabilitada. Por favor, remova os usuários diretamente do console do Firebase.",
+      "update_success_title": "Usuário Atualizado",
+      "update_success_desc": "As informações do usuário foram salvas com sucesso.",
+      "errors": {
+        "fetch_failed": "Não foi possível buscar a lista de usuários. Verifique as regras e permissões do Firestore.",
+        "role_update_failed": "Falha ao atualizar o papel do usuário.",
+        "profile_update_failed": "Falha ao atualizar o perfil do usuário.",
+        "generic_update_failed": "Não foi possível salvar as alterações do usuário."
+      }
+    }
+  }
+}

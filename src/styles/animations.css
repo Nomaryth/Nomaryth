@@ -1,0 +1,79 @@
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes glitch {
+  0% {
+    clip-path: inset(80% -6px 0 0);
+    transform: translate(-10px, -10px);
+  }
+  10% {
+    clip-path: inset(10% -6px 85% 0);
+    transform: translate(10px, 10px);
+  }
+  20% {
+    clip-path: inset(80% -6px 0 0);
+    transform: translate(-10px, 10px);
+  }
+  30% {
+    clip-path: inset(10% -6px 85% 0);
+    transform: translate(0px, 5px);
+  }
+  40% {
+    clip-path: inset(50% -6px 30% 0);
+    transform: translate(-5px, 0px);
+  }
+  50% {
+    clip-path: inset(10% -6px 85% 0);
+    transform: translate(5px, 0px);
+  }
+  60% {
+    clip-path: inset(40% -6px 43% 0);
+    transform: translate(5px, 10px);
+  }
+  70% {
+    clip-path: inset(50% -6px 30% 0);
+    transform: translate(-10px, 10px);
+  }
+  80% {
+    clip-path: inset(80% -6px 5% 0);
+    transform: translate(10px, -10px);
+  }
+  90% {
+    clip-path: inset(80% -6px 0 0);
+    transform: translate(-10px, 10px);
+  }
+  100% {
+    clip-path: inset(80% -6px 85% 0);
+    transform: translate(10px, -10px);
+  }
+}
+
+/* Adicione ao seu tailwind.config.js:
+extend: {
+  animation: {
+    'scan': 'scan 2s linear infinite',
+    'pulse-slow': 'pulse 3s infinite',
+    'pulse-slower': 'pulse 4s infinite',
+    'glitch': 'glitch 4s infinite',
+    'glitch-2': 'glitch 4s infinite reverse',
+    'gradient': 'gradient 6s linear infinite',
+  },
+  keyframes: {
+    gradient: {
+      '0%, 100%': {
+        'background-size': '200% 200%',
+        'background-position': 'left center',
+      },
+      '50%': {
+        'background-size': '200% 200%',
+        'background-position': 'right center',
+      },
+    },
+  },
+}

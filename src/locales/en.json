@@ -1,0 +1,436 @@
+
+{
+  "nav": {
+    "home": "Home",
+    "docs": "Docs",
+    "projects": "Projects",
+    "map": "Map",
+    "factions": "Factions"
+  },
+  "header": {
+    "search_docs": "Search docs...",
+    "search_results_title": "Search Results for",
+    "no_results": "No documents found.",
+    "view_all_results": "View all results",
+    "language_switcher_alt": "Change language",
+    "login_alt": "Login",
+    "menu_alt": "Toggle Menu",
+    "profile": "Profile",
+    "logout": "Logout",
+    "notifications": {
+      "title": "Notifications",
+      "tooltip": "View notifications",
+      "no_notifications": "No new notifications.",
+      "mark_as_read": "Mark as read",
+      "clear_read": "Clear read notifications",
+      "clearing": "Clearing..."
+    }
+  },
+  "home": {
+    "tagline": "Ordain your destiny in a world shrouded in magic and conflict.",
+    "explore_lore": "Explore the Lore",
+    "discover_projects": "Discover Projects",
+    "download_launcher": "Download Game Launcher",
+    "explore_title": "Explore the World of Nomaryth",
+    "explore_subtitle": "Dive into the core concepts that shape the realms and its inhabitants.",
+    "timeline": {
+      "title": "A Living History",
+      "subtitle": "Key events that have shaped the world of Nomaryth as it stands today."
+    }
+  },
+  "features": {
+    "magic": {
+      "title": "Potent Magic",
+      "description": "Harness the raw Aetherium to cast powerful spells, but beware its corrupting influence on the unwary."
+    },
+    "factions": {
+      "title": "Warring Factions",
+      "description": "Align with noble houses or shadow syndicates. Your choices will forge alliances and create powerful enemies."
+    },
+    "aetherium": {
+      "title": "The Aetherium",
+      "description": "A mystical plane of pure energy, the source of all magic. Its power is immense, dangerous, and sought by all."
+    }
+  },
+  "map": {
+    "title": "World Map",
+    "subtitle": "Explore the realms of Nomaryth. Click on a marker to learn more about a location."
+  },
+  "login": {
+    "title": "Login",
+    "description": "Enter your credentials to access your account.",
+    "google_signin": "Sign in with Google",
+    "or_continue_with": "Or continue with",
+    "email_label": "Email",
+    "password_label": "Password",
+    "signin_button": "Sign in",
+    "signing_in_button": "Signing in...",
+    "no_account": "Don't have an account?",
+    "signup_link": "Sign up",
+    "error_title": "Login Failed",
+    "generic_error": "An unexpected error occurred. Please try again.",
+    "success_title": "Login Successful",
+    "success_description": "Welcome back, explorer!"
+  },
+  "signup": {
+    "title": "Sign Up",
+    "description": "Create a new account to begin your journey.",
+    "signup_button": "Sign Up",
+    "signing_up_button": "Signing Up...",
+    "have_account": "Already have an account?",
+    "login_link": "Login",
+    "error_title": "Signup Failed",
+    "password_too_short": "Password must be at least 6 characters long.",
+    "generic_error": "An unexpected error occurred. Please try again.",
+    "success_title": "Account Created",
+    "success_description": "Welcome to Nomaryth! Your journey begins now.",
+    "verification_email_sent": "A verification email has been sent. Please check your inbox."
+  },
+  "profile": {
+    "title": "User Profile",
+    "username_value": "Aether-Walker",
+    "user_bio": "A seasoned explorer of Nomaryth's hidden truths.",
+    "public_bio_placeholder": "A quiet explorer of Nomaryth's forgotten paths.",
+    "account_info_title": "Account Information",
+    "account_info_desc": "This information is public. Be careful what you share.",
+    "username_label": "Username",
+    "bio_label": "Bio",
+    "bio_placeholder": "Tell us a little about yourself...",
+    "email_label": "Email",
+    "settings_title": "Settings",
+    "settings_desc": "Manage your site preferences.",
+    "location_label": "Location",
+    "location_placeholder": "Select your location",
+    "locations": {
+      "br": "Brasil",
+      "us": "United States",
+      "es": "España"
+    },
+    "language_label": "Language",
+    "language_placeholder": "Select language",
+    "languages": {
+      "en": "English (US)",
+      "pt": "Português (BR)"
+    },
+    "theme_label": "Theme",
+    "theme_placeholder": "Select theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "save_button": "Save Changes",
+    "saving_button": "Saving...",
+    "logout_button": "Logout",
+    "save_success_title": "Profile Updated",
+    "save_success_description": "Your changes have been saved successfully.",
+    "save_error_title": "Update Failed",
+    "save_error_description": "Couldn’t save. Try again.",
+    "avatar_selector": {
+      "title": "Pick Your Avatar",
+      "description": "Choose an avatar that suits you.",
+      "confirm_button": "Confirm",
+      "generate_new": "Generate New",
+      "generating": "Generating..."
+    },
+    "avatar_success_title": "Avatar Updated",
+    "avatar_success_description": "Your new avatar is live.",
+    "badges_title": "Achievements",
+    "public_badges_desc": "Badges earned by this user.",
+    "no_badges_yet": "This user hasn't unlocked any badges yet.",
+    "badges": {
+      "verified": {
+        "title": "Verified User",
+        "description": "Email confirmed."
+      },
+      "complete": {
+        "title": "Profile Complete",
+        "description": "Profile fully filled out. Congrats."
+      }
+    },
+    "admin": {
+      "title": "Admin Panel",
+      "description": "Access the administrator dashboard.",
+      "button": "Go to Dashboard",
+      "role": "Admin"
+    },
+    "world": {
+      "title": "World",
+      "description": "Interact with game systems.",
+      "view_factions": "View Factions"
+    }
+  },
+  "projects": {
+    "title": "Open Source Projects Powering Nomaryth",
+    "subtitle": "Check out some chaotic projects we did while there was coffee.",
+    "load_error_title": "Failed to load projects",
+    "load_error_desc": "Failed to load. Please try again later.",
+    "by": "Author",
+    "no_description": "No description. Mystery or laziness?",
+    "stars": "stars",
+    "forks": "forks",
+    "github_link": "GitHub"
+  },
+  "docs": {
+    "nav": {
+      "introduction": "Introduction",
+      "getting_started": "Getting Started",
+      "core_concepts": "Core Concepts",
+      "api_reference": "API Reference",
+      "error_pages": "Error Pages"
+    }
+  },
+  "footer": {
+    "bio": "Nothing here is stable. Magic collapses, alliances fail. And all of this was created by hands that knew exactly what they were doing.",
+    "headings": {
+      "chronicles": "Chronicles",
+      "community": "Community",
+      "legal": "Legal"
+    },
+    "links": {
+      "lore": "Lore",
+      "concepts": "Concepts",
+      "projects": "Projects",
+      "discord": "Discord",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "copyright": "Nomaryth. All rights reserved."
+  },
+  "error_pages": {
+    "buttons": {
+      "go_home": "Return to Home",
+      "explore_docs": "Explore Documentation"
+    },
+    "404": {
+      "title": "Page Lost in the Aether",
+      "description": "The page you're looking for has disappeared. It may never have existed, but you'll need to explain that to support."
+    },
+    "403": {
+      "title": "The door’s locked. The key was never yours.",
+      "description": "No access. This section is restricted, and the guardians have one job — keep the curious out",
+      "details_title": "Access Information",
+      "required_level": "Required Access Level",
+      "account_status": "Account Status",
+      "not_authorized": "Not Authorized",
+      "not_logged_in": "Not Logged In",
+      "last_attempt": "Last Attempt",
+      "contact_admin": "Want in? First, convince the lazy admins."
+    }
+  },
+  "firebase": {
+    "not_configured_title": "Firebase Not Configured",
+    "not_configured_description": "Please configure your Firebase environment variables in `.env.local` to enable authentication."
+  },
+  "firebase_errors": {
+    "auth/invalid-email": "Invalid email. Check that right.",
+    "auth/user-disabled": "Account disabled. End of line.",
+    "auth/user-not-found": "User not found. Try another email.",
+    "auth/wrong-password": "Wrong password. Try harder.",
+    "auth/email-already-in-use": "Email in use. Find another.",
+    "auth/weak-password": "Weak password. Step it up.",
+    "auth/account-exists-with-different-credential": "Account exists with different credential.",
+    "auth/popup-closed-by-user": "You closed the window. Start again.",
+    "auth/unauthorized-domain": "Unauthorized domain. Fix it on Firebase.",
+    "auth/invalid-credential": "Invalid credential. Check and retry.",
+    "storage/unauthorized": "No permission to access file.",
+    "storage/canceled": "Operation canceled. Stopped halfway.",
+    "storage/unknown": "Unknown error. Try again."
+  },
+  "status": {
+    "build": "Build",
+    "weather_error": "Weather unavailable"
+  },
+  "common": {
+    "error": "Error",
+    "success": "Success!",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "edit": "Edit",
+    "delete": "Delete",
+    "not_authenticated": "Not Authenticated",
+    "not_authorized": "Not Authorized",
+    "sending": "Sending..."
+  },
+  "notifications": {
+    "badge_unlocked": "Badge Unlocked: {{badgeName}}"
+  },
+  "factions": {
+    "page_title": "Factions",
+    "page_subtitle": "Forge alliances or crush your enemies. Destiny is in your hands.",
+    "create_button": "Create Faction",
+    "no_factions_title": "No factions have been forged yet.",
+    "no_factions_desc": "Be the first to leave your mark on this world.",
+    "members": "Members",
+    "members_count": "Members",
+    "founder": "Founder",
+    "no_description": "A mysterious faction with unknown goals.",
+    "not_found_title": "Faction Not Found",
+    "not_found_desc": "This faction may have been disbanded.",
+    "apply": "apply",
+    "join": "join",
+    "apply_button": "Request to Join",
+    "join_button": "Join Faction",
+    "actions_title": "Actions",
+    "leave_faction_button": "Leave Faction",
+    "leave_confirm_title": "Are you sure you want to leave?",
+    "leave_confirm_desc": "You will lose your affiliation with {{factionName}}. This action cannot be undone, but you can join again later.",
+    "confirm_leave_button": "Confirm Leave",
+    "application_sent_button": "Application Sent",
+
+    "already_in_faction_button": "You are already in another faction",
+    "login_to_interact": "Log in to interact",
+    "manage_faction_button": "Manage Faction",
+    "disband_faction_button": "Disband Faction",
+    "disband_confirm_title": "Disband {{factionName}}?",
+    "disband_confirm_desc": "This action is <span class=\"font-bold text-destructive\">permanent</span> and cannot be undone. All members will be removed, and the faction will be deleted forever.",
+    "confirm_disband_button": "Confirm Disband",
+    "leave_success_title": "You have left.",
+    "leave_success_desc": "You are no longer a member of {{factionName}}.",
+    "disband_success_title": "Faction Disbanded",
+    "disband_success_desc": "{{factionName}} no longer exists.",
+    "roles": {
+      "owner": "Owner",
+      "member": "Member",
+      "officer": "Officer"
+    },
+    "create_form": {
+      "title": "Forge a New Faction",
+      "description": "Define the name, tag, and purpose of your alliance. Choose wisely, as this name will be feared or revered.",
+      "name_label": "Faction Name",
+      "name_placeholder": "E.g., Guardians of the Aether",
+      "tag_label": "Tag (2-4 characters)",
+      "tag_placeholder": "E.g., GRDN",
+      "desc_label": "Short Description",
+      "desc_placeholder": "Describe the purpose and ideals of your faction...",
+      "submitting_button": "Forging...",
+      "validation": {
+        "name_min": "Name must have at least 3 characters.",
+        "name_max": "Name cannot have more than 20 characters.",
+        "tag_min": "Tag must have 2 to 4 characters.",
+        "tag_max": "Tag cannot have more than 4 characters.",
+        "tag_regex": "Tag can only contain letters and numbers.",
+        "desc_max": "Description cannot have more than 150 characters."
+      }
+    },
+    "manage_dialog": {
+      "title": "Manage Faction",
+      "description": "Manage members, applications, and your faction's settings.",
+      "pending_applications": "Pending Applications ({{count}})",
+      "members_title": "Members ({{count}})",
+      "no_other_members": "There are no other members to manage.",
+      "transfer_confirm_title": "Transfer Leadership?",
+      "transfer_confirm_desc": "Are you sure you want to make {{memberName}} the new leader? <span class=\"font-bold text-destructive\">This action is irreversible.</span> You will become a regular member.",
+      "confirm_transfer_button": "Confirm Transfer",
+      "kick_confirm_title": "Kick {{memberName}}?",
+      "kick_confirm_desc": "This action cannot be undone. The member will be permanently removed from the faction.",
+      "confirm_kick_button": "Confirm Kick",
+      "recruitment_title": "Recruitment Settings",
+      "recruitment_by_application": "Recruitment by Application",
+      "recruitment_desc": "If enabled, new members will need your approval to join. If disabled, anyone can join freely."
+    },
+    "create_success_title": "Faction Forged!",
+    "create_success_desc": "The faction \"{{factionName}}\" has been created successfully.",
+    "errors": {
+      "error_title": "Error",
+      "fetch_details_failed": "Could not load faction details.",
+      "action_failed_title": "Failed to {{action}}",
+      "action_failed_desc": "Could not {{action}} the faction.",
+      "leave_failed_title": "Failed to leave",
+      "leave_failed_desc": "Could not leave the faction.",
+      "disband_failed_title": "Failed to disband",
+      "disband_failed_desc": "Could not disband the faction.",
+      "login_required_create": "You need to be logged in to create a faction.",
+      "generic_create_failed": "Failed to create the faction.",
+      "create_failed_title": "Error Creating Faction",
+      "generic_action_failed": "Failed to execute action."
+    }
+  },
+  "admin": {
+    "settings": {
+      "title": "Admin Settings",
+      "description": "Configure global settings for the admin panel and application.",
+      "wip_title": "Under Construction",
+      "wip_desc": "This section for administrator settings is coming soon."
+    },
+    "announcements": {
+      "title": "Send Announcement",
+      "description": "Create and send a notification to all users or a specific user.",
+      "form": {
+        "title_label": "Title",
+        "title_placeholder": "E.g., Server Maintenance",
+        "message_label": "Message",
+        "message_placeholder": "Your detailed announcement message goes here.",
+        "target_label": "Target Audience",
+        "target_global": "Global (All Users)",
+        "target_specific": "Specific User",
+        "select_user_placeholder": "Select a user...",
+        "search_user_placeholder": "Search user...",
+        "no_user_found": "No user found.",
+        "send_button": "Send Announcement"
+      },
+      "success_desc": "Announcement has been sent.",
+      "errors": {
+        "fetch_users_failed": "Failed to fetch users",
+        "fetch_users_failed_desc": "Could not load user list for targeting.",
+        "missing_fields_title": "Missing Fields",
+        "missing_fields_desc": "Please provide a title and message.",
+        "no_user_selected_title": "No User Selected",
+        "no_user_selected_desc": "Please select a user to send the announcement to.",
+        "not_authenticated_desc": "You must be logged in to send announcements.",
+        "send_failed": "Failed to send announcement",
+        "send_failed_title": "Send Failed",
+        "send_failed_desc": "Could not send announcement."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "description": "A list of all registered users in the system. Changes to roles require the user to log out and back in.",
+      "permission_denied_title": "Permission Denied",
+      "permission_denied_desc": "Your current Firestore security rules do not allow listing users. This is expected if you are using rules that only allow users to access their own data. The user list will be empty.",
+      "no_data_permission": "User data cannot be displayed.",
+      "no_users_found": "No users found.",
+      "unnamed_user": "Unnamed User",
+      "table": {
+        "image": "Image",
+        "name": "Name",
+        "role": "Role",
+        "badges": "Badges",
+        "actions": "Actions",
+        "toggle_menu": "Toggle menu"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "User"
+      },
+      "edit_dialog": {
+        "title": "Edit User: {{userName}}",
+        "description": "Modify the details for this user. Role changes require a user to log out and log back in to take effect.",
+        "name_label": "Name",
+        "role_label": "Role",
+        "role_placeholder": "Select a role",
+        "bio_label": "Bio",
+        "location_label": "Location",
+        "badge_title": "Badge Management",
+        "badge_desc": "Manually grant or revoke badges for this user."
+      },
+      "delete_confirm_title": "Are you absolutely sure?",
+      "delete_confirm_desc": "For security, this action is disabled in the UI. Please delete users directly from the Firebase Authentication console.",
+      "delete_understood_button": "Understood",
+      "delete_disabled_title": "Deletion Disabled",
+      "delete_disabled_desc": "For safety, direct user deletion via the admin panel is disabled. Please remove users directly from the Firebase console.",
+      "update_success_title": "User Updated",
+      "update_success_desc": "User information has been successfully saved.",
+      "errors": {
+        "fetch_failed": "Could not fetch user list. Check Firestore rules and permissions.",
+        "role_update_failed": "Failed to update user role.",
+        "profile_update_failed": "Failed to update user profile.",
+        "generic_update_failed": "Could not save user changes."
+      }
+    }
+  }
+}
