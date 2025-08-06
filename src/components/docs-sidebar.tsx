@@ -346,7 +346,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
                  </Button>
                </TooltipTrigger>
                <TooltipContent>
-                 <p>{t('docs.sidebar.sort_tooltip', { direction: sortOrder === 'asc' ? t('docs.sidebar.sort_ascending') : t('docs.sidebar.sort_descending') })}</p>
+                 <p>{t('docs.sidebar.sort_tooltip')}</p>
                </TooltipContent>
              </Tooltip>
            </TooltipProvider>
@@ -522,7 +522,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
               <div className="flex items-center gap-1">
                 {searchQuery && (
                   <Badge variant="outline" className="text-xs">
-                    {t('docs.sidebar.search_filter', { query: searchQuery })}
+                    {t('docs.sidebar.search_filter')}
                   </Badge>
                 )}
                 {filterDifficulty !== 'all' && (
@@ -537,7 +537,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
           
            {filteredAndSortedData.length !== docsData.length && (
              <div className="text-xs text-muted-foreground">
-               {t('docs.sidebar.showing_results', { filtered: filteredAndSortedData.length, total: docsData.length })}
+               {t('docs.sidebar.showing_results')}
              </div>
            )}
            
