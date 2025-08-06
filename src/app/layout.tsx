@@ -7,6 +7,7 @@ import { PrivacyNotice } from "@/components/privacy-notice";
 import { TranslationsProvider } from "@/context/i18n-context";
 import { AuthProvider } from "@/context/auth-context";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -101,6 +102,7 @@ export default function RootLayout({
                 {children}
               </div>
               <Toaster />
+              <Analytics />
             </ThemeProvider>
           </AuthProvider>
         </TranslationsProvider>
