@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { OptimizedImage } from "@/components/optimized-image";
 import { FlipButton } from "@/components/flip-button";
 import { BannerButton } from "@/components/banner-button";
+import { StructuredData, websiteSchema, organizationSchema, creativeWorkSchema } from "@/components/structured-data";
 
 function HomeContent() {
   const { t } = useTranslation();
@@ -100,9 +101,18 @@ function HomeContent() {
   );
 }
 
-
 export default function Home() {
+  // Combine multiple schemas for comprehensive structured data
+  const combinedSchema = [
+    websiteSchema,
+    organizationSchema,
+    creativeWorkSchema
+  ];
+
   return (
-    <HomeContent />
+    <>
+      <StructuredData data={combinedSchema} />
+      <HomeContent />
+    </>
   )
 }

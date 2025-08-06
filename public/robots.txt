@@ -1,6 +1,9 @@
 # Nomaryth - Robots.txt
 # https://gghorizon.com
 
+User-agent: Googlebot
+Disallow:
+
 User-agent: *
 Crawl-delay: 1
 
@@ -32,13 +35,4 @@ User-agent: MJ12bot
 Disallow: /
 
 User-agent: dotbot
-Disallow: /
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: ia_archiver
 Disallow: /
