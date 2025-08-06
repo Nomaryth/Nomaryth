@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+.docs-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.docs-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.docs-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.docs-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+.content-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) transparent;
+}
+
+@media (max-width: 768px) {
+  .docs-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 98%;
@@ -64,7 +92,6 @@
     @apply bg-background text-foreground;
   }
   
-  /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;

@@ -255,6 +255,11 @@ export function Header() {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
+    if (pathname.startsWith('/docs')) {
+      setScrollProgress(0);
+      return;
+    }
+
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       const progress = (window.scrollY / totalHeight) * 100;
@@ -263,7 +268,7 @@ export function Header() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [pathname]);
 
   const NavLinks = ({ className }: { className?: string }) => (
     <nav className={cn("flex items-center gap-4 lg:gap-6", className)}>
@@ -337,7 +342,9 @@ export function Header() {
         </div>
       </div>
        <CommandMenu open={openCommandMenu} setOpen={setOpenCommandMenu} />
-       <Progress value={scrollProgress} className="absolute bottom-0 h-0.5 w-full bg-transparent rounded-none [&>div]:bg-primary" />
+       {!pathname.startsWith('/docs') && (
+         <Progress value={scrollProgress} className="absolute bottom-0 h-0.5 w-full bg-transparent rounded-none [&>div]:bg-primary" />
+       )}
     </header>
   );
 }

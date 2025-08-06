@@ -19,8 +19,8 @@ export function Footer() {
       { href: 'https://github.com/Nomaryth', labelKey: 'footer.links.github' },
     ],
     legal: [
-      { href: '#', labelKey: 'footer.links.privacy' },
-      { href: '#', 'labelKey': 'footer.links.terms' },
+      { href: '/privacy', labelKey: 'footer.links.privacy' },
+      { href: '/terms', labelKey: 'footer.links.terms' },
     ],
   };
 

@@ -11,6 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { StatusFooter } from "@/components/status-footer";
+import { ReadingModeToggle } from "@/components/reading-mode-toggle";
+import { ReadingProgress } from "@/components/reading-progress";
+import { ContextualNavigation } from "@/components/contextual-navigation";
+import { DocsBreadcrumbs } from "@/components/docs-breadcrumbs";
 
 interface Doc {
   slug: string;
@@ -32,6 +36,7 @@ function DocsLayoutContent({
   const pathname = usePathname();
   const [docsData, setDocsData] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isReadingMode, setIsReadingMode] = useState(false);
 
   useEffect(() => {
     fetch('/api/docs')
@@ -102,8 +107,28 @@ function DocsLayoutContent({
             </SidebarContent>
           </Sidebar>
           <SidebarInset>
+            <div className="sticky top-16 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+              <div className="px-6 py-2">
+                <ReadingProgress />
+              </div>
+            </div>
+            
             <div className="p-8">
-              {children}
+              <div className="flex items-center justify-between mb-6">
+                <DocsBreadcrumbs />
+                <ReadingModeToggle onModeChange={setIsReadingMode} />
+              </div>
+              
+              <div className={cn(
+                "transition-all duration-300",
+                isReadingMode && "max-w-4xl mx-auto px-4"
+              )}>
+                {children}
+              </div>
+
+              <div className="mt-12 pt-8 border-t">
+                <ContextualNavigation currentDoc={pathname} docsData={docsData} />
+              </div>
             </div>
           </SidebarInset>
         </div>

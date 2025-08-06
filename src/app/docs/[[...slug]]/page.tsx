@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { adminDb } from '@/lib/firebase-admin';
 import { BookX } from 'lucide-react';
+import { BreadcrumbSchema } from '@/components/breadcrumb-schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,10 +98,32 @@ export default async function DocPage({ params }: { params: Promise<{ slug?: str
     notFound();
   }
 
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Documentation", url: "/docs" }
+  ];
+
+  if (slug && slug.length > 0) {
+    const categoryName = slug[0].split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+    breadcrumbItems.push({ name: categoryName, url: `/docs/${slug[0]}` });
+
+    if (slug.length > 1) {
+      const docName = slug[1].split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+      breadcrumbItems.push({ name: docName, url: `/docs/${slug[0]}/${slug[1]}` });
+    }
+  }
+
   return (
-    <article className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-headings:text-accent prose-a:text-accent hover:prose-a:text-accent/80 prose-strong:text-foreground prose-blockquote:border-accent prose-code:text-accent prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-muted prose-code:px-1.5 prose-code:py-1 prose-code:rounded-md">
-        <h1 className="font-headline text-4xl font-bold mb-4 text-accent">{doc.title}</h1>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{doc.content}</ReactMarkdown>
-    </article>
+    <>
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <article className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-headings:text-accent prose-a:text-accent hover:prose-a:text-accent/80 prose-strong:text-foreground prose-blockquote:border-accent prose-code:text-accent prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-muted prose-code:px-1.5 prose-code:py-1 prose-code:rounded-md">
+          <h1 className="font-headline text-4xl font-bold mb-4 text-accent">{doc.title}</h1>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{doc.content}</ReactMarkdown>
+      </article>
+    </>
   );
 }
