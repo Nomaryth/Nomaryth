@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff, Sidebar, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/context/i18n-context';
 
 interface ReadingModeToggleProps {
   onModeChange: (isReadingMode: boolean) => void;
@@ -12,6 +13,7 @@ interface ReadingModeToggleProps {
 
 export function ReadingModeToggle({ onModeChange, className }: ReadingModeToggleProps) {
   const [isReadingMode, setIsReadingMode] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const savedMode = localStorage.getItem('nomaryth-reading-mode');
@@ -39,17 +41,17 @@ export function ReadingModeToggle({ onModeChange, className }: ReadingModeToggle
         isReadingMode && "bg-accent text-accent-foreground",
         className
       )}
-      title={isReadingMode ? "Sair do modo foco" : "Ativar modo foco"}
+      title={isReadingMode ? t('docs.reading_mode.toggle_off') : t('docs.reading_mode.toggle_on')}
     >
       {isReadingMode ? (
         <>
           <EyeOff className="h-4 w-4" />
-          <span className="hidden sm:inline">Modo Foco</span>
+          <span className="hidden sm:inline">{t('docs.reading_mode.focus_mode')}</span>
         </>
       ) : (
         <>
           <Eye className="h-4 w-4" />
-          <span className="hidden sm:inline">Modo Foco</span>
+          <span className="hidden sm:inline">{t('docs.reading_mode.focus_mode')}</span>
         </>
       )}
     </Button>

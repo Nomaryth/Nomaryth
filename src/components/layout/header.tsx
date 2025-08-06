@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -40,7 +39,9 @@ interface Notification {
     message: string;
     isRead: boolean;
     timestamp: { seconds: number; nanoseconds: number } | null;
-    type: 'welcome' | 'badge' | 'system';
+    type: 'welcome' | 'badge' | 'system' | 'news';
+    newsId?: string;
+    newsTitle?: string;
 }
 
 function LanguageSwitcher() {
@@ -134,10 +135,16 @@ function NotificationBell() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [hasUnread, setHasUnread] = useState(false);
     const [isClearing, setIsClearing] = useState(false);
+    const [isClient, setIsClient] = useState(false);
     const { t, language } = useTranslation();
+    const router = useRouter();
 
     useEffect(() => {
-        if (!user || !db) {
+        setIsClient(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isClient || !user || !db) {
             setNotifications([]);
             return;
         };
@@ -152,7 +159,7 @@ function NotificationBell() {
         });
 
         return () => unsubscribe();
-    }, [user]);
+    }, [user, isClient]);
 
     const handleMarkAsRead = async (notificationId: string) => {
         if (!user || !db) return;
@@ -169,13 +176,41 @@ function NotificationBell() {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${idToken}` },
             });
+            
             const result = await response.json();
-            if (!response.ok) throw new Error(result.error);
-            toast({ title: t('header.notifications.clear_read'), description: t('header.notifications.clear_success_desc') });
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to clear notifications');
+            }
+            
+            toast({ 
+                title: t('header.notifications.clear_read'), 
+                description: t('header.notifications.clear_success_desc') 
+            });
         } catch (error) {
-            toast({ variant: 'destructive', title: t('common.error'), description: t('header.notifications.clear_error_desc') });
+            console.error('Error clearing notifications:', error);
+            toast({ 
+                variant: 'destructive', 
+                title: t('common.error'), 
+                description: t('header.notifications.clear_error_desc') 
+            });
         } finally {
             setIsClearing(false);
+        }
+    };
+
+    const handleNotificationClick = async (notification: Notification) => {
+        if (!isClient) return;
+        if (!notification.isRead) {
+            await handleMarkAsRead(notification.id);
+        }
+
+        if (notification.type === 'news' && notification.newsId) {
+            router.push('/');
+            toast({
+                title: t('header.notifications.navigating_to_news'),
+                description: `${t('header.notifications.redirecting_to_news')} "${notification.newsTitle}"`,
+            });
         }
     };
 
@@ -183,6 +218,41 @@ function NotificationBell() {
         const date = new Date(seconds * 1000);
         const locale = language === 'pt' ? ptBR : undefined;
         return formatDistanceToNow(date, { addSuffix: true, locale });
+    };
+
+    const getNotificationIcon = (type: string) => {
+        switch (type) {
+            case 'news':
+                return <Bell className="h-4 w-4 text-amber-500 dark:text-amber-400" />;
+            case 'system':
+                return <LayoutDashboard className="h-4 w-4 text-amber-400 dark:text-amber-300" />;
+            case 'badge':
+                return <Swords className="h-4 w-4 text-amber-300 dark:text-amber-200" />;
+            default:
+                return <Bell className="h-4 w-4 text-muted-foreground" />;
+        }
+    };
+
+    const getNotificationBadge = (type: string) => {
+        switch (type) {
+            case 'news':
+                return <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-200 border-amber-200 dark:border-amber-800/50">Notícia</Badge>;
+            case 'system':
+                return <Badge variant="outline" className="text-xs border-amber-200 text-amber-700 dark:border-amber-800/50 dark:text-amber-300">Sistema</Badge>;
+            case 'badge':
+                return <Badge variant="default" className="text-xs bg-amber-600 text-white hover:bg-amber-700 dark:bg-amber-800 dark:hover:bg-amber-700">Conquista</Badge>;
+            default:
+                return null;
+        }
+    };
+
+    if (!isClient) {
+        return (
+            <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">{t('header.notifications.tooltip')}</span>
+            </Button>
+        );
     }
 
     return (
@@ -193,7 +263,9 @@ function NotificationBell() {
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="relative">
                                 <Bell className="h-5 w-5" />
-                                {hasUnread && <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-primary" />}
+                                {hasUnread && (
+                                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
+                                )}
                                 <span className="sr-only">{t('header.notifications.tooltip')}</span>
                             </Button>
                         </DropdownMenuTrigger>
@@ -203,46 +275,101 @@ function NotificationBell() {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-            <DropdownMenuContent align="end" className="w-80 p-0">
-                <DropdownMenuLabel className="p-2">{t('header.notifications.title')}</DropdownMenuLabel>
-                <DropdownMenuSeparator className="m-0" />
-                <ScrollArea className="h-[300px]">
+            <DropdownMenuContent align="end" className="w-96 p-0">
+                <div className="flex items-center justify-between p-4 border-b">
+                    <h3 className="font-semibold text-lg">{t('header.notifications.title')}</h3>
+                    {hasUnread && (
+                        <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-200 border-amber-200 dark:border-amber-800/50">
+                            {notifications.filter(n => !n.isRead).length} nova{notifications.filter(n => !n.isRead).length !== 1 ? 's' : ''}
+                        </Badge>
+                    )}
+                </div>
+                <ScrollArea className="h-[400px]">
                     {notifications.length > 0 ? (
-                        notifications.map(notif => (
-                            <DropdownMenuItem key={notif.id} className="flex flex-col items-start gap-2 p-2" onSelect={(e) => e.preventDefault()}>
-                                <div className="w-full">
-                                    <p className="font-semibold">{notif.title}</p>
-                                    <p className="text-sm text-muted-foreground">{notif.message}</p>
-                                    {notif.timestamp && <p className="text-xs text-muted-foreground/80 mt-1">{getRelativeTime(notif.timestamp.seconds)}</p>}
+                        <div className="p-2 space-y-2">
+                            {notifications.map(notif => (
+                                <div
+                                    key={notif.id}
+                                    className={`relative p-3 rounded-lg border transition-all cursor-pointer ${
+                                        !notif.isRead ? 'bg-amber-50 dark:bg-amber-950/10 border-amber-200 dark:border-amber-800/30' : 'bg-card'
+                                    } hover:bg-amber-50 dark:hover:bg-muted/20 hover:border-amber-200 dark:hover:border-border/30`}
+                                    onClick={() => handleNotificationClick(notif)}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 mt-0.5">
+                                            {getNotificationIcon(notif.type)}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <p className={`font-medium text-sm ${!notif.isRead ? 'text-amber-900 dark:text-amber-200' : ''}`}>
+                                                    {notif.title}
+                                                </p>
+                                                {getNotificationBadge(notif.type)}
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                                {notif.message}
+                                            </p>
+                                            {notif.timestamp && (
+                                                <p className="text-xs text-muted-foreground/60">
+                                                    {getRelativeTime(notif.timestamp.seconds)}
+                                                </p>
+                                            )}
+                                        </div>
+                                        {!notif.isRead && (
+                                            <div className="flex-shrink-0">
+                                                <span className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {notif.type === 'news' && notif.newsId && (
+                                        <div className="mt-2 pt-2 border-t border-border/50">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-6 text-xs text-amber-600 dark:text-amber-300 hover:text-amber-700 dark:hover:text-foreground hover:bg-amber-100 dark:hover:bg-muted/20"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleNotificationClick(notif);
+                                                }}
+                                            >
+                                                {t('header.notifications.view_news')} →
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
-                                {!notif.isRead && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="w-full h-8"
-                                        onClick={() => handleMarkAsRead(notif.id)}
-                                    >
-                                        <Check className="mr-2 h-4 w-4" />
-                                        {t('header.notifications.mark_as_read')}
-                                    </Button>
-                                )}
-                            </DropdownMenuItem>
-                        ))
+                            ))}
+                        </div>
                     ) : (
-                        <p className="p-4 text-sm text-center text-muted-foreground">{t('header.notifications.no_notifications')}</p>
+                        <div className="p-8 text-center">
+                            <Bell className="h-12 w-12 mx-auto mb-4 text-amber-500/50 dark:text-amber-400/30" />
+                            <p className="text-sm text-muted-foreground">{t('header.notifications.no_notifications')}</p>
+                        </div>
                     )}
                 </ScrollArea>
-                {notifications.some(n => n.isRead) && (
-                    <>
-                        <DropdownMenuSeparator className="m-0"/>
-                        <div className="p-1">
-                            <Button variant="ghost" size="sm" className="w-full" onClick={handleClearAllRead} disabled={isClearing}>
-                                {isClearing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Trash2 className="mr-2 h-4 w-4" />}
-                                {isClearing ? t('header.notifications.clearing') : t('header.notifications.clear_read')}
-                            </Button>
-                        </div>
-                    </>
-                )}
+                {(() => {
+                    const hasReadNotifications = notifications.some(n => n.isRead);
+                    return hasReadNotifications && (
+                        <>
+                            <div className="border-t p-2">
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="w-full justify-start text-muted-foreground hover:text-amber-600 dark:hover:text-foreground hover:bg-amber-100 dark:hover:bg-muted/20" 
+                                    onClick={handleClearAllRead} 
+                                    disabled={isClearing}
+                                >
+                                    {isClearing ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                    ) : (
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                    )}
+                                    {isClearing ? t('header.notifications.clearing') : t('header.notifications.clear_read')}
+                                </Button>
+                            </div>
+                        </>
+                    );
+                })()}
             </DropdownMenuContent>
         </DropdownMenu>
     );

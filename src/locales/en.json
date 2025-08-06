@@ -23,19 +23,78 @@
       "no_notifications": "No new notifications.",
       "mark_as_read": "Mark as read",
       "clear_read": "Clear read notifications",
-      "clearing": "Clearing..."
+      "clearing": "Clearing...",
+      "clear_success_desc": "Read notifications have been removed",
+      "clear_error_desc": "Error clearing notifications",
+      "view_news": "View news",
+      "navigating_to_news": "Navigating to news",
+      "redirecting_to_news": "Redirecting to",
+      "types": {
+        "news": "News",
+        "system": "System",
+        "badge": "Achievement"
+      }
     }
   },
   "home": {
-    "tagline": "Ordain your destiny in a world shrouded in magic and conflict.",
-    "explore_lore": "Explore the Lore",
-    "discover_projects": "Discover Projects",
+    "tagline": "Determine your destiny in a world shrouded in cruelty and conflict.",
+    "explore_lore": "Explore the History",
+    "discover_projects": "Discover our Projects",
     "download_launcher": "Download Game Launcher",
-    "explore_title": "Explore the World of Nomaryth",
-    "explore_subtitle": "Dive into the core concepts that shape the realms and its inhabitants.",
+    "explore_title": "Understand the elements that define this continent on the brink of collapse.",
+    "explore_subtitle": "Nomaryth is defined by immutable rules, where every choice hides a consequence and every step shapes how your end will be.",
     "timeline": {
       "title": "A Living History",
-      "subtitle": "Key events that have shaped the world of Nomaryth as it stands today."
+      "subtitle": "Key events that shaped the world of Nomaryth as it is today."
+    },
+    "news": {
+      "title": "Latest News",
+      "subtitle": "Stay updated with the latest news from Nomaryth",
+      "filters": {
+        "all": "All",
+        "updates": "Updates",
+        "events": "Events",
+        "announcements": "Announcements"
+      },
+      "featured": "Featured",
+      "no_news": "No news found",
+      "view_all": "View All News",
+      "subscription": {
+        "subscribe": "Receive Updates",
+        "unsubscribe": "Cancel Subscription",
+        "subscribed": "Successfully subscribed to updates for this news",
+        "unsubscribed": "Subscription removed successfully",
+        "login_required": "You need to be logged in to subscribe to news",
+        "error": "Failed to change subscription"
+      },
+      "types": {
+        "update": "Update",
+        "event": "Event",
+        "announcement": "Announcement"
+      },
+      "detail": {
+        "excerpt": "Summary",
+        "content": "Full Content",
+        "metadata": "Information",
+        "view_on_github": "View on GitHub",
+        "not_found": "News not found"
+      }
+    },
+    "stats": {
+      "title": "World Statistics",
+      "subtitle": "Track community progress and discover how the world of Nomaryth evolves",
+      "items": {
+        "users": "Active Users",
+        "factions": "Active Factions",
+        "news": "Published News",
+        "progress": "World Progress"
+      },
+      "metrics": {
+        "progress": "Progress",
+        "monthly_growth": "Monthly Growth",
+        "target_achieved": "Target Achieved",
+        "online_time": "Longest Online Time"
+      }
     }
   },
   "features": {
@@ -178,6 +237,60 @@
       "core_concepts": "Core Concepts",
       "api_reference": "API Reference",
       "error_pages": "Error Pages"
+    },
+    "sidebar": {
+      "title": "Documentation",
+      "documents_count": "documents",
+      "search_placeholder": "Search documents... (Ctrl+K)",
+      "filter_all": "All",
+      "filter_beginner": "Beginner",
+      "filter_intermediate": "Intermediate",
+      "filter_advanced": "Advanced",
+      "filter_tooltip": "Filter by difficulty (Ctrl+F)",
+      "sort_ascending": "ascending",
+      "sort_descending": "descending",
+      "sort_tooltip": "Sort {{direction}} (Ctrl+S)",
+      "keyboard_shortcuts": "Keyboard shortcuts (?)",
+      "keyboard_shortcuts_tooltip": "Keyboard shortcuts (?)",
+      "progress": "Progress",
+      "complete": "complete",
+      "active_filters": "Active filters:",
+      "search_filter": "Search: \"{{query}}\"",
+      "showing_results": "Showing {{filtered}} of {{total}} categories",
+      "search_active": "Search active",
+      "filter_applied": "Filter applied",
+      "sort_changed": "Sort changed",
+      "keyboard_shortcuts_title": "Keyboard Shortcuts",
+      "shortcuts": {
+        "search_documents": "Search documents",
+        "filter_difficulty": "Filter by difficulty",
+        "toggle_sort": "Toggle sort",
+        "clear_filters": "Clear filters",
+        "show_shortcuts": "Show shortcuts"
+      }
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "documentation": "Documentation"
+    },
+    "reading_mode": {
+      "toggle": "Toggle reading mode",
+      "enabled": "Reading mode enabled",
+      "disabled": "Reading mode disabled",
+      "toggle_on": "Enable focus mode",
+      "toggle_off": "Exit focus mode",
+      "focus_mode": "Focus Mode"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "back_to_top": "Back to top",
+      "continue_exploring": "Continue Exploring",
+      "view_all_documentation": "View all documentation"
+    },
+    "not_found": {
+      "title": "Documentation Coming Soon",
+      "description": "There are currently no documents to display. Please check back later."
     }
   },
   "footer": {

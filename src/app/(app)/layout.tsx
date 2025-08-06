@@ -13,16 +13,20 @@ export default function AppLayout({
   return (
      <div className="relative flex flex-col min-h-screen">
         <Header />
-        <Particles
-            className="absolute inset-0 -z-10"
-            quantity={150}
-            color="hsl(var(--primary))"
-            ease={80}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-transparent -z-10" />
-        <main className="flex-grow animate-fadeIn">{children}</main>
-        <Footer />
-        <StatusFooter />
+        <div className="absolute inset-0 -z-10">
+          <Particles
+              className="absolute inset-0"
+              quantity={150}
+              color="hsl(var(--primary))"
+              ease={80}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-transparent" />
+        </div>
+        <main className="flex-grow animate-fadeIn relative z-10">{children}</main>
+        <div className="mt-auto relative z-10">
+          <Footer />
+          <StatusFooter />
+        </div>
      </div>
   );
 }

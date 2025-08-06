@@ -23,7 +23,17 @@
       "no_notifications": "Nenhuma notificação nova.",
       "mark_as_read": "Marcar como lida",
       "clear_read": "Limpar notificações lidas",
-      "clearing": "Limpando..."
+      "clearing": "Limpando...",
+      "clear_success_desc": "Notificações lidas foram removidas",
+      "clear_error_desc": "Erro ao limpar notificações",
+      "view_news": "Ver notícia",
+      "navigating_to_news": "Navegando para a notícia",
+      "redirecting_to_news": "Redirecionando para",
+      "types": {
+        "news": "Notícia",
+        "system": "Sistema",
+        "badge": "Conquista"
+      }
     }
   },
   "home": {
@@ -36,6 +46,55 @@
     "timeline": {
       "title": "Uma História Viva",
       "subtitle": "Eventos chave que moldaram o mundo de Nomaryth como ele é hoje."
+    },
+    "news": {
+      "title": "Últimas Notícias",
+      "subtitle": "Mantenha-se atualizado com as novidades de Nomaryth",
+      "filters": {
+        "all": "Todas",
+        "updates": "Atualizações",
+        "events": "Eventos",
+        "announcements": "Anúncios"
+      },
+      "featured": "Destaque",
+      "no_news": "Nenhuma notícia encontrada",
+      "view_all": "Ver Todas as Notícias",
+      "subscription": {
+        "subscribe": "Receber Atualizações",
+        "unsubscribe": "Cancelar Inscrição",
+        "subscribed": "Inscrito com sucesso nas atualizações desta notícia",
+        "unsubscribed": "Inscrição removida com sucesso",
+        "login_required": "Você precisa estar logado para se inscrever em notícias",
+        "error": "Falha ao alterar inscrição"
+      },
+      "types": {
+        "update": "Atualização",
+        "event": "Evento",
+        "announcement": "Anúncio"
+      },
+      "detail": {
+        "excerpt": "Resumo",
+        "content": "Conteúdo Completo",
+        "metadata": "Informações",
+        "view_on_github": "Ver no GitHub",
+        "not_found": "Notícia não encontrada"
+      }
+    },
+    "stats": {
+      "title": "Estatísticas do Mundo",
+      "subtitle": "Acompanhe o progresso da comunidade e descubra como o mundo de Nomaryth evolui",
+      "items": {
+        "users": "Usuários Ativos",
+        "factions": "Facções Ativas",
+        "news": "Notícias Publicadas",
+        "progress": "Progresso Mundial"
+      },
+      "metrics": {
+        "progress": "Progresso",
+        "monthly_growth": "Crescimento Mensal",
+        "target_achieved": "Meta Alcançada",
+        "online_time": "Maior Tempo Online"
+      }
     }
   },
   "features": {
@@ -178,6 +237,60 @@
       "core_concepts": "Conceitos Principais",
       "api_reference": "Referência da API",
       "error_pages": "Páginas de Erro"
+    },
+    "sidebar": {
+      "title": "Documentação",
+      "documents_count": "documentos",
+      "search_placeholder": "Buscar documentos... (Ctrl+K)",
+      "filter_all": "Todos",
+      "filter_beginner": "Iniciante",
+      "filter_intermediate": "Intermediário",
+      "filter_advanced": "Avançado",
+      "filter_tooltip": "Filtrar por dificuldade (Ctrl+F)",
+      "sort_ascending": "crescente",
+      "sort_descending": "decrescente",
+      "sort_tooltip": "Ordenar {{direction}} (Ctrl+S)",
+      "keyboard_shortcuts": "Atalhos de teclado (?)",
+      "keyboard_shortcuts_tooltip": "Atalhos de teclado (?)",
+      "progress": "Progresso",
+      "complete": "completo",
+      "active_filters": "Filtros ativos:",
+      "search_filter": "Busca: \"{{query}}\"",
+      "showing_results": "Mostrando {{filtered}} de {{total}} categorias",
+      "search_active": "Busca ativa",
+      "filter_applied": "Filtro aplicado",
+      "sort_changed": "Ordenação alterada",
+      "keyboard_shortcuts_title": "Atalhos de Teclado",
+      "shortcuts": {
+        "search_documents": "Buscar documentos",
+        "filter_difficulty": "Filtrar por dificuldade",
+        "toggle_sort": "Alternar ordenação",
+        "clear_filters": "Limpar filtros",
+        "show_shortcuts": "Mostrar atalhos"
+      }
+    },
+    "breadcrumbs": {
+      "home": "Início",
+      "documentation": "Documentação"
+    },
+    "reading_mode": {
+      "toggle": "Alternar modo de leitura",
+      "enabled": "Modo de leitura ativado",
+      "disabled": "Modo de leitura desativado",
+      "toggle_on": "Ativar modo foco",
+      "toggle_off": "Sair do modo foco",
+      "focus_mode": "Modo Foco"
+    },
+    "navigation": {
+      "previous": "Anterior",
+      "next": "Próximo",
+      "back_to_top": "Voltar ao topo",
+      "continue_exploring": "Continue Explorando",
+      "view_all_documentation": "Ver toda a documentação"
+    },
+    "not_found": {
+      "title": "Documentação em Breve",
+      "description": "Não há documentos para exibir no momento. Volte mais tarde."
     }
   },
   "footer": {

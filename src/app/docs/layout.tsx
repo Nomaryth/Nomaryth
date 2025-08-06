@@ -54,9 +54,6 @@ function DocsLayoutContent({
         setLoading(false);
       })
       .catch(err => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error("Failed to fetch docs data", err);
-        }
         setDocsData([]);
         setLoading(false);
       });

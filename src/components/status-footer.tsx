@@ -74,7 +74,7 @@ export function StatusFooter() {
   }, []);
 
   return (
-    <footer className="border-t bg-muted/40 px-6 py-3">
+    <footer className="border-t bg-muted/40 px-6 py-3 mt-0">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-2">
           <span>© 2025 Nomaryth</span>

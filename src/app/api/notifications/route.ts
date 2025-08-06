@@ -7,6 +7,7 @@ export async function DELETE(req: NextRequest) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
     }
+    
     const idToken = authHeader.split('Bearer ')[1];
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
@@ -27,10 +28,12 @@ export async function DELETE(req: NextRequest) {
 
     await batch.commit();
 
-    return NextResponse.json({ message: `${snapshot.size} notifications cleared.` });
+    return NextResponse.json({ 
+        message: `${snapshot.size} notifications cleared.`,
+        deletedCount: snapshot.size
+    });
 
   } catch (error: any) {
-    console.error('Error in DELETE /api/notifications:', error);
     if (error.code?.startsWith('auth/')) {
         return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
     }

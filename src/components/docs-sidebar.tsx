@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from '@/context/i18n-context';
 
 interface Doc {
   slug: string;
@@ -96,6 +97,7 @@ const ProgressIndicator = ({ isRead }: { isRead: boolean }) => (
 
 export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [readDocs, setReadDocs] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'title' | 'difficulty' | 'progress'>('title');
@@ -147,7 +149,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
   const handleKeyboardShortcuts = useCallback((event: KeyboardEvent) => {
     if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
       event.preventDefault();
-      const searchInput = document.querySelector('input[placeholder="Buscar documentos..."]') as HTMLInputElement;
+      const searchInput = document.querySelector('input[placeholder*="Buscar documentos"]') as HTMLInputElement;
       if (searchInput) {
         searchInput.focus();
         setLastInteraction('search');
@@ -271,10 +273,10 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
   return (
     <div className="space-y-2 p-4 w-full">
       <div className="mb-4">
-        <h3 className="text-sm font-semibold text-muted-foreground mb-2">Documentação</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground mb-2">{t('docs.sidebar.title')}</h3>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <BookOpen className="h-3 w-3" />
-          <span>{docsData.reduce((acc, cat) => acc + cat.documents.length, 0)} documentos</span>
+          <span>{docsData.reduce((acc, cat) => acc + cat.documents.length, 0)} {t('docs.sidebar.documents_count')}</span>
         </div>
       </div>
 
@@ -282,7 +284,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
          <div className="relative">
            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
            <Input
-             placeholder="Buscar documentos... (Ctrl+K)"
+             placeholder={t('docs.sidebar.search_placeholder')}
              value={searchQuery}
              onChange={(e) => {
                setSearchQuery(e.target.value);
@@ -314,13 +316,13 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
                    )}
                  >
                    <Filter className="h-3 w-3 mr-1" />
-                   {filterDifficulty === 'all' ? 'Todos' : 
-                    filterDifficulty === 'beginner' ? 'Iniciante' :
-                    filterDifficulty === 'intermediate' ? 'Intermediário' : 'Avançado'}
+                   {filterDifficulty === 'all' ? t('docs.sidebar.filter_all') : 
+                    filterDifficulty === 'beginner' ? t('docs.sidebar.filter_beginner') :
+                    filterDifficulty === 'intermediate' ? t('docs.sidebar.filter_intermediate') : t('docs.sidebar.filter_advanced')}
                  </Button>
                </TooltipTrigger>
                <TooltipContent>
-                 <p>Filtrar por dificuldade (Ctrl+F)</p>
+                 <p>{t('docs.sidebar.filter_tooltip')}</p>
                </TooltipContent>
              </Tooltip>
            </TooltipProvider>
@@ -344,7 +346,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
                  </Button>
                </TooltipTrigger>
                <TooltipContent>
-                 <p>Ordenar {sortOrder === 'asc' ? 'crescente' : 'decrescente'} (Ctrl+S)</p>
+                 <p>{t('docs.sidebar.sort_tooltip', { direction: sortOrder === 'asc' ? t('docs.sidebar.sort_ascending') : t('docs.sidebar.sort_descending') })}</p>
                </TooltipContent>
              </Tooltip>
            </TooltipProvider>
@@ -362,7 +364,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
                  </Button>
                </TooltipTrigger>
                <TooltipContent>
-                 <p>Atalhos de teclado (?)</p>
+                 <p>{t('docs.sidebar.keyboard_shortcuts_tooltip')}</p>
                </TooltipContent>
              </Tooltip>
            </TooltipProvider>
@@ -396,7 +398,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
                             <div className="flex items-center justify-between mb-4">
                  <h3 id="keyboard-shortcuts-title" className="text-lg font-semibold flex items-center gap-2">
                    <Keyboard className="h-5 w-5" />
-                   Atalhos de Teclado
+                   {t('docs.sidebar.keyboard_shortcuts_title')}
                  </h3>
                <Button
                  variant="ghost"
@@ -409,23 +411,23 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
              </div>
              <div className="space-y-3 text-sm">
                <div className="flex items-center justify-between">
-                 <span>Buscar documentos</span>
+                 <span>{t('docs.sidebar.shortcuts.search_documents')}</span>
                  <kbd className="px-2 py-1 bg-muted rounded text-xs">Ctrl+K</kbd>
                </div>
                <div className="flex items-center justify-between">
-                 <span>Filtrar por dificuldade</span>
+                 <span>{t('docs.sidebar.shortcuts.filter_difficulty')}</span>
                  <kbd className="px-2 py-1 bg-muted rounded text-xs">Ctrl+F</kbd>
                </div>
                <div className="flex items-center justify-between">
-                 <span>Alternar ordenação</span>
+                 <span>{t('docs.sidebar.shortcuts.toggle_sort')}</span>
                  <kbd className="px-2 py-1 bg-muted rounded text-xs">Ctrl+S</kbd>
                </div>
                <div className="flex items-center justify-between">
-                 <span>Limpar filtros</span>
+                 <span>{t('docs.sidebar.shortcuts.clear_filters')}</span>
                  <kbd className="px-2 py-1 bg-muted rounded text-xs">Esc</kbd>
                </div>
                <div className="flex items-center justify-between">
-                 <span>Mostrar atalhos</span>
+                 <span>{t('docs.sidebar.shortcuts.show_shortcuts')}</span>
                  <kbd className="px-2 py-1 bg-muted rounded text-xs">?</kbd>
                </div>
              </div>
@@ -502,11 +504,11 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <TrendingUp className="h-3 w-3" />
-              <span>Progresso</span>
+              <span>{t('docs.sidebar.progress')}</span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              <span>{progress}% completo</span>
+              <span>{progress}% {t('docs.sidebar.complete')}</span>
             </div>
           </div>
           <Progress value={progress} className="h-1" />
@@ -515,18 +517,18 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Filter className="h-3 w-3" />
-                <span>Filtros ativos:</span>
+                <span>{t('docs.sidebar.active_filters')}</span>
               </div>
               <div className="flex items-center gap-1">
                 {searchQuery && (
                   <Badge variant="outline" className="text-xs">
-                    Busca: "{searchQuery}"
+                    {t('docs.sidebar.search_filter', { query: searchQuery })}
                   </Badge>
                 )}
                 {filterDifficulty !== 'all' && (
                   <Badge variant="outline" className="text-xs">
-                    {filterDifficulty === 'beginner' ? 'Iniciante' :
-                     filterDifficulty === 'intermediate' ? 'Intermediário' : 'Avançado'}
+                    {filterDifficulty === 'beginner' ? t('docs.sidebar.filter_beginner') :
+                     filterDifficulty === 'intermediate' ? t('docs.sidebar.filter_intermediate') : t('docs.sidebar.filter_advanced')}
                   </Badge>
                 )}
               </div>
@@ -535,7 +537,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
           
            {filteredAndSortedData.length !== docsData.length && (
              <div className="text-xs text-muted-foreground">
-               Mostrando {filteredAndSortedData.length} de {docsData.length} categorias
+               {t('docs.sidebar.showing_results', { filtered: filteredAndSortedData.length, total: docsData.length })}
              </div>
            )}
            
@@ -543,9 +545,9 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
              <div className="flex items-center gap-2 text-xs text-accent animate-in slide-in-from-bottom-2">
                <Lightning className="h-3 w-3 animate-pulse" />
                <span>
-                 {lastInteraction === 'search' && 'Busca ativa'}
-                 {lastInteraction === 'filter' && 'Filtro aplicado'}
-                 {lastInteraction === 'sort' && 'Ordenação alterada'}
+                 {lastInteraction === 'search' && t('docs.sidebar.search_active')}
+                 {lastInteraction === 'filter' && t('docs.sidebar.filter_applied')}
+                 {lastInteraction === 'sort' && t('docs.sidebar.sort_changed')}
                </span>
              </div>
            )}

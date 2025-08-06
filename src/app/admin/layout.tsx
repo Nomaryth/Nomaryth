@@ -12,6 +12,7 @@ import {
   User,
   PenSquare,
   Megaphone,
+  BarChart3,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,8 @@ const navLinks = [
   { href: '/admin/content', label: 'Content Guide', icon: <FileText className="h-5 w-5" /> },
   { href: '/admin/content-editor', label: 'Doc Editor', icon: <PenSquare className="h-5 w-5" /> },
   { href: '/admin/announcements', label: 'Announcements', icon: <Megaphone className="h-5 w-5" /> },
+  { href: '/admin/stats', label: 'Statistics', icon: <BarChart3 className="h-5 w-5" /> },
+  { href: '/admin/news', label: 'News', icon: <Bell className="h-5 w-5" /> },
 ];
 
 const systemLinks = [
@@ -149,18 +152,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="w-full flex-1">
           </div>
           
-          <TooltipProvider>
-             <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-9 w-9">
-                        <Bell className="h-5 w-5" />
-                        <span className="sr-only">Toggle notifications</span>
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>Toggle Notifications</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <UserNav />
         </header>
         <main className="flex-1 overflow-auto bg-background p-6">

@@ -207,8 +207,8 @@ export function Particles({
   };
 
   return (
-    <div className={className} ref={canvasContainerRef} aria-hidden="true">
-      <canvas ref={canvasRef} />
+    <div className={`${className} w-full h-full`} ref={canvasContainerRef} aria-hidden="true">
+      <canvas ref={canvasRef} className="w-full h-full" />
     </div>
   );
 }

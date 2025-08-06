@@ -63,12 +63,6 @@ try {
       auth = getAuth(app);
       db = getFirestore(app);
       storage = getStorage(app);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Firebase initialized successfully');
-        console.log('Auth domain:', firebaseConfig.authDomain);
-        console.log('Project ID:', firebaseConfig.projectId);
-      }
     }
   } else {
     if (process.env.NODE_ENV === 'development') {

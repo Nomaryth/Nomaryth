@@ -6,6 +6,9 @@ import { useEffect, useState } from 'react';
 import { AdminDashboardClient, type DashboardData } from '@/components/admin-dashboard-client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { addDays, subDays, startOfMonth, endOfMonth, format } from 'date-fns';
+import { useAuth } from '@/context/auth-context';
+import { ErrorDisplay } from '@/components/error-display';
+import { Lock } from 'lucide-react';
 
 interface UserData {
   uid: string;
@@ -27,8 +30,24 @@ interface UserData {
 function AdminPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user, isAdmin, loading: authLoading } = useAuth();
 
   useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      setError('Usuário não autenticado');
+      setLoading(false);
+      return;
+    }
+
+    if (!isAdmin) {
+      setError('Acesso negado. Apenas administradores podem acessar esta página.');
+      setLoading(false);
+      return;
+    }
+
     async function getAdminDashboardData() {
       if (!db) {
         setLoading(false);
@@ -38,6 +57,7 @@ function AdminPage() {
 
       try {
         const usersSnapshot = await getDocs(query(collection(db, 'users')));
+        
         const usersList = usersSnapshot.docs.map((doc) => ({
           uid: doc.id,
           ...doc.data(),
@@ -73,7 +93,7 @@ function AdminPage() {
         }).reverse();
         
 
-        setData({
+        const dashboardData = {
              totalUsers, 
              adminUsers,
              contentPages: 4, 
@@ -84,10 +104,13 @@ function AdminPage() {
                 { name: 'User', value: normalUsers, fill: 'hsl(var(--chart-2))' },
              ],
              recentActivity,
-        });
+        };
+
+        setData(dashboardData);
 
       } catch (error) {
         console.error('Could not fetch dashboard data, likely due to Firestore rules:', error);
+        setError('Erro ao buscar dados do dashboard. Verifique suas permissões de administrador.');
         const userSignups = Array.from({ length: 12 }, (_, i) => {
           const date = subDays(new Date(), i * 3);
           return {
@@ -103,7 +126,57 @@ function AdminPage() {
     }
     
     getAdminDashboardData();
-  }, []);
+  }, [user, isAdmin, authLoading]);
+
+  if (authLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Skeleton className="lg:col-span-2 h-96" />
+          <Skeleton className="h-96" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <ErrorDisplay
+        errorCode="401"
+        title="Não Autenticado"
+        description="Você precisa estar logado para acessar esta página."
+        icon={<Lock className="w-16 h-16 text-accent/20 mt-8" />}
+      />
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <ErrorDisplay
+        errorCode="403"
+        title="Acesso Negado"
+        description="Apenas administradores podem acessar esta área."
+        icon={<Lock className="w-16 h-16 text-accent/20 mt-8" />}
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorDisplay
+        errorCode="500"
+        title="Erro do Sistema"
+        description={error}
+        icon={<Lock className="w-16 h-16 text-accent/20 mt-8" />}
+      />
+    );
+  }
 
   if (loading || !data) {
     return (

@@ -8,22 +8,28 @@ import { X, Info } from 'lucide-react';
 export function PrivacyNotice() {
   const [showNotice, setShowNotice] = useState(false);
   const [hasSeenNotice, setHasSeenNotice] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     
-    const seen = localStorage.getItem('geolocation-notice-seen');
-    if (!seen) {
-      setShowNotice(true);
+    if (typeof window !== 'undefined') {
+      const seen = localStorage.getItem('geolocation-notice-seen');
+      if (!seen) {
+        setShowNotice(true);
+      }
     }
   }, []);
 
   const handleDismiss = () => {
     setShowNotice(false);
     setHasSeenNotice(true);
-    localStorage.setItem('geolocation-notice-seen', 'true');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('geolocation-notice-seen', 'true');
+    }
   };
 
-  if (!showNotice || hasSeenNotice) {
+  if (!isClient || !showNotice || hasSeenNotice) {
     return null;
   }
 

@@ -124,7 +124,7 @@ export default function ContentPage() {
             <h3>Code Blocks</h3>
             <pre className="bg-muted p-2 rounded-md"><code>
             ```javascript<br/>
-            console.log("Hello, World!");<br/>
+            // Your code here<br/>
             ```
             </code></pre>
             

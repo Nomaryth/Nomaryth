@@ -127,9 +127,7 @@ function LoginPageContent() {
         prompt: 'select_account'
       });
       
-      console.log('Iniciando Google Sign-In...');
       const result = await signInWithPopup(auth, provider);
-      console.log('Google Sign-In bem-sucedido:', result.user.email);
       
       await setupGoogleUser(result.user);
 

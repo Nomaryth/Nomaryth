@@ -27,7 +27,6 @@ const getNestedValue = (obj: any, key: string): string => {
   return key.split('.').reduce((acc, part) => acc && acc[part], obj) || key;
 };
 
-// Função segura para acessar localStorage
 const getSecureStorage = (key: string): string | null => {
   try {
     if (typeof window !== 'undefined') {
@@ -42,7 +41,6 @@ const getSecureStorage = (key: string): string | null => {
   }
 };
 
-// Função segura para definir localStorage
 const setSecureStorage = (key: string, value: string): void => {
   try {
     if (typeof window !== 'undefined') {

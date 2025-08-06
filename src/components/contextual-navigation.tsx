@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, ExternalLink, BookOpen, Users, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/context/i18n-context';
 
 interface RelatedDoc {
   title: string;
@@ -30,6 +31,8 @@ interface ContextualNavigationProps {
 }
 
 export function ContextualNavigation({ currentDoc, docsData, className }: ContextualNavigationProps) {
+  const { t } = useTranslation();
+  
   const generateRelatedDocs = (): RelatedDoc[] => {
     const relatedDocs: RelatedDoc[] = [];
     
@@ -124,7 +127,7 @@ export function ContextualNavigation({ currentDoc, docsData, className }: Contex
     <div className={cn("space-y-6", className)}>
       <div className="flex items-center gap-2">
         <BookOpen className="h-5 w-5 text-accent" />
-        <h3 className="text-lg font-semibold">Continue Explorando</h3>
+        <h3 className="text-lg font-semibold">{t('docs.navigation.continue_exploring')}</h3>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -169,7 +172,7 @@ export function ContextualNavigation({ currentDoc, docsData, className }: Contex
           className="flex items-center gap-2 text-sm text-accent hover:text-accent/80 transition-colors"
         >
           <Users className="h-4 w-4" />
-          Ver toda a documentação
+          {t('docs.navigation.view_all_documentation')}
           <ArrowRight className="h-3 w-3" />
         </Link>
       </div>

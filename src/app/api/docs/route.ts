@@ -7,7 +7,6 @@ const DOCS_DOCUMENT = 'content';
 async function isUserAdmin(uid: string): Promise<boolean> {
   try {
     if (!adminDb) {
-      console.warn("Firebase Admin DB not available");
       return false;
     }
 
@@ -24,7 +23,6 @@ async function getDocsData() {
   try {
     
     if (!adminDb) {
-      console.warn("Firebase Admin DB not available");
       return [];
     }
 
@@ -52,9 +50,6 @@ async function getDocsData() {
       return defaultData;
     }
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Error reading docs data:", error);
-    }
     return [];
   }
 }
@@ -70,9 +65,6 @@ export async function GET(req: NextRequest) {
     const data = await getDocsData();
     return NextResponse.json(data);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Failed to read docs data from Firestore:', error);
-    }
     return NextResponse.json({ error: 'Failed to read documentation data' }, { status: 500 });
   }
 }

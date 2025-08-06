@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
+import { useTranslation } from '@/context/i18n-context';
 
 interface BreadcrumbItem {
   name: string;
@@ -12,12 +13,13 @@ interface BreadcrumbItem {
 
 export function DocsBreadcrumbs() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   
   const pathSegments = pathname.split('/').filter(Boolean);
   
   const breadcrumbItems: BreadcrumbItem[] = [
     {
-      name: 'Home',
+      name: t('docs.breadcrumbs.home'),
       href: '/',
       isCurrent: pathname === '/'
     }

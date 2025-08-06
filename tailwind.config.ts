@@ -17,8 +17,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Literata', 'serif'],
-        headline: ['Literata', 'serif'],
+        sans: ["var(--font-inter)"],
+        body: ['var(--font-inter)', 'sans-serif'],
+        headline: ['var(--font-inter)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -107,5 +108,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require("@tailwindcss/typography")],
+  plugins: [require('tailwindcss-animate')],
 } satisfies Config;

@@ -100,30 +100,30 @@ function EditUserDialog({ user, isOpen, onOpenChange, onUserUpdate }: { user: Us
         try {
             const idToken = await auth.currentUser.getIdToken();
             
-            const roleChanged = user.role !== formData.role;
-            if (roleChanged) {
-                const roleRes = await fetch('/api/set-admin', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
-                    body: JSON.stringify({ targetUid: user.uid, isAdmin: formData.role === 'admin' })
-                });
-                if (!roleRes.ok) throw new Error(t('admin.users.errors.role_update_failed'));
-            }
-            
-            const profileUpdateData = {
+            const updateData = {
                 displayName: formData.displayName,
                 bio: formData.bio,
                 location: formData.location,
                 badges: formData.badges,
+                role: formData.role,
             };
 
-            const profileRes = await fetch('/api/set-admin', {
+            const response = await fetch('/api/set-admin', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
-                body: JSON.stringify({ targetUid: user.uid, updateData: profileUpdateData })
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${idToken}` 
+                },
+                body: JSON.stringify({ 
+                    targetUid: user.uid, 
+                    updateData: updateData 
+                })
             });
             
-             if (!profileRes.ok) throw new Error(t('admin.users.errors.profile_update_failed'));
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || t('admin.users.errors.update_failed'));
+            }
 
             const updatedUserForUI: UserProfile = { ...user, ...formData };
             onUserUpdate(updatedUserForUI);

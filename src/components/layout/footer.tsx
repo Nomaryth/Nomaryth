@@ -25,7 +25,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-card border-t mt-auto">
+    <footer className="bg-card border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-4 flex flex-col items-center lg:items-start text-center lg:text-left">

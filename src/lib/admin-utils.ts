@@ -7,8 +7,7 @@ export async function isAdmin(uid: string): Promise<boolean> {
     if (!uid || !db) return false;
     
     const adminDoc = await getDoc(doc(db, 'admins', uid));
-    const data = adminDoc.data();
-    return adminDoc.exists() && Boolean(data);
+    return adminDoc.exists();
   } catch (error) {
     console.error('Error checking admin status:', error);
     return false;
@@ -28,8 +27,7 @@ export function useAdminStatus(uid: string | null) {
 
     const adminDocRef = doc(db, 'admins', uid);
     const unsubscribe = onSnapshot(adminDocRef, (doc) => {
-      const data = doc.data();
-      setIsAdminUser(doc.exists() && Boolean(data));
+      setIsAdminUser(doc.exists());
       setLoading(false);
     }, (error) => {
       console.error('Error listening to admin status:', error);
@@ -41,4 +39,16 @@ export function useAdminStatus(uid: string | null) {
   }, [uid]);
 
   return { isAdmin: isAdminUser, loading };
+} 
+
+export interface WorldStats {
+  id: string;
+  explorers: number;
+  documents: number;
+  locations: number;
+  events: number;
+  monthlyGrowth: number;
+  targetAchieved: number;
+  onlineTime: string;
+  lastUpdated: string;
 } 

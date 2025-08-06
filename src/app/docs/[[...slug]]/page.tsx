@@ -28,7 +28,6 @@ async function getDocsFromFirestore(): Promise<Category[]> {
   try {
     
     if (!adminDb) {
-      console.warn("Firebase Admin DB not available");
       return [];
     }
 
@@ -42,9 +41,6 @@ async function getDocsFromFirestore(): Promise<Category[]> {
     }
     return [];
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Could not read docs from Firestore", error);
-    }
     return [];
   }
 }
@@ -122,7 +118,29 @@ export default async function DocPage({ params }: { params: Promise<{ slug?: str
       <BreadcrumbSchema items={breadcrumbItems} />
       <article className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-headings:text-accent prose-a:text-accent hover:prose-a:text-accent/80 prose-strong:text-foreground prose-blockquote:border-accent prose-code:text-accent prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-muted prose-code:px-1.5 prose-code:py-1 prose-code:rounded-md">
           <h1 className="font-headline text-4xl font-bold mb-4 text-accent">{doc.title}</h1>
-          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{doc.content}</ReactMarkdown>
+          <div className="markdown-content">
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]} 
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                h1: ({children}) => <h1 className="text-3xl font-bold mb-4 text-accent">{children}</h1>,
+                h2: ({children}) => <h2 className="text-2xl font-bold mb-3 text-accent">{children}</h2>,
+                h3: ({children}) => <h3 className="text-xl font-bold mb-2 text-accent">{children}</h3>,
+                p: ({children}) => <p className="mb-4 text-foreground">{children}</p>,
+                strong: ({children}) => <strong className="font-bold text-foreground">{children}</strong>,
+                em: ({children}) => <em className="italic text-foreground">{children}</em>,
+                code: ({children}) => <code className="bg-muted px-2 py-1 rounded text-accent">{children}</code>,
+                pre: ({children}) => <pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4">{children}</pre>,
+                blockquote: ({children}) => <blockquote className="border-l-4 border-accent pl-4 italic text-muted-foreground mb-4">{children}</blockquote>,
+                ul: ({children}) => <ul className="list-disc list-inside mb-4 space-y-1">{children}</ul>,
+                ol: ({children}) => <ol className="list-decimal list-inside mb-4 space-y-1">{children}</ol>,
+                li: ({children}) => <li className="text-foreground">{children}</li>,
+                a: ({href, children}) => <a href={href} className="text-accent hover:text-accent/80 underline">{children}</a>
+              }}
+            >
+              {doc.content}
+            </ReactMarkdown>
+          </div>
       </article>
     </>
   );

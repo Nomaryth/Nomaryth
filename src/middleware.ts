@@ -43,7 +43,6 @@ function isRateLimited(ip: string, isAdmin: boolean = false): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Skip middleware for static files and API routes that don't need rate limiting
   if (pathname.startsWith('/_next/') || 
       pathname.startsWith('/favicon.ico') ||
       pathname.startsWith('/api/geolocation') ||
@@ -51,7 +50,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Apply rate limiting only to API routes
   if (pathname.startsWith('/api/')) {
     const clientIP = getClientIP(request);
     const isAdmin = pathname.startsWith('/api/admin/');
@@ -67,18 +65,18 @@ export function middleware(request: NextRequest) {
   const response = NextResponse.next();
   const securityHeaders = getSecurityHeaders();
   
-  // Apply security headers
   Object.entries(securityHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
   
-  if (shouldLog('security')) {
-    const clientIP = getClientIP(request);
-    const userAgent = request.headers.get('user-agent') || 'unknown';
+  if (pathname.startsWith('/api/admin')) {
+    const clientIP = request.headers.get('x-forwarded-for') || 
+                    request.headers.get('x-real-ip') || 
+                    'unknown';
     
-    if (pathname.startsWith('/api/admin/')) {
-      console.log(`Admin API access: ${pathname} from IP: ${clientIP}`);
-    }
+    response.headers.set('X-RateLimit-Limit', '10');
+    response.headers.set('X-RateLimit-Remaining', '9');
+    response.headers.set('X-RateLimit-Reset', Math.floor(Date.now() / 1000 + 3600).toString());
   }
   
   return response;
@@ -86,12 +84,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }; 
