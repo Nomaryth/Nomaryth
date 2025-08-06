@@ -15,6 +15,7 @@ interface RelatedDoc {
 interface Category {
   categorySlug: string;
   categoryTitle: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
   documents: {
     slug: string;
     title: string;
@@ -45,7 +46,7 @@ export function ContextualNavigation({ currentDoc, docsData, className }: Contex
             href: `/docs/${category.categorySlug}/${doc.slug}`,
             description: generateDescription(doc.content),
             category: category.categoryTitle,
-            difficulty: getDifficultyByCategory(category.categorySlug)
+            difficulty: getDifficultyByCategory(category)
           });
         });
       });
@@ -62,7 +63,7 @@ export function ContextualNavigation({ currentDoc, docsData, className }: Contex
             href: `/docs/${currentCategoryData.categorySlug}/${doc.slug}`,
             description: generateDescription(doc.content),
             category: currentCategoryData.categoryTitle,
-            difficulty: getDifficultyByCategory(currentCategoryData.categorySlug)
+            difficulty: getDifficultyByCategory(currentCategoryData)
           });
         }
       });
@@ -80,7 +81,7 @@ export function ContextualNavigation({ currentDoc, docsData, className }: Contex
             href: `/docs/${category.categorySlug}/${doc.slug}`,
             description: generateDescription(doc.content),
             category: category.categoryTitle,
-            difficulty: getDifficultyByCategory(category.categorySlug)
+            difficulty: getDifficultyByCategory(category)
           });
         });
       }
@@ -100,16 +101,8 @@ export function ContextualNavigation({ currentDoc, docsData, className }: Contex
       : plainText;
   };
   
-  const getDifficultyByCategory = (categorySlug: string): 'beginner' | 'intermediate' | 'advanced' => {
-    const difficultyMap: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
-      'introduction': 'beginner',
-      'core-concepts': 'beginner',
-      'basic-topics': 'intermediate',
-      'advanced-topics': 'advanced',
-      'expert-topics': 'advanced'
-    };
-    
-    return difficultyMap[categorySlug] || 'intermediate';
+  const getDifficultyByCategory = (category: Category): 'beginner' | 'intermediate' | 'advanced' => {
+    return category.difficulty || 'intermediate';
   };
   
   const relatedDocs = generateRelatedDocs();

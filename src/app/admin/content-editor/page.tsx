@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   FilePlus,
@@ -46,6 +47,7 @@ interface Doc {
 interface Category {
   categorySlug: string;
   categoryTitle: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
   documents: Doc[];
 }
 
@@ -139,6 +141,7 @@ export default function ContentEditorPage() {
     const newCategory: Category = {
       categorySlug: newCategorySlug,
       categoryTitle: 'New Category',
+      difficulty: 'intermediate',
       documents: [],
     };
     setData([...data, newCategory]);
@@ -188,6 +191,7 @@ export default function ContentEditorPage() {
         const category = newData[catIndex];
         if (field === 'categoryTitle') category.categoryTitle = value;
         if (field === 'categorySlug') category.categorySlug = value.toLowerCase().replace(/\s+/g, '-');
+        if (field === 'difficulty') category.difficulty = value as 'beginner' | 'intermediate' | 'advanced';
     } else { 
         const document = newData[catIndex].documents[docIndex];
         if (field === 'title') document.title = value;
@@ -327,6 +331,19 @@ export default function ContentEditorPage() {
                              <div className="space-y-2">
                                 <Label htmlFor="categorySlug">Category Slug (URL)</Label>
                                 <Input id="categorySlug" value={selectedData.data.categorySlug} onChange={(e) => handleFieldChange('categorySlug', e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="difficulty">Difficulty Level</Label>
+                                <Select value={selectedData.data.difficulty} onValueChange={(value) => handleFieldChange('difficulty', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select difficulty level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="beginner">Beginner</SelectItem>
+                                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                                        <SelectItem value="advanced">Advanced</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </>
                     ) : (
