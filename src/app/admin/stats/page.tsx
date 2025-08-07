@@ -11,10 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 
 interface WorldStats {
   id: string;
-  explorers: number;
-  documents: number;
-  locations: number;
-  events: number;
+  totalUsers: number;
+  activeFactions: number;
+  totalNews: number;
+  worldProgress: number;
   monthlyGrowth: number;
   targetAchieved: number;
   onlineTime: string;
@@ -124,53 +124,53 @@ export default function AdminStatsPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="explorers">Exploradores Ativos</Label>
+                <Label htmlFor="totalUsers">Usuários Ativos</Label>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-blue-600" />
                   <Input
-                    id="explorers"
+                    id="totalUsers"
                     type="number"
-                    value={stats?.explorers || 0}
-                    onChange={(e) => handleInputChange('explorers', parseInt(e.target.value) || 0)}
+                    value={stats?.totalUsers || 0}
+                    onChange={(e) => handleInputChange('totalUsers', parseInt(e.target.value) || 0)}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="documents">Documentos Criados</Label>
+                <Label htmlFor="activeFactions">Facções Ativas</Label>
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-green-600" />
                   <Input
-                    id="documents"
+                    id="activeFactions"
                     type="number"
-                    value={stats?.documents || 0}
-                    onChange={(e) => handleInputChange('documents', parseInt(e.target.value) || 0)}
+                    value={stats?.activeFactions || 0}
+                    onChange={(e) => handleInputChange('activeFactions', parseInt(e.target.value) || 0)}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="locations">Locais Descobertos</Label>
+                <Label htmlFor="totalNews">Notícias Publicadas</Label>
                 <div className="flex items-center gap-2">
                   <Map className="w-4 h-4 text-purple-600" />
                   <Input
-                    id="locations"
+                    id="totalNews"
                     type="number"
-                    value={stats?.locations || 0}
-                    onChange={(e) => handleInputChange('locations', parseInt(e.target.value) || 0)}
+                    value={stats?.totalNews || 0}
+                    onChange={(e) => handleInputChange('totalNews', parseInt(e.target.value) || 0)}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="events">Eventos Realizados</Label>
+                <Label htmlFor="worldProgress">Progresso Mundial (%)</Label>
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-orange-600" />
                   <Input
-                    id="events"
+                    id="worldProgress"
                     type="number"
-                    value={stats?.events || 0}
-                    onChange={(e) => handleInputChange('events', parseInt(e.target.value) || 0)}
+                    value={stats?.worldProgress || 0}
+                    onChange={(e) => handleInputChange('worldProgress', parseInt(e.target.value) || 0)}
                   />
                 </div>
               </div>
@@ -235,23 +235,23 @@ export default function AdminStatsPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-card/50 rounded-lg">
                 <Users className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                <div className="text-2xl font-bold">{stats?.explorers || 0}</div>
-                <div className="text-sm text-muted-foreground">Exploradores</div>
+                <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
+                <div className="text-sm text-muted-foreground">Usuários</div>
               </div>
               <div className="text-center p-4 bg-card/50 rounded-lg">
                 <BookOpen className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                <div className="text-2xl font-bold">{stats?.documents || 0}</div>
-                <div className="text-sm text-muted-foreground">Documentos</div>
+                <div className="text-2xl font-bold">{stats?.activeFactions || 0}</div>
+                <div className="text-sm text-muted-foreground">Facções</div>
               </div>
               <div className="text-center p-4 bg-card/50 rounded-lg">
                 <Map className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                <div className="text-2xl font-bold">{stats?.locations || 0}</div>
-                <div className="text-sm text-muted-foreground">Locais</div>
+                <div className="text-2xl font-bold">{stats?.totalNews || 0}</div>
+                <div className="text-sm text-muted-foreground">Notícias</div>
               </div>
               <div className="text-center p-4 bg-card/50 rounded-lg">
                 <Zap className="w-8 h-8 mx-auto mb-2 text-orange-600" />
-                <div className="text-2xl font-bold">{stats?.events || 0}</div>
-                <div className="text-sm text-muted-foreground">Eventos</div>
+                <div className="text-2xl font-bold">{stats?.worldProgress || 0}%</div>
+                <div className="text-sm text-muted-foreground">Progresso</div>
               </div>
             </div>
           </CardContent>

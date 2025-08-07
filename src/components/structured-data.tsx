@@ -36,6 +36,7 @@ export const websiteSchema = {
   "name": "Nomaryth",
   "description": "An interactive world presentation and documentation for the Nomaryth universe. Explore factions, magic, and the mystical realm of Nomaryth.",
   "url": "https://gghorizon.com",
+  "inLanguage": ["pt-BR", "en-US"],
   "potentialAction": {
     "@type": "SearchAction",
     "target": "https://gghorizon.com/search?q={search_term_string}",
@@ -53,10 +54,23 @@ export const organizationSchema = {
   "@type": "Organization",
   "name": "Nomaryth",
   "url": "https://gghorizon.com",
-  "logo": "https://gghorizon.com/assets/NomaIcon1.png",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://gghorizon.com/assets/NomaIcon1.png",
+    "width": 512,
+    "height": 512
+  },
   "description": "An interactive world presentation and documentation for the Nomaryth universe.",
   "sameAs": [
     "https://github.com/Nomaryth"
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "contact@nomaryth.uk",
+      "availableLanguage": ["pt-BR", "en-US"]
+    }
   ]
 };
 

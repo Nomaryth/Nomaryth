@@ -234,7 +234,7 @@
     "nav": {
       "introduction": "Introduction",
       "getting_started": "Getting Started",
-      "core_concepts": "Core Concepts",
+      "core_concepts": "About Project",
       "api_reference": "API Reference",
       "error_pages": "Error Pages"
     },
@@ -302,7 +302,7 @@
     },
     "links": {
       "lore": "Lore",
-      "concepts": "Concepts",
+      "concepts": "About Project",
       "projects": "Projects",
       "discord": "Discord",
       "twitter": "Twitter",

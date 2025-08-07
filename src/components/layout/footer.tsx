@@ -11,7 +11,7 @@ export function Footer() {
   const footerLinks = {
     chronicles: [
       { href: '/docs', labelKey: 'footer.links.lore' },
-      { href: '/docs/core-concepts', labelKey: 'footer.links.concepts' },
+      { href: '/about', labelKey: 'footer.links.concepts' },
       { href: '/projects', labelKey: 'footer.links.projects' },
     ],
     community: [

@@ -234,7 +234,7 @@
     "nav": {
       "introduction": "Introdução",
       "getting_started": "Começando",
-      "core_concepts": "Conceitos Principais",
+      "core_concepts": "Sobre o Projeto",
       "api_reference": "Referência da API",
       "error_pages": "Páginas de Erro"
     },
@@ -302,7 +302,7 @@
     },
     "links": {
       "lore": "História",
-      "concepts": "Conceitos",
+      "concepts": "Sobre o Projeto",
       "projects": "Projetos",
       "discord": "Discord",
       "twitter": "Twitter",
