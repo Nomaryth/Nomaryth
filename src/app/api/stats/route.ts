@@ -18,14 +18,20 @@ export async function GET() {
     }
     
     const data = statsDoc.data() as any;
+
+    const toNumber = (v: any, fallback = 0) => {
+      const n = typeof v === 'string' ? Number(v) : v;
+      return Number.isFinite(n) ? n : fallback;
+    };
+
     const normalized = {
-      totalUsers: data.totalUsers ?? data.explorers ?? 0,
-      activeFactions: data.activeFactions ?? data.documents ?? 0,
-      totalNews: data.totalNews ?? data.locations ?? 0,
-      worldProgress: data.worldProgress ?? data.events ?? 0,
-      monthlyGrowth: data.monthlyGrowth ?? 0,
-      targetAchieved: data.targetAchieved ?? 0,
-      onlineTime: data.onlineTime ?? '0 hrs',
+      totalUsers: toNumber(data.totalUsers ?? data.explorers, 0),
+      activeFactions: toNumber(data.activeFactions ?? data.documents, 0),
+      totalNews: toNumber(data.totalNews ?? data.locations, 0),
+      worldProgress: toNumber(data.worldProgress ?? data.events, 0),
+      monthlyGrowth: toNumber(data.monthlyGrowth, 0),
+      targetAchieved: toNumber(data.targetAchieved, 0),
+      onlineTime: typeof data.onlineTime === 'string' ? data.onlineTime : '0 hrs',
       lastUpdated: data.lastUpdated ?? null,
     };
     return NextResponse.json(normalized);

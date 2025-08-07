@@ -71,40 +71,16 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
   useEffect(() => {
     if (!isVisible || !isClient || !worldStats) return;
 
-    const stats: StatItem[] = [
-      {
-        icon: <Users className="w-6 h-6" />,
-        label: "Usuários Ativos",
-        value: worldStats.totalUsers || 0,
-        color: "text-blue-600",
-        progress: Math.min((worldStats.totalUsers / 2000) * 100, 100)
-      },
-      {
-        icon: <BookOpen className="w-6 h-6" />,
-        label: "Facções Ativas",
-        value: worldStats.activeFactions || 0,
-        color: "text-green-600",
-        progress: Math.round(Math.min((worldStats.activeFactions / 150) * 100, 100))
-      },
-      {
-        icon: <Map className="w-6 h-6" />,
-        label: "Notícias Publicadas",
-        value: worldStats.totalNews || 0,
-        color: "text-purple-600",
-        progress: Math.min((worldStats.totalNews / 200) * 100, 100)
-      },
-      {
-        icon: <Zap className="w-6 h-6" />,
-        label: "Progresso Mundial",
-        value: worldStats.worldProgress || 0,
-        color: "text-orange-600",
-        progress: Math.min((worldStats.worldProgress / 100) * 100, 100)
-      }
+    const items = [
+      { key: 'users', value: worldStats.totalUsers || 0 },
+      { key: 'factions', value: worldStats.activeFactions || 0 },
+      { key: 'news', value: worldStats.totalNews || 0 },
+      { key: 'progress', value: worldStats.worldProgress || 0 },
     ];
 
-    stats.forEach((stat, index) => {
-      const key = stat.label;
-      const targetValue = stat.value;
+    items.forEach((item) => {
+      const key = item.key;
+      const targetValue = Number.isFinite(item.value) ? item.value : 0;
       const duration = 2000;
       const steps = 60;
       const increment = targetValue / steps;
@@ -116,10 +92,10 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
           currentValue = targetValue;
           clearInterval(timer);
         }
-        
-        setCounters(prev => ({
+
+        setCounters((prev) => ({
           ...prev,
-          [key]: Math.floor(currentValue)
+          [key]: Math.floor(currentValue),
         }));
       }, duration / steps);
 
@@ -127,8 +103,9 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
     });
   }, [isVisible, isClient, worldStats]);
 
-  const stats: StatItem[] = [
+  const stats: (StatItem & { key: string })[] = [
     {
+      key: 'users',
       icon: <Users className="w-6 h-6" />,
       label: t('home.stats.items.users'),
       value: worldStats?.totalUsers || 0,
@@ -136,6 +113,7 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
       progress: worldStats ? Math.round(Math.min((worldStats.totalUsers / 2000) * 100, 100)) : 0
     },
     {
+      key: 'factions',
       icon: <BookOpen className="w-6 h-6" />,
       label: t('home.stats.items.factions'),
       value: worldStats?.activeFactions || 0,
@@ -143,6 +121,7 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
       progress: worldStats ? Math.round(Math.min((worldStats.activeFactions / 150) * 100, 100)) : 0
     },
     {
+      key: 'news',
       icon: <Map className="w-6 h-6" />,
       label: t('home.stats.items.news'),
       value: worldStats?.totalNews || 0,
@@ -150,6 +129,7 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
       progress: worldStats ? Math.round(Math.min((worldStats.totalNews / 200) * 100, 100)) : 0
     },
     {
+      key: 'progress',
       icon: <Zap className="w-6 h-6" />,
       label: t('home.stats.items.progress'),
       value: worldStats?.worldProgress || 0,
@@ -193,8 +173,8 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
               </CardHeader>
               <CardContent className="text-center space-y-4">
                 <div className="text-3xl font-bold text-primary">
-                  {isClient && counters[stat.label] !== undefined 
-                    ? counters[stat.label].toLocaleString() 
+                  {isClient && counters[stat.key] !== undefined 
+                    ? counters[stat.key].toLocaleString() 
                     : '0'
                   }
                 </div>
