@@ -63,6 +63,7 @@ export function middleware(request: NextRequest) {
     "'self'",
     'https://www.googleapis.com',
     'https://apis.google.com',
+    'https://accounts.google.com',
     'https://identitytoolkit.googleapis.com',
     'https://securetoken.googleapis.com',
     'https://firestore.googleapis.com',
@@ -80,6 +81,9 @@ export function middleware(request: NextRequest) {
   const scriptSrc = [
     "'self'",
     `'nonce-${nonce}'`,
+    'https://apis.google.com',
+    'https://www.gstatic.com',
+    'https://accounts.google.com',
     'https://va.vercel-scripts.com',
     'https://analytics.umami.is',
     'https://us.umami.is',
