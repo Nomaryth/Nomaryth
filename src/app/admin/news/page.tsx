@@ -25,7 +25,7 @@ interface NewsItemFromAPI {
   author?: string;
   tags?: string[];
   published: boolean;
-  firebaseId: string;
+  firebaseId?: string;
 }
 
 export default function AdminNewsPage() {
@@ -223,6 +223,12 @@ export default function AdminNewsPage() {
       toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
       return;
     }
+    
+    if (!newsItem.firebaseId) {
+      toast({ title: "Erro", description: "ID da notícia não encontrado.", variant: "destructive" });
+      return;
+    }
+    
     if (!confirm(`Tem certeza que deseja deletar a notícia "${newsItem.title}"? Esta ação não pode ser desfeita.`)) {
       return;
     }
@@ -527,16 +533,18 @@ export default function AdminNewsPage() {
                   >
                     <Edit className="w-3 h-3" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-red-500"
-                    onClick={() => handleDeleteNews(item)}
-                    disabled={loading}
-                    title="Deletar notícia"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                  {item.firebaseId && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-red-500"
+                      onClick={() => handleDeleteNews(item)}
+                      disabled={loading}
+                      title="Deletar notícia"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
                   <Button 
                     variant="ghost" 
                     size="sm" 

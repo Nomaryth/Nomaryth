@@ -16,11 +16,7 @@ export async function GET(request: NextRequest) {
     }
 
     const news = await getNewsFromFirebase();
-    const publicNews = news.map(item => {
-      const { firebaseId, ...publicItem } = item;
-      return publicItem;
-    });
-    return NextResponse.json(publicNews);
+    return NextResponse.json(news);
   } catch (error: any) {
     if (error.code?.startsWith('auth/')) {
       return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
