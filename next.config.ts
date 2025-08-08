@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     const scriptSrc = isProd
       ? [
           "'self'",
-          "'unsafe-inline'", // TEMP: evitar tela branca até nonce dinâmico
+          "'unsafe-inline'",
           'https://va.vercel-scripts.com',
           'https://analytics.umami.is',
           'https://us.umami.is',
@@ -82,7 +82,6 @@ const nextConfig: NextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
-          // CSP dinâmica com nonce definida em src/middleware.ts
         ],
       },
       {

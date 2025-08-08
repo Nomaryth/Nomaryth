@@ -48,15 +48,13 @@ export async function getNewsFromGitHub(): Promise<NewsItem[]> {
     if (GITHUB_TOKEN) {
       headers['Authorization'] = `token ${GITHUB_TOKEN}`;
     } else {
-      console.warn('GitHub token not configured, using fallback data');
-      return getFallbackNews();
+      return [];
     }
 
     const response = await fetch(url, { headers });
     
     if (!response.ok) {
-      console.error('GitHub API error:', response.status, response.statusText);
-      return getFallbackNews();
+      return [];
     }
 
     const issues = await response.json();
@@ -78,52 +76,11 @@ export async function getNewsFromGitHub(): Promise<NewsItem[]> {
       published: issue.state === 'open',
       githubIssueId: issue.number
     }));
-  } catch (error) {
-    console.error('Error fetching GitHub issues:', error);
-    return getFallbackNews();
+  } catch {
+    return [];
   }
 }
 
-function getFallbackNews(): NewsItem[] {
-  return [
-    {
-      id: '1',
-      title: 'Nova Atualização do Sistema de Magia',
-      excerpt: 'Introdução de novos feitiços e melhorias no sistema de combate mágico.',
-      date: new Date('2024-02-10'),
-      type: 'update',
-      featured: true,
-      published: true
-    },
-    {
-      id: '2',
-      title: 'Grande Batalha das Facções',
-      excerpt: 'Uma batalha épica entre as principais facções determinará o futuro do continente.',
-      date: new Date('2024-02-15'),
-      type: 'event',
-      featured: false,
-      published: true
-    },
-    {
-      id: '3',
-      title: 'Descoberta de Ruínas Antigas',
-      excerpt: 'Exploradores descobriram ruínas misteriosas que podem conter segredos perdidos.',
-      date: new Date('2024-02-08'),
-      type: 'announcement',
-      featured: false,
-      published: true
-    },
-    {
-      id: '4',
-      title: 'Correções de Performance',
-      excerpt: 'Otimizações importantes para melhorar a experiência de todos os jogadores.',
-      date: new Date('2024-02-05'),
-      type: 'update',
-      featured: false,
-      published: true
-    }
-  ];
-}
 
 export async function closeGitHubIssue(issueNumber: number): Promise<boolean> {
   if (!GITHUB_TOKEN) {

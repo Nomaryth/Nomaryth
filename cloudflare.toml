@@ -36,7 +36,6 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Redirects
 [[redirects]]
   from = "/admin"
   to = "/admin/"
@@ -47,7 +46,6 @@
   to = "/docs/"
   status = 301
 
-# Security headers for admin routes
 [[headers]]
   for = "/admin/*"
   [headers.values]
