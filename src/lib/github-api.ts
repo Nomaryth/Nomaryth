@@ -20,6 +20,7 @@ export interface NewsItem {
   tags?: string[];
   published: boolean;
   previousVersion?: string;
+  githubIssueId?: number;
 }
 
 const GITHUB_REPO = 'Nomaryth/Nomaryth';
