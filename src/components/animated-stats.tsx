@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Users, BookOpen, Map, Zap, TrendingUp, Target, Clock, Star } from "lucide-react";
@@ -21,6 +22,7 @@ interface AnimatedStatsProps {
 
 export function AnimatedStats({ className }: AnimatedStatsProps) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [counters, setCounters] = useState<Record<string, number>>({});
@@ -36,7 +38,8 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
 
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/stats');
+        // usar endpoint público de leitura
+        const response = await fetch('/api/public/stats');
         if (response.ok) {
           const stats = await response.json();
           setWorldStats(stats);
@@ -47,7 +50,7 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
     };
 
     fetchStats();
-  }, [isClient]);
+  }, [isClient, user]);
 
   useEffect(() => {
     if (!isClient) return;

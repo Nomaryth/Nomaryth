@@ -18,7 +18,7 @@ const translations: { [key in Language]: Translations } = {
 interface I18nContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, vars?: Record<string, string | number>) => string;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -69,9 +69,17 @@ export const TranslationsProvider = ({ children }: { children: ReactNode }) => {
     setSecureStorage('language_manual_set', 'true');
   };
 
-  const t = (key: string): string => {
-    return getNestedValue(translations[language], key);
+  const t = (key: string, vars?: Record<string, string | number>): string => {
+    const raw = getNestedValue(translations[language], key);
+    if (!vars) return raw;
+    return Object.keys(vars).reduce((acc, k) => acc.replace(new RegExp(`\\{\\{${k}\\}}`, 'g'), String(vars[k])), raw);
   };
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('lang', language);
+    }
+  }, [language]);
 
   return (
     <I18nContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>

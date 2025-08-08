@@ -32,6 +32,7 @@ const navLinks = [
   { href: '/admin', label: 'Dashboard', icon: <Home className="h-5 w-5" /> },
   { href: '/admin/users', label: 'Users', icon: <Users className="h-5 w-5" /> },
   { href: '/admin/content', label: 'Content Guide', icon: <FileText className="h-5 w-5" /> },
+  { href: '/admin/badges', label: 'Badges', icon: <PenSquare className="h-5 w-5" /> },
   { href: '/admin/content-editor', label: 'Doc Editor', icon: <PenSquare className="h-5 w-5" /> },
   { href: '/admin/announcements', label: 'Announcements', icon: <Megaphone className="h-5 w-5" /> },
   { href: '/admin/stats', label: 'Statistics', icon: <BarChart3 className="h-5 w-5" /> },

@@ -6,8 +6,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { PrivacyNotice } from "@/components/privacy-notice";
 import { TranslationsProvider } from "@/context/i18n-context";
 import { AuthProvider } from "@/context/auth-context";
-import { Inter } from "next/font/google";
+import { Exo_2, Teko } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -66,10 +67,18 @@ export const metadata: Metadata = {
   },
 };
 
-const inter = Inter({
+const exo2 = Exo_2({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-exo2",
+});
+
+const teko = Teko({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "700"],
+  variable: "--font-headline",
 });
 
 
@@ -79,13 +88,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@6..72,400;6..72,700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" suppressHydrationWarning className={`${exo2.variable} ${teko.variable}`}>
+      <head></head>
       <body className="font-sans antialiased">
+        {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
+          <Script
+            src={(process.env.NEXT_PUBLIC_UMAMI_SRC || 'https://analytics.umami.is/script.js').split(' ')[0]}
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+            strategy="afterInteractive"
+          />
+        )}
         <TranslationsProvider>
           <AuthProvider>
             <ThemeProvider

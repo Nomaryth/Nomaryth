@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Bell, Plus, ExternalLink, RefreshCw, Edit, Save, X, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/auth-context";
 import type { NewsItem } from "@/lib/github-api";
 
 interface NewsItemFromAPI {
@@ -45,6 +46,7 @@ export default function AdminNewsPage() {
     published: true
   });
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchNews();
@@ -53,7 +55,10 @@ export default function AdminNewsPage() {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/news');
+      const token = user ? await user.getIdToken() : undefined;
+      const response = await fetch('/api/news', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       if (response.ok) {
         const data = await response.json();
         setNews(data);
@@ -71,6 +76,10 @@ export default function AdminNewsPage() {
   };
 
   const handleCreateNews = async () => {
+    if (!user) {
+      toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
+      return;
+    }
     if (!newNews.title.trim() || !newNews.excerpt.trim()) {
       toast({
         title: "Erro",
@@ -82,22 +91,22 @@ export default function AdminNewsPage() {
 
     setLoading(true);
     try {
+      const idToken = await user.getIdToken();
       const response = await fetch('/api/news', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({
-          newsData: {
-            title: newNews.title,
-            excerpt: newNews.excerpt,
-            content: newNews.content,
-            type: newNews.type,
-            featured: newNews.featured,
-            author: newNews.author,
-            tags: newNews.tags,
-            published: newNews.published
-          }
+          title: newNews.title,
+          excerpt: newNews.excerpt,
+          content: newNews.content,
+          type: newNews.type,
+          featured: newNews.featured,
+          author: newNews.author,
+          tags: newNews.tags,
+          published: newNews.published
         }),
       });
 
@@ -142,6 +151,10 @@ export default function AdminNewsPage() {
 
   const handleSaveEdit = async () => {
     if (!editingNews) return;
+    if (!user) {
+      toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
+      return;
+    }
     
     if (!editingNews.title.trim() || !editingNews.excerpt.trim()) {
       toast({
@@ -154,23 +167,23 @@ export default function AdminNewsPage() {
 
     setLoading(true);
     try {
+      const idToken = await user.getIdToken();
       const response = await fetch('/api/news', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           firebaseId: editingNews.firebaseId,
-          newsData: {
-            title: editingNews.title,
-            excerpt: editingNews.excerpt,
-            content: editingNews.content,
-            type: editingNews.type,
-            featured: editingNews.featured,
-            author: editingNews.author,
-            tags: editingNews.tags,
-            published: editingNews.published
-          }
+          title: editingNews.title,
+          excerpt: editingNews.excerpt,
+          content: editingNews.content,
+          type: editingNews.type,
+          featured: editingNews.featured,
+          author: editingNews.author,
+          tags: editingNews.tags,
+          published: editingNews.published
         }),
       });
 
@@ -206,14 +219,20 @@ export default function AdminNewsPage() {
   };
 
   const handleDeleteNews = async (newsItem: NewsItemFromAPI) => {
+    if (!user) {
+      toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
+      return;
+    }
     if (!confirm(`Tem certeza que deseja deletar a notícia "${newsItem.title}"? Esta ação não pode ser desfeita.`)) {
       return;
     }
 
     setLoading(true);
     try {
+      const idToken = await user.getIdToken();
       const response = await fetch(`/api/news/${newsItem.firebaseId}`, {
         method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${idToken}` },
       });
 
       if (response.ok) {

@@ -1,20 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getNewsFromFirebase, createNews, updateNews } from '@/lib/news-manager';
-import { adminDb } from '@/lib/firebase-admin';
+import { adminDb, adminAuth } from '@/lib/firebase-admin';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
+    }
+    const idToken = authHeader.split('Bearer ')[1];
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const adminDoc = await adminDb.collection('admins').doc(decoded.uid).get();
+    if (!adminDoc.exists) {
+      return NextResponse.json({ error: 'Forbidden: User is not an admin' }, { status: 403 });
+    }
+
     const news = await getNewsFromFirebase();
-    return NextResponse.json(news);
+    const publicNews = news.map(item => {
+      const { firebaseId, ...publicItem } = item;
+      return publicItem;
+    });
+    return NextResponse.json(publicNews);
   } catch (error: any) {
+    if (error.code?.startsWith('auth/')) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
+    }
     return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const newsData = await request.json();
-    const { firebaseId, ...newsContent } = newsData;
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
+    }
+    const idToken = authHeader.split('Bearer ')[1];
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const adminDoc = await adminDb.collection('admins').doc(decoded.uid).get();
+    if (!adminDoc.exists) {
+      return NextResponse.json({ error: 'Forbidden: User is not an admin' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { firebaseId, ...newsContent } = body;
 
     if (firebaseId) {
       const result = await updateNews(firebaseId, newsContent);
@@ -26,12 +55,12 @@ export async function POST(request: NextRequest) {
           const notificationRef = userDoc.ref.collection('notifications').doc();
           batch.set(notificationRef, {
             title: 'Notícia Atualizada',
-            message: `A notícia "${newsData.title}" foi atualizada`,
+            message: `A notícia "${newsContent.title}" foi atualizada`,
             isRead: false,
             timestamp: new Date(),
             type: 'news',
             newsId: firebaseId,
-            newsTitle: newsData.title
+            newsTitle: newsContent.title
           });
         });
         
@@ -41,7 +70,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to update news' }, { status: 500 });
       }
     } else {
-      const result = await createNews(newsContent);
+      const result = await createNews(newsContent as any);
       if (result.success && result.newsId) {
         const usersSnapshot = await adminDb.collection('users').get();
         const batch = adminDb.batch();
@@ -50,12 +79,12 @@ export async function POST(request: NextRequest) {
           const notificationRef = userDoc.ref.collection('notifications').doc();
           batch.set(notificationRef, {
             title: 'Nova Notícia',
-            message: `Uma nova notícia foi publicada: "${newsData.title}"`,
+            message: `Uma nova notícia foi publicada: "${newsContent.title}"`,
             isRead: false,
             timestamp: new Date(),
             type: 'news',
             newsId: result.newsId,
-            newsTitle: newsData.title
+            newsTitle: newsContent.title
           });
         });
         

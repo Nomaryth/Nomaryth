@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getNewsById, deleteNews } from '@/lib/news-manager';
+import { adminAuth } from '@/lib/firebase-admin';
 
 export async function GET(
   request: NextRequest,
@@ -24,6 +25,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
+    }
+    const idToken = authHeader.split('Bearer ')[1];
+    await adminAuth.verifyIdToken(idToken);
+
     const { id } = await params;
     const result = await deleteNews(id);
     

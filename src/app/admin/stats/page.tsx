@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Users, BookOpen, Map, Zap, TrendingUp, Target, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/auth-context";
 
 interface WorldStats {
   id: string;
@@ -26,6 +27,7 @@ export default function AdminStatsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchStats();
@@ -34,7 +36,10 @@ export default function AdminStatsPage() {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/stats');
+      const token = user ? await user.getIdToken() : undefined;
+      const response = await fetch('/api/stats', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       if (response.ok) {
         const data = await response.json();
         setStats(data);
@@ -56,9 +61,10 @@ export default function AdminStatsPage() {
 
     try {
       setSaving(true);
+      const token = user ? await user.getIdToken() : undefined;
       const response = await fetch('/api/stats', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify(stats)
       });
 

@@ -1,6 +1,6 @@
 {
   "name": "nomaryth",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 9002",
@@ -53,6 +53,7 @@
     "embla-carousel-react": "^8.6.0",
     "firebase": "^11.9.1",
     "firebase-admin": "^12.2.0",
+    "framer-motion": "^10.18.0",
     "genkit": "^1.13.0",
     "lucide-react": "^0.475.0",
     "next": "15.4.1",

@@ -105,7 +105,7 @@ function ProfilePageContent() {
                     const badge = badgeRegistry[badgeId];
                     if (badge) {
                         await addDoc(notificationsRef, {
-                            title: t('notifications.badge_unlocked'),
+                            title: t('notifications.badge_unlocked', { badgeName: badge.title }),
                             message: badge.description,
                             type: 'badge',
                             isRead: false,

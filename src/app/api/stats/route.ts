@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase-admin';
+import { adminDb, adminAuth } from '@/lib/firebase-admin';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
+    }
+    const idToken = authHeader.split('Bearer ')[1];
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const adminDoc = await adminDb.collection('admins').doc(decoded.uid).get();
+    if (!adminDoc.exists) {
+      return NextResponse.json({ error: 'Forbidden: User is not an admin' }, { status: 403 });
+    }
+
     const statsDoc = await adminDb.collection('stats').doc('world').get();
     
     if (!statsDoc.exists) {
@@ -43,6 +54,20 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
+    }
+    
+    const idToken = authHeader.split('Bearer ')[1];
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    
+    // Check if user is admin
+    const adminDoc = await adminDb.collection('admins').doc(decodedToken.uid).get();
+    if (!adminDoc.exists) {
+      return NextResponse.json({ error: 'Forbidden: User is not an admin' }, { status: 403 });
+    }
+    
     const stats = await request.json();
     const payload = {
       ...stats,
@@ -51,7 +76,11 @@ export async function POST(request: NextRequest) {
     await adminDb.collection('stats').doc('world').set(payload, { merge: true });
     
     return NextResponse.json({ success: true, message: 'Stats updated successfully' });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error updating stats:', error);
+    if (error.code === 'auth/id-token-expired' || error.code === 'auth/argument-error' || error.code === 'auth/id-token-revoked') {
+      return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
+    }
     return NextResponse.json({ error: 'Failed to update stats' }, { status: 500 });
   }
 } 

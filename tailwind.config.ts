@@ -17,9 +17,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)"],
-        body: ['var(--font-inter)', 'sans-serif'],
-        headline: ['var(--font-inter)', 'sans-serif'],
+        sans: ["var(--font-exo2)", 'system-ui', 'sans-serif'],
+        body: ['var(--font-exo2)', 'system-ui', 'sans-serif'],
+        headline: ['var(--font-headline)', 'ui-sans-serif', 'system-ui'],
         code: ['monospace'],
       },
       colors: {
@@ -100,13 +100,25 @@ export default {
           from: { opacity: "0", transform: "translateY(-10px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        shieldPulse: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.08)', opacity: '1' },
+        },
+        shieldRing: {
+          '0%': { transform: 'scale(1)', opacity: '0.5' },
+          '70%': { transform: 'scale(1.8)', opacity: '0' },
+          '100%': { opacity: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         "fadeIn": "fadeIn 0.5s ease-in-out forwards",
+        shieldPulse: 'shieldPulse 2.2s ease-in-out infinite',
+        shieldRing: 'shieldRing 2.2s ease-out infinite',
       },
     },
   },
+  
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;

@@ -30,7 +30,7 @@ export function NewsDetailPopover({ newsId, children }: NewsDetailPopoverProps) 
   const fetchNewsDetails = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/news/${newsId}`);
+      const response = await fetch(`/api/public/news/${newsId}`);
       if (response.ok) {
         const data = await response.json();
         setNewsItem(data);

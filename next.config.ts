@@ -7,6 +7,53 @@ const nextConfig: NextConfig = {
   generateEtags: false,
   
   async headers() {
+    const isProd = process.env.NODE_ENV === 'production';
+    const scriptSrc = isProd
+      ? [
+          "'self'",
+          'https://va.vercel-scripts.com',
+          'https://analytics.umami.is',
+          'https://us.umami.is',
+        ].join(' ')
+      : [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          'https://va.vercel-scripts.com',
+          'https://analytics.umami.is',
+          'https://us.umami.is',
+        ].join(' ');
+
+    const connectSrc = [
+      "'self'",
+      'https://www.googleapis.com',
+      'https://apis.google.com',
+      'https://api.open-meteo.com',
+      'https://geocoding-api.open-meteo.com',
+      'https://va.vercel-scripts.com',
+      'https://analytics.umami.is',
+      'https://us.umami.is',
+      'https://identitytoolkit.googleapis.com',
+      'https://securetoken.googleapis.com',
+      'https://firestore.googleapis.com',
+      'https://storage.googleapis.com',
+      'https://api.github.com',
+      'https://raw.githubusercontent.com',
+    ].join(' ');
+
+    const csp = [
+      "default-src 'self'",
+      `script-src ${scriptSrc}`,
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' data: https: blob:",
+      "font-src 'self' https://fonts.gstatic.com",
+      `connect-src ${connectSrc}`,
+      "frame-src 'self' https://www.google.com https://accounts.google.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ].join('; ');
     return [
       {
         source: '/(.*)',
@@ -24,13 +71,14 @@ const nextConfig: NextConfig = {
             value: 'strict-origin-when-cross-origin',
           },
           {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+          {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://www.googleapis.com https://apis.google.com https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.googleapis.com https://apis.google.com;",
-          },
+          { key: 'Content-Security-Policy', value: csp },
         ],
       },
       {

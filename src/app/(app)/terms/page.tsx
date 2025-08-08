@@ -218,7 +218,7 @@ export default function TermsOfService() {
             </p>
             <div className="mt-4 p-4 bg-card border rounded-lg">
               <p className="text-muted-foreground">
-                <strong>Email:</strong> nomaryth@gmail.com<br />
+                <strong>Email:</strong> contact@nomaryth.uk<br />
                 <strong>Address:</strong> Nomaryth Team<br />
                 <strong>Website:</strong> https://gghorizon.com
               </p>

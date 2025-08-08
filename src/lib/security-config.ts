@@ -27,15 +27,41 @@ export const SECURITY_CONFIG = {
     'X-XSS-Protection': '1; mode=block',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-                           'Content-Security-Policy': [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://www.googleapis.com https://apis.google.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com",
-            "img-src 'self' data: https: blob:",
-            "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://storage.googleapis.com https://api.github.com https://raw.githubusercontent.com https://openweathermap.org https://wttr.in",
-            "frame-src 'self' https://www.google.com https://accounts.google.com https://nomarythweb.firebaseapp.com"
-          ].join('; '),
+                    'Content-Security-Policy': (() => {
+            const isProd = process.env.NODE_ENV === 'production';
+            const scriptSrc = isProd
+              ? ["'self'", 'https://va.vercel-scripts.com', 'https://analytics.umami.is', 'https://us.umami.is'].join(' ')
+              : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://va.vercel-scripts.com', 'https://analytics.umami.is', 'https://us.umami.is'].join(' ');
+            const connectSrc = [
+              "'self'",
+              'https://identitytoolkit.googleapis.com',
+              'https://securetoken.googleapis.com',
+              'https://firestore.googleapis.com',
+              'https://storage.googleapis.com',
+              'https://api.github.com',
+              'https://raw.githubusercontent.com',
+              'https://openweathermap.org',
+              'https://wttr.in',
+              'https://api.open-meteo.com',
+              'https://geocoding-api.open-meteo.com',
+              'https://va.vercel-scripts.com',
+              'https://analytics.umami.is',
+              'https://us.umami.is',
+            ].join(' ');
+            return [
+              "default-src 'self'",
+              `script-src ${scriptSrc}`,
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: https: blob:",
+              `connect-src ${connectSrc}`,
+              "frame-src 'self' https://www.google.com https://accounts.google.com https://nomarythweb.firebaseapp.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+            ].join('; ');
+          })(),
   },
 
   ALLOWED_ORIGINS: [

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { BookOpen, Map } from "lucide-react";
 import Link from "next/link";
@@ -95,12 +96,14 @@ export function InteractiveHero({ className }: InteractiveHeroProps) {
       ref={heroRef}
       className={`relative h-[calc(100vh-4rem)] w-full flex items-center justify-center overflow-hidden ${className}`}
     >
-      <div 
+      <motion.div 
         className="absolute inset-0 z-10"
         style={{
-          transform: isClient ? `translate(${parallaxX}px, ${parallaxY - scrollParallax}px)` : 'none',
-          transition: 'transform 0.1s ease-out'
+          transform: isClient ? `translate(${parallaxX}px, ${parallaxY - scrollParallax}px)` : 'none'
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <OptimizedImage
           src="https://github.com/Nomaryth/nomaryth/blob/main/assets/NomaBanner1.png?raw=true"
@@ -110,7 +113,7 @@ export function InteractiveHero({ className }: InteractiveHeroProps) {
           data-ai-hint="fantasy landscape"
           priority
         />
-      </div>
+      </motion.div>
 
       {isClient && (
         <div className="absolute inset-0 z-15 pointer-events-none">
@@ -186,10 +189,8 @@ export function InteractiveHero({ className }: InteractiveHeroProps) {
           {t('home.tagline')}
         </p>
 
-         <div 
-           className={`flex flex-col sm:flex-row justify-center gap-4 ${
-             isTyping ? 'animate-fadeIn' : 'opacity-0'
-           }`}
+          <div 
+           className={`${isTyping ? 'animate-fadeIn' : 'opacity-0'}`}
            style={{ 
              animationDelay: '1.5s',
              animationDuration: isTyping ? '1s' : '0s',
@@ -198,31 +199,47 @@ export function InteractiveHero({ className }: InteractiveHeroProps) {
              animationName: isTyping ? 'fadeIn' : 'none'
            }}
          >
-          <Button 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 justify-center items-center">
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+            <Button 
             asChild 
             size="lg" 
-            className="bg-accent text-accent-foreground hover:bg-accent/90 transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-accent/25"
+              className="justify-center bg-accent text-accent-foreground hover:bg-accent/90 transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-accent/25 px-6 max-w-[240px] w-auto sm:justify-self-end sm:mr-1"
           >
             <Link href="/docs">
               <BookOpen className="mr-2 h-5 w-5" />
               {t('home.explore_lore')}
             </Link>
           </Button>
-          <Button 
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+            <Button 
             asChild 
             size="lg" 
             variant="secondary"
-            className="transform hover:scale-105 transition-all duration-300 hover:shadow-lg"
+                className="justify-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg px-6 max-w-[240px] w-auto sm:justify-self-start sm:ml-1"
           >
             <Link href="/projects">
               <Map className="mr-2 h-5 w-5" />
               {t('home.discover_projects')}
             </Link>
           </Button>
+            </motion.div>
+          <div className="sm:col-span-2 flex justify-center pt-2">
+            <Button 
+              asChild 
+              size="lg" 
+              variant="outline"
+              className="transform hover:scale-105 transition-all duration-300 hover:shadow-lg"
+            >
+              <Link href="https://launcher.gghorizon.com">Open Launcher</Link>
+            </Button>
+          </div>
+          </div>
         </div>
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10" />
     </div>
   );
-} 
+}

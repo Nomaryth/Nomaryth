@@ -5,8 +5,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Clock } from "lucide-react";
 import { useTranslation } from "@/context/i18n-context";
+import { useAuth } from '@/context/auth-context';
 import { NewsDetailPopover } from "./news-detail-popover";
-import type { NewsItem } from "@/lib/news-manager";
+// Tipo público simplificado para a listagem
+interface PublicNewsItem {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: Date | string;
+  type: 'update' | 'event' | 'announcement';
+  featured: boolean;
+  author?: string;
+  tags?: string[];
+  published: boolean;
+  githubIssueId?: number | null;
+}
 
 interface MinimalNewsProps {
   className?: string;
@@ -14,9 +27,10 @@ interface MinimalNewsProps {
 
 export function MinimalNews({ className }: MinimalNewsProps) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [isClient, setIsClient] = useState(false);
   const [selectedType, setSelectedType] = useState<'all' | 'update' | 'event' | 'announcement'>('all');
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [newsItems, setNewsItems] = useState<PublicNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +43,7 @@ export function MinimalNews({ className }: MinimalNewsProps) {
     const fetchNews = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/news');
+        const response = await fetch('/api/public/news');
         if (response.ok) {
           const news = await response.json();
           setNewsItems(news);
@@ -42,7 +56,7 @@ export function MinimalNews({ className }: MinimalNewsProps) {
     };
 
     fetchNews();
-  }, [isClient]);
+  }, [isClient, user]);
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -193,7 +207,7 @@ export function MinimalNews({ className }: MinimalNewsProps) {
                   </div>
                   
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <NewsDetailPopover newsId={item.firebaseId}>
+                    <NewsDetailPopover newsId={item.id}>
                       <Button 
                         variant="ghost" 
                         size="sm" 
