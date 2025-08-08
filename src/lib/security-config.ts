@@ -30,7 +30,7 @@ export const SECURITY_CONFIG = {
                     'Content-Security-Policy': (() => {
             const isProd = process.env.NODE_ENV === 'production';
             const scriptSrc = isProd
-              ? ["'self'", 'https://va.vercel-scripts.com', 'https://analytics.umami.is', 'https://us.umami.is'].join(' ')
+              ? ["'self'", "'unsafe-inline'", 'https://va.vercel-scripts.com', 'https://analytics.umami.is', 'https://us.umami.is', 'https://static.cloudflareinsights.com'].join(' ')
               : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://va.vercel-scripts.com', 'https://analytics.umami.is', 'https://us.umami.is'].join(' ');
             const connectSrc = [
               "'self'",
@@ -47,6 +47,7 @@ export const SECURITY_CONFIG = {
               'https://va.vercel-scripts.com',
               'https://analytics.umami.is',
               'https://us.umami.is',
+              'https://static.cloudflareinsights.com',
             ].join(' ');
             return [
               "default-src 'self'",

@@ -11,9 +11,11 @@ const nextConfig: NextConfig = {
     const scriptSrc = isProd
       ? [
           "'self'",
+          "'unsafe-inline'", // TEMP: evitar tela branca até nonce dinâmico
           'https://va.vercel-scripts.com',
           'https://analytics.umami.is',
           'https://us.umami.is',
+          'https://static.cloudflareinsights.com',
         ].join(' ')
       : [
           "'self'",
@@ -22,6 +24,7 @@ const nextConfig: NextConfig = {
           'https://va.vercel-scripts.com',
           'https://analytics.umami.is',
           'https://us.umami.is',
+          'https://static.cloudflareinsights.com',
         ].join(' ');
 
     const connectSrc = [
@@ -39,6 +42,7 @@ const nextConfig: NextConfig = {
       'https://storage.googleapis.com',
       'https://api.github.com',
       'https://raw.githubusercontent.com',
+      'https://static.cloudflareinsights.com',
     ].join(' ');
 
     const csp = [
@@ -78,7 +82,7 @@ const nextConfig: NextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
-          { key: 'Content-Security-Policy', value: csp },
+          // CSP dinâmica com nonce definida em src/middleware.ts
         ],
       },
       {
