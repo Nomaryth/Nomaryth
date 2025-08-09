@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     if (cursor) query = query.startAfter(cursor)
     const snap = await query.get()
     const data = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-    const nextCursor = data.length > 0 ? String(data[data.length - 1].timestamp) : ''
+    const nextCursor = data.length > 0 ? String((data[data.length - 1] as any).timestamp ?? '') : ''
     return NextResponse.json({ data, nextCursor })
   } catch {
     return NextResponse.json({ error: 'error' }, { status: 500 })
