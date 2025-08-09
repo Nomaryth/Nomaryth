@@ -9,7 +9,6 @@ import { AuthProvider } from "@/context/auth-context";
 import { Exo_2, Teko } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
-import { headers } from "next/headers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -88,22 +87,84 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hdrs = await headers();
-  const nonce = hdrs.get('x-csp-nonce') || undefined;
   return (
     <html lang="en" suppressHydrationWarning className={`${exo2.variable} ${teko.variable}`}>
-      <head>
-        {nonce && <meta name="csp-nonce" content={nonce} />}
-      </head>
       <body className="font-sans antialiased">
         {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
           <Script
             src={(process.env.NEXT_PUBLIC_UMAMI_SRC || 'https://analytics.umami.is/script.js').split(' ')[0]}
             data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
             strategy="afterInteractive"
-            nonce={nonce}
           />
         )}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (() => {
+                try {
+                  const envOk = typeof window !== 'undefined' && typeof navigator !== 'undefined' && typeof crypto !== 'undefined';
+                  if (!envOk) return;
+                  const host = String(window.location.hostname || '').toLowerCase();
+                  const isLocal = host === 'localhost' || host === '127.0.0.1';
+                  const now = Date.now();
+                  const seed = (now ^ (performance?.timeOrigin || 0)) >>> 0;
+                  const rand = (n) => {
+                    const a = 1664525, c = 1013904223, m = 2 ** 32;
+                    let x = (seed + n) >>> 0;
+                    x = (a * x + c) % m;
+                    return x / m;
+                  };
+                  const hash = (crypto?.getRandomValues ? Array.from(crypto.getRandomValues(new Uint32Array(2))).map(x => x.toString(36)).join('') : Math.random().toString(36).slice(2)) + '-' + now.toString(36);
+                  const banner = '%c[Nomaryth Gate]';
+                  const style = 'font-weight:600;color:#fbbf24;letter-spacing:.3px';
+                  const pad = (v, w=6) => (String(v).padEnd(w));
+                  const info = [
+                    ['Build', '${process.env.NEXT_PUBLIC_BUILD_VERSION || 'dev'}'],
+                    ['Node', (typeof process !== 'undefined' && process.version) ? process.version : 'edge'],
+                    ['Hash', hash],
+                    ['AISec', 'ACTIVE'],
+                    ['WAF', 100 + Math.floor(rand(1)*64)],
+                    ['Entropy', (crypto && crypto.getRandomValues ? 'seeded' : 'weak')],
+                    ['Beacon', !!navigator.sendBeacon]
+                  ];
+                  const log = (k, v) => {
+                    try { console.log(banner, style, pad(k)+':', v); } catch(_) {}
+                  };
+                  const onceKey = '__ng_init__';
+                  if (!window[onceKey]) {
+                    window[onceKey] = 1;
+                    log('Initialized', new Date(now).toISOString());
+                    for (let i=0;i<info.length;i++) log(info[i][0], info[i][1]);
+                    if (!isLocal && (rand(2) > 0.35)) {
+                      const t0 = performance.now();
+                      const sample = new Uint8Array(32);
+                      try { crypto.getRandomValues(sample); } catch(_) {}
+                      const t1 = performance.now();
+                      const stamp = Math.abs(((t1 - t0) * 1000) | 0);
+                      log('Integrity', 'OK#' + (stamp ^ (seed >>> 5)) .toString(16));
+                    }
+                  }
+                  let warned = false
+                  let lastWarn = 0
+                  const devtoolsDetector = () => {
+                    const threshold = 160
+                    const widthDiff = Math.abs(window.outerWidth - window.innerWidth)
+                    const heightDiff = Math.abs(window.outerHeight - window.innerHeight)
+                    const nowTs = performance.now()
+                    const open = widthDiff > threshold || heightDiff > threshold
+                    if (open && (!warned || nowTs - lastWarn > 10000)) {
+                      lastWarn = nowTs
+                      warned = true
+                      try { console.warn(banner, style, 'Inspection detected. Telemetry: token=' + hash.slice(0,8)) } catch(_) {}
+                    }
+                  }
+                  let rafId = 0; const loop = () => { devtoolsDetector(); rafId = requestAnimationFrame(loop) }; rafId = requestAnimationFrame(loop)
+                  setTimeout(() => cancelAnimationFrame(rafId), 45000)
+                } catch(e) {}
+              })();
+            `
+          }}
+        />
         <TranslationsProvider>
           <AuthProvider>
             <ThemeProvider

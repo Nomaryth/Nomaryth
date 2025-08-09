@@ -37,6 +37,7 @@ const navLinks = [
   { href: '/admin/announcements', label: 'Announcements', icon: <Megaphone className="h-5 w-5" /> },
   { href: '/admin/stats', label: 'Statistics', icon: <BarChart3 className="h-5 w-5" /> },
   { href: '/admin/news', label: 'News', icon: <Bell className="h-5 w-5" /> },
+  { href: '/admin/security-events', label: 'Security Events', icon: <BarChart3 className="h-5 w-5" /> },
 ];
 
 const systemLinks = [

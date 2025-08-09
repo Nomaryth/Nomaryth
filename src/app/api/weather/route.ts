@@ -9,6 +9,16 @@ interface WeatherData {
 }
 
 export async function GET(req: NextRequest) {
+  const withTimeout = async (url: string, init?: RequestInit, ms = 5000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), ms);
+    try {
+      return await fetch(url, { ...(init || {}), signal: controller.signal });
+    } finally {
+      clearTimeout(id);
+    }
+  };
+
   try {
     const { searchParams } = new URL(req.url);
     const q = searchParams.get('location');
@@ -17,9 +27,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'location query required' }, { status: 400 });
     }
 
-    // Geocode with Open-Meteo (no API key required)
     const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=pt&format=json`;
-    const geoResp = await fetch(geoUrl, { next: { revalidate: 3600 } });
+    const geoResp = await withTimeout(geoUrl, { next: { revalidate: 3600 } });
     if (!geoResp.ok) throw new Error('geocoding failed');
     const geoJson = await geoResp.json();
     if (!geoJson.results || geoJson.results.length === 0) {
@@ -29,10 +38,9 @@ export async function GET(req: NextRequest) {
     const latitude = g.latitude;
     const longitude = g.longitude;
     const cityName: string = g.name;
-    const admin1: string | undefined = g.admin1; // state/region
+    const admin1: string | undefined = g.admin1;
     const countryCode: string = g.country_code;
 
-    // Map Brazilian states to UF abbreviation when possible
     const brUfMap: Record<string, string> = {
       'Acre': 'AC', 'Alagoas': 'AL', 'Amapá': 'AP', 'Amazonas': 'AM', 'Bahia': 'BA',
       'Ceará': 'CE', 'Distrito Federal': 'DF', 'Espírito Santo': 'ES', 'Goiás': 'GO', 'Maranhão': 'MA',
@@ -44,9 +52,8 @@ export async function GET(req: NextRequest) {
 
     const regionDisplay = countryCode === 'BR' && admin1 ? (brUfMap[admin1] || admin1) : (admin1 || countryCode);
 
-    // Fetch weather
     const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
-    const meteoResp = await fetch(meteoUrl, { cache: 'no-store' });
+    const meteoResp = await withTimeout(meteoUrl, { cache: 'no-store' });
     if (!meteoResp.ok) throw new Error('weather failed');
     const meteo = await meteoResp.json();
     const tempC = Math.round(meteo.current_weather?.temperature ?? 0);
@@ -73,11 +80,30 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(payload);
   } catch (error) {
-    console.error('Weather API error:', error);
-    
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    try {
+      const { searchParams } = new URL(req.url);
+      const q = searchParams.get('location') || '';
+      const wttrUrl = `https://wttr.in/${encodeURIComponent(q)}?format=j1`;
+      const wttrResp = await fetch(wttrUrl, { cache: 'no-store' });
+      if (wttrResp.ok) {
+        const data = await wttrResp.json();
+        const current = data?.current_condition?.[0];
+        const area = data?.nearest_area?.[0];
+        const tempC = current ? parseInt(current.temp_C, 10) : 0;
+        const conditionText = current?.weatherDesc?.[0]?.value || 'Clear';
+        const cityName = area?.areaName?.[0]?.value || q || 'Unknown';
+        const country = area?.country?.[0]?.value || 'Unknown';
+        const payload: { success: true; data: WeatherData } = {
+          success: true,
+          data: {
+            current: { temp_c: tempC, condition: { text: conditionText } },
+            location: { name: cityName, country },
+          },
+        };
+        return NextResponse.json(payload);
+      }
+    } catch {}
+
+    return NextResponse.json({ success: false, error: 'weather_unavailable' });
   }
 } 

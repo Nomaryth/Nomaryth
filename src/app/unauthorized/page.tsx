@@ -15,6 +15,23 @@ function UnauthorizedPageContent() {
 
   useEffect(() => {
     setTimestamp(new Date().toLocaleString())
+    ;(async () => {
+      try {
+        const data = {
+          ip: '',
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+          path: typeof window !== 'undefined' ? window.location.pathname : '/unauthorized',
+          method: 'GET',
+          isAuthenticated: !!user,
+          userId: user?.uid || null,
+          email: user?.email || null,
+          referer: typeof document !== 'undefined' ? document.referrer : '',
+          origin: typeof location !== 'undefined' ? location.origin : '',
+          agentHint: typeof navigator !== 'undefined' ? (navigator as any)['userAgentData']?.brands?.map((b: any) => b.brand+"/"+b.version).join(' ') || '' : ''
+        }
+        await fetch('/api/security-log', { method: 'POST', cache: 'no-store', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) })
+      } catch {}
+    })()
   }, []);
   
   const accessDetails = (

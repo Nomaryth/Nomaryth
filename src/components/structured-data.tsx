@@ -16,10 +16,6 @@ export function StructuredData({ data }: StructuredDataProps) {
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.setAttribute('data-structured-data', 'true');
-    const nonceMeta = document.querySelector('meta[name="csp-nonce"]') as HTMLMetaElement | null;
-    if (nonceMeta?.content) {
-      (script as any).nonce = nonceMeta.content;
-    }
     script.textContent = JSON.stringify(data);
     document.head.appendChild(script);
 

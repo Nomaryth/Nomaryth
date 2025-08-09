@@ -69,6 +69,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (currentUser) {
+        try {
+          const idToken = await currentUser.getIdToken();
+          await fetch('/api/session', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ idToken }) });
+        } catch {}
         if (db) {
             const userDocRef = doc(db, "users", currentUser.uid);
             profileUnsubscribe.current = onSnapshot(userDocRef, (doc) => {
@@ -84,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             });
         }
       } else {
+        try { await fetch('/api/session', { method: 'DELETE' }); } catch {}
         setTheme('system'); 
         removeSecureStorage('language_manual_set');
         setLanguage('en'); 

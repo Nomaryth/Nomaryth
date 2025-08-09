@@ -5,7 +5,6 @@ import { adminDb, adminAuth } from '@/lib/firebase-admin';
 async function isUserAdmin(uid: string): Promise<boolean> {
   try {
     if (!adminDb) {
-      console.warn("Firebase Admin DB not available");
       return false;
     }
 
