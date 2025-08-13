@@ -1,4 +1,4 @@
-name: Security CI - CodeQL + OSV + Semgrep
+name: Security CI - CodeQL + OSV + Semgrep + Discord Alerts
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   codeql:
-    name: CodeQL Analysis (${{ matrix.language }})
+    name: CodeQL Analysis (JS/TS)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -39,6 +39,8 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:javascript-typescript"
+          threads: 4
+          ram: 16384
 
   osv:
     name: OSV Dependency Scan
@@ -49,11 +51,29 @@ jobs:
         uses: actions/checkout@v4
 
       - name: OSV Scan
-        uses: google/osv-scanner-action@v1
+        uses: google/osv-scanner-action@v0
         with:
           path: .
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send OSV Alerts to Discord
+        if: failure() || always()
+        run: |
+          if [ -f osv-report.json ]; then
+            ALERTS=$(jq -r '.[] | "- \(.id): \(.summary)"' osv-report.json)
+            if [ -z "$ALERTS" ]; then
+              ALERTS="Nenhuma vulnerabilidade detectada."
+            fi
+            TEXT="⚠️ **OSV Scan** para **${GITHUB_REPOSITORY}**:\n${ALERTS}"
+            ESCAPED_TEXT=$(echo "$TEXT" | sed 's/"/\\"/g')
+            curl -H "Content-Type: application/json" \
+                 -X POST \
+                 -d "{\"content\": \"$ESCAPED_TEXT\"}" \
+                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          fi
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
   semgrep:
     name: Semgrep Analysis
@@ -69,3 +89,20 @@ jobs:
           config: "p/ci"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send Semgrep Alerts to Discord
+        if: failure() || always()
+        run: |
+          if [ -f semgrep-results.json ]; then
+            ALERTS=$(jq -r '.results[] | "- \(.check_id): \(.extra.message)"' semgrep-results.json)
+            if [ -z "$ALERTS" ]; then
+              ALERTS="Nenhuma vulnerabilidade detectada."
+            fi
+            TEXT="⚠️ **Semgrep Scan** para **${GITHUB_REPOSITORY}**:\n${ALERTS}"
+            ESCAPED_TEXT=$(echo "$TEXT" | sed 's/"/\\"/g')
+            curl -H "Content-Type: application/json" \
+                 -X POST \
+                 -d "{\"content\": \"$ESCAPED_TEXT\"}" \
+                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
