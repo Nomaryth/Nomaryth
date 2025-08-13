@@ -6,6 +6,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   notify:
     runs-on: ubuntu-latest
@@ -15,21 +18,20 @@ jobs:
         run: |
           REPO="${GITHUB_REPOSITORY}"
           USER="${GITHUB_ACTOR}"
-          COMMIT_MSGS=""
-          for COMMIT in $(seq 0 $((${#GITHUB_EVENT_COMMITS[@]} - 1))); do
-            :
-          done
-          # Como $GITHUB_EVENT_COMMITS não é acessível diretamente no bash, pegamos via arquivo JSON
-          COMMIT_LIST=$(cat $GITHUB_EVENT_PATH | grep '"message":' | sed 's/.*"message": "\(.*\)",/\1/')
-          COMMIT_URLS=$(cat $GITHUB_EVENT_PATH | grep '"url":' | grep commits | sed 's/.*"url": "\(.*\)"/\1/')
-          paste <(echo "$COMMIT_LIST") <(echo "$COMMIT_URLS") | while IFS=$'\t' read -r MSG URL; do
-            COMMIT_MSGS="$COMMIT_MSGS- $MSG ($URL)\n"
-          done
+          
+          COMMITS=$(jq -r '.commits[]? | "- \(.message) (\(.url))"' "$GITHUB_EVENT_PATH")
 
-          TEXT="📢 **${REPO}** recebeu um push de **${USER}**:\n${COMMIT_MSGS}"
+          if [ -z "$COMMITS" ]; then
+            COMMITS="(nenhum commit listado)"
+          fi
+
+          TEXT="📢 **${REPO}** recebeu um push de **${USER}**:\n${COMMITS}"
+          
+          ESCAPED_TEXT=$(echo "$TEXT" | sed 's/"/\\"/g')
+
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"$TEXT\"}" \
+               -d "{\"content\": \"$ESCAPED_TEXT\"}" \
                "${DISCORD_WEBHOOK_URL}"
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -42,9 +44,10 @@ jobs:
           TITLE="${{ github.event.pull_request.title }}"
           URL="${{ github.event.pull_request.html_url }}"
           TEXT="📝 **${USER}** abriu um Pull Request em **${REPO}**: ${TITLE} - ${URL}"
+          ESCAPED_TEXT=$(echo "$TEXT" | sed 's/"/\\"/g')
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"$TEXT\"}" \
+               -d "{\"content\": \"$ESCAPED_TEXT\"}" \
                "${DISCORD_WEBHOOK_URL}"
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -57,9 +60,10 @@ jobs:
           NAME="${{ github.event.release.name }}"
           URL="${{ github.event.release.html_url }}"
           TEXT="🚀 **${USER}** publicou uma nova release em **${REPO}**: ${NAME} - ${URL}"
+          ESCAPED_TEXT=$(echo "$TEXT" | sed 's/"/\\"/g')
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"$TEXT\"}" \
+               -d "{\"content\": \"$ESCAPED_TEXT\"}" \
                "${DISCORD_WEBHOOK_URL}"
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
