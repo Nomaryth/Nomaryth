@@ -3,11 +3,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
-import { PrivacyNotice } from "@/components/privacy-notice";
+import { CookieBanner } from "@/components/cookie-banner";
 import { TranslationsProvider } from "@/context/i18n-context";
 import { AuthProvider } from "@/context/auth-context";
 import { Exo_2, Teko } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsWrapper } from "@/components/analytics-wrapper";
 import Script from "next/script";
 import "./globals.css";
 
@@ -174,11 +174,11 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <div className="flex flex-col min-h-screen">
-                <PrivacyNotice />
                 {children}
               </div>
+              <CookieBanner />
               <Toaster />
-              <Analytics />
+              <AnalyticsWrapper />
             </ThemeProvider>
           </AuthProvider>
         </TranslationsProvider>
