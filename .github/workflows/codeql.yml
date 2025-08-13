@@ -17,16 +17,12 @@ permissions:
 jobs:
   codeql:
     name: CodeQL Analysis (${{ matrix.language }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
           - language: javascript-typescript
-            build-mode: none
-          - language: python
-            build-mode: none
-          - language: java
             build-mode: none
 
     steps:
@@ -36,19 +32,13 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
-
-      - if: matrix.build-mode == 'manual'
-        shell: bash
-        run: |
-          echo 'Build your code manually here if needed'
-          exit 1
+          languages: javascript-typescript
+          build-mode: none
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: "/language:javascript-typescript"
 
   osv:
     name: OSV Dependency Scan
