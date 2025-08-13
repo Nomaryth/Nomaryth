@@ -7,7 +7,6 @@ import { StructuredData, websiteSchema, organizationSchema, creativeWorkSchema }
 import { InteractiveHero } from "@/components/interactive-hero";
 import { MinimalNews } from "@/components/minimal-news";
 import { SectionDivider } from "@/components/section-divider";
-import { FeaturedProjects } from "@/components/featured-projects";
 
 
 function HomeContent() {
@@ -37,8 +36,6 @@ function HomeContent() {
       
       <SectionDivider variant="arknights" />
 
-      <FeaturedProjects />
-      <SectionDivider variant="tech" />
       <MinimalNews />
 
       <SectionDivider variant="hologram" />

@@ -14,7 +14,7 @@ export const remarkGithubAlerts: Plugin<[], Root> = () => {
       if (firstTextNode?.type !== 'text') return;
       
       const text = firstTextNode.value;
-      const alertMatch = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|ERROR|INFO|EXAMPLE)\]\s*/i);
+      const alertMatch = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|ERROR|INFO|EXAMPLE|QUOTE|TODO|CITE)\]\s*/i);
       
       if (alertMatch) {
         const alertType = alertMatch[1].toLowerCase();
