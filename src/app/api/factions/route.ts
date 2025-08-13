@@ -53,12 +53,12 @@ export async function POST(req: NextRequest) {
 
             const existingNames = nameDoc.exists ? nameDoc.data() : {};
             if (existingNames && existingNames[name.toLowerCase()]) {
-                throw new Error(`O nome da facção "${name}" já está em uso.`);
+                throw { code: 'duplicated_name', message: `O nome da facção "${name}" já está em uso.` };
             }
 
             const existingTags = tagDoc.exists ? tagDoc.data() : {};
             if (existingTags && existingTags[normalizedTag]) {
-                throw new Error(`A tag da facção "${normalizedTag}" já está em uso.`);
+                throw { code: 'duplicated_tag', message: `A tag da facção "${normalizedTag}" já está em uso.` };
             }
 
             const newFactionRef = factionsRef.doc();
@@ -100,12 +100,11 @@ export async function POST(req: NextRequest) {
         
         return NextResponse.json({ message: 'Facção criada com sucesso!', faction: newFaction }, { status: 201 });
 
-    } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-            console.error("Error creating faction:", error);
-        }
-        const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro interno.";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+    } catch (error: any) {
+        const duplicate = error?.code === 'duplicated_name' || error?.code === 'duplicated_tag';
+        const status = duplicate ? 409 : 500;
+        const msg = typeof error?.message === 'string' ? error.message : 'Ocorreu um erro interno.';
+        return NextResponse.json({ error: msg }, { status });
     }
 }
 

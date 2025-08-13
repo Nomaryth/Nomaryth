@@ -9,7 +9,6 @@ export async function GET(
   try {
     const { id } = await params;
     const doc = await adminDb.collection('news').doc(id).get();
-    // Fallback: if direct doc not found, try where firebaseId == id
     let data: any | null = null;
     if (doc.exists) {
       data = doc.data();
@@ -21,7 +20,6 @@ export async function GET(
     }
 
     if (!data || data.published === false) {
-      // tentar no GitHub
       const gh = await getNewsFromGitHub();
       const byId = gh.find(n => n.githubIssueId?.toString() === id || n.id === id);
       if (byId && byId.published) {

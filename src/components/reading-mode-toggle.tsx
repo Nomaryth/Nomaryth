@@ -30,30 +30,4 @@ export function ReadingModeToggle({ onModeChange, className }: ReadingModeToggle
     localStorage.setItem('nomaryth-reading-mode', JSON.stringify(newMode));
     onModeChange(newMode);
   };
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={toggleReadingMode}
-      className={cn(
-        "flex items-center gap-2 transition-all duration-200",
-        isReadingMode && "bg-accent text-accent-foreground",
-        className
-      )}
-      title={isReadingMode ? t('docs.reading_mode.toggle_off') : t('docs.reading_mode.toggle_on')}
-    >
-      {isReadingMode ? (
-        <>
-          <EyeOff className="h-4 w-4" />
-          <span className="hidden sm:inline">{t('docs.reading_mode.focus_mode')}</span>
-        </>
-      ) : (
-        <>
-          <Eye className="h-4 w-4" />
-          <span className="hidden sm:inline">{t('docs.reading_mode.focus_mode')}</span>
-        </>
-      )}
-    </Button>
-  );
 } 

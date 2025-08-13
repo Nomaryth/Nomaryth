@@ -54,6 +54,68 @@
   }
 }
 
+@keyframes animate-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: animate-gradient 6s linear infinite;
+}
+
+@keyframes stripe-move {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes stripe-move-reverse {
+  0% {
+    transform: translateX(100%) translateY(100%) rotate(-45deg);
+  }
+  100% {
+    transform: translateX(-100%) translateY(-100%) rotate(-45deg);
+  }
+}
+
+.stripe-gradient-bg {
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255, 193, 7, 0.03) 20px,
+      rgba(255, 193, 7, 0.03) 40px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(255, 193, 7, 0.02) 20px,
+      rgba(255, 193, 7, 0.02) 40px
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 193, 7, 0.05) 0%,
+      rgba(255, 193, 7, 0.1) 25%,
+      rgba(255, 193, 7, 0.15) 50%,
+      rgba(255, 193, 7, 0.1) 75%,
+      rgba(255, 193, 7, 0.05) 100%
+    );
+  background-size: 200% 200%, 200% 200%, 100% 100%;
+  animation: 
+    stripe-move 8s linear infinite,
+    stripe-move-reverse 12s linear infinite;
+}
+
 /* Adicione ao seu tailwind.config.js:
 extend: {
   animation: {

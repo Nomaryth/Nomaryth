@@ -2,8 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getNewsFromFirebase, createNews, updateNews } from '@/lib/news-manager';
 import { adminDb, adminAuth } from '@/lib/firebase-admin';
 
+const newsRateLimit = new Map<string, { count: number; expires: number }>()
+
+function isNewsRateLimited(ip: string): boolean {
+  const now = Date.now()
+  let entry = newsRateLimit.get(ip)
+  if (!entry || entry.expires < now) {
+    entry = { count: 1, expires: now + 60000 }
+    newsRateLimit.set(ip, entry)
+    return false
+  }
+  entry.count++
+  return entry.count > 30
+}
+
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, value] of newsRateLimit.entries()) {
+    if (value.expires < now) newsRateLimit.delete(key)
+  }
+}, 120000)
+
 export async function GET(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               request.headers.get('x-real-ip') || 
+               request.headers.get('cf-connecting-ip') || 
+               'unknown'
+    
+    if (isNewsRateLimited(ip)) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
+
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
@@ -17,8 +47,8 @@ export async function GET(request: NextRequest) {
 
     const news = await getNewsFromFirebase();
     return NextResponse.json(news);
-  } catch (error: any) {
-    if (error.code?.startsWith('auth/')) {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' && error.code.startsWith('auth/')) {
       return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
     }
     return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 });
@@ -27,6 +57,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               request.headers.get('x-real-ip') || 
+               request.headers.get('cf-connecting-ip') || 
+               'unknown'
+    
+    if (isNewsRateLimited(ip)) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
+
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
@@ -66,7 +105,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to update news' }, { status: 500 });
       }
     } else {
-      const result = await createNews(newsContent as any);
+      const result = await createNews(newsContent as { title: string; excerpt: string; content?: string; type: 'update' | 'event' | 'announcement'; featured: boolean; author?: string; tags?: string[]; published: boolean });
       if (result.success && result.newsId) {
         const usersSnapshot = await adminDb.collection('users').get();
         const batch = adminDb.batch();
@@ -90,7 +129,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create news' }, { status: 500 });
       }
     }
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: 'Failed to process news' }, { status: 500 });
   }
 } 

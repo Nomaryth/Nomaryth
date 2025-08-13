@@ -14,6 +14,7 @@ interface OptimizedImageProps {
   priority?: boolean;
   quality?: number;
   sizes?: string;
+  disableFallback?: boolean;
 }
 
 export function OptimizedImage({
@@ -26,19 +27,24 @@ export function OptimizedImage({
   priority = false,
   quality = 75,
   sizes,
+  disableFallback = false,
   ...props
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
 
   const handleError = () => {
+    if (disableFallback) {
+      setHasError(true);
+      return;
+    }
     if (!hasError && imgSrc !== fallbackImageUrl) {
       setImgSrc(fallbackImageUrl);
       setHasError(true);
     }
   };
 
-  const validSrc = isValidImageUrl(imgSrc) ? imgSrc : fallbackImageUrl;
+  const validSrc = isValidImageUrl(imgSrc) || disableFallback ? imgSrc : fallbackImageUrl;
 
   return (
     <Image

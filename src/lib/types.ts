@@ -8,6 +8,21 @@ export interface UserProfile {
   bio?: string;
   theme?: 'light' | 'dark' | 'system';
   language?: 'en' | 'pt';
+  primaryProvider?: 'google' | 'github';
+  linkedProviders?: {
+    google?: {
+      email?: string;
+      displayName?: string;
+      photoURL?: string;
+      linkedAt?: { seconds: number; nanoseconds: number } | Date;
+    };
+    github?: {
+      email?: string;
+      displayName?: string;
+      photoURL?: string;
+      linkedAt?: { seconds: number; nanoseconds: number } | Date;
+    };
+  };
   createdAt?: {
     seconds: number;
     nanoseconds: number;

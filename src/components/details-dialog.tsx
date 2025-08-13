@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, GitFork, Star, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import DOMPurify from 'dompurify';
 import { Repo } from "@/app/(app)/projects/page";
 import { Skeleton } from "./ui/skeleton";
@@ -36,14 +38,9 @@ interface DetailsDialogProps {
 
 async function getReadme(owner: string, repoName: string): Promise<string> {
     try {
-        const readmeRes = await fetch(`https://raw.githubusercontent.com/${owner}/${repoName}/main/README.md`);
-        if(!readmeRes.ok) {
-            const readmeMasterRes = await fetch(`https://raw.githubusercontent.com/${owner}/${repoName}/master/README.md`);
-            if(!readmeMasterRes.ok) return "Could not load README for this project.";
-            const content = await readmeMasterRes.text();
-            return DOMPurify.sanitize(content);
-        }
-        const content = await readmeRes.text();
+        const res = await fetch(`/api/github/readme?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repoName)}`, { cache: 'reload' });
+        if (!res.ok) return "Could not load README for this project.";
+        const content = await res.text();
         return DOMPurify.sanitize(content);
 
     } catch (error) {
@@ -116,7 +113,7 @@ export function DetailsDialog({ item, type, isOpen, onOpenChange }: DetailsDialo
                 </div>
             ) : (
                 <article className="prose prose-sm dark:prose-invert max-w-none">
-                     <ReactMarkdown>{content}</ReactMarkdown>
+                     <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
                 </article>
             )}
         </div>

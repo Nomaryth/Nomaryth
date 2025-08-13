@@ -537,7 +537,7 @@ export function DocsSidebar({ docsData, loading }: DocsSidebarProps) {
           
            {filteredAndSortedData.length !== docsData.length && (
              <div className="text-xs text-muted-foreground">
-               {t('docs.sidebar.showing_results')}
+               {t('docs.sidebar.showing_results', { filtered: filteredAndSortedData.length, total: docsData.length })}
              </div>
            )}
            

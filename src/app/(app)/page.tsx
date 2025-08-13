@@ -5,9 +5,10 @@ import { Wand2, Shield, Gem } from "lucide-react";
 import { useTranslation } from "@/context/i18n-context";
 import { StructuredData, websiteSchema, organizationSchema, creativeWorkSchema } from "@/components/structured-data";
 import { InteractiveHero } from "@/components/interactive-hero";
-import { AnimatedStats } from "@/components/animated-stats";
 import { MinimalNews } from "@/components/minimal-news";
 import { SectionDivider } from "@/components/section-divider";
+import { FeaturedProjects } from "@/components/featured-projects";
+
 
 function HomeContent() {
   const { t } = useTranslation();
@@ -35,8 +36,8 @@ function HomeContent() {
       <InteractiveHero />
       
       <SectionDivider variant="arknights" />
-      <AnimatedStats />
 
+      <FeaturedProjects />
       <SectionDivider variant="tech" />
       <MinimalNews />
 

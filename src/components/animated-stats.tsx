@@ -38,7 +38,6 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
 
     const fetchStats = async () => {
       try {
-        // usar endpoint público de leitura
         const response = await fetch('/api/public/stats');
         if (response.ok) {
           const stats = await response.json();
@@ -113,7 +112,7 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
       label: t('home.stats.items.users'),
       value: worldStats?.totalUsers || 0,
       color: "text-blue-600",
-      progress: worldStats ? Math.round(Math.min((worldStats.totalUsers / 2000) * 100, 100)) : 0
+      progress: undefined
     },
     {
       key: 'factions',
@@ -182,7 +181,7 @@ export function AnimatedStats({ className }: AnimatedStatsProps) {
                   }
                 </div>
                 
-                {stat.progress && (
+                {typeof stat.progress === 'number' && (
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>{t('home.stats.metrics.progress')}</span>

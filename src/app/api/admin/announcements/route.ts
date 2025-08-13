@@ -2,6 +2,26 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
+const announcementsRateLimit = new Map<string, { count: number; expires: number }>()
+
+function isAnnouncementsRateLimited(ip: string): boolean {
+  const now = Date.now()
+  let entry = announcementsRateLimit.get(ip)
+  if (!entry || entry.expires < now) {
+    entry = { count: 1, expires: now + 60000 }
+    announcementsRateLimit.set(ip, entry)
+    return false
+  }
+  entry.count++
+  return entry.count > 20
+}
+
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, value] of announcementsRateLimit.entries()) {
+    if (value.expires < now) announcementsRateLimit.delete(key)
+  }
+}, 120000)
 
 async function isUserAdmin(uid: string): Promise<boolean> {
   try {
@@ -21,6 +41,14 @@ async function isUserAdmin(uid: string): Promise<boolean> {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               req.headers.get('cf-connecting-ip') || 
+               'unknown'
+    
+    if (isAnnouncementsRateLimited(ip)) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
     
     const authHeader = req.headers.get('Authorization');
     
@@ -90,9 +118,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: `Announcement sent to user ${target}.` });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in POST /api/admin/announcements:', error);
-    if (error.code?.startsWith('auth/')) {
+    if (error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' && error.code.startsWith('auth/')) {
         return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
     }
     return NextResponse.json(

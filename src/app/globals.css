@@ -92,6 +92,13 @@
     @apply bg-background text-foreground;
   }
   
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -234,7 +241,6 @@ canvas {
   width: 100% !important;
 }
 
-/* Markdown Content Styles */
 .markdown-content {
   @apply text-foreground;
 }
@@ -323,4 +329,80 @@ canvas {
 
 .markdown-content hr {
   @apply border-border my-8;
+}
+
+@keyframes blobMoveA {
+  0% { transform: translate(-10%, -10%) scale(1); }
+  50% { transform: translate(5%, 0%) scale(1.1); }
+  100% { transform: translate(-10%, -10%) scale(1); }
+}
+@keyframes blobMoveB {
+  0% { transform: translate(10%, 10%) scale(1.1); }
+  50% { transform: translate(-5%, 0%) scale(1); }
+  100% { transform: translate(10%, 10%) scale(1.1); }
+}
+
+.blobs-animated-dark-gold {
+  position: relative;
+  isolation: isolate;
+}
+.blobs-animated-dark-gold::before,
+.blobs-animated-dark-gold::after {
+  content: "";
+  position: absolute;
+  inset: -20% -10% -10% -20%;
+  filter: blur(60px);
+  opacity: 0.8;
+  z-index: -1;
+  pointer-events: none;
+}
+.blobs-animated-dark-gold::before {
+  background: radial-gradient(600px 400px at 20% 30%, hsl(48 96% 53% / 0.35), transparent 60%),
+              radial-gradient(500px 300px at 70% 20%, hsl(26 83% 14% / 0.5), transparent 60%),
+              radial-gradient(600px 400px at 80% 80%, hsl(48 96% 53% / 0.25), transparent 60%);
+  animation: blobMoveA 16s ease-in-out infinite;
+}
+.blobs-animated-dark-gold::after {
+  background: radial-gradient(700px 500px at 30% 80%, hsl(224 71% 4% / 0.9), transparent 60%),
+              radial-gradient(600px 400px at 80% 40%, hsl(48 96% 53% / 0.25), transparent 60%),
+              radial-gradient(500px 300px at 10% 60%, hsl(26 83% 14% / 0.35), transparent 60%);
+  mix-blend-mode: screen;
+  animation: blobMoveB 18s ease-in-out infinite;
+}
+
+.fancy-divider-y {
+  position: relative;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, hsl(var(--primary) / 0.8), transparent);
+}
+.fancy-divider-y::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 20%;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  filter: blur(6px);
+  opacity: .6;
+}
+.fancy-divider-y::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 25%;
+  width: 80px;
+  height: 120px;
+  background: radial-gradient(closest-side, hsl(var(--primary) / 0.25), transparent 70%);
+  filter: blur(12px);
+  opacity: .7;
+}
+
+.login-page-gradient {
+  pointer-events: none;
+  background: radial-gradient(800px 500px at 15% 15%, hsl(48 96% 53% / 0.12), transparent 60%),
+              radial-gradient(900px 600px at 85% 85%, hsl(26 83% 14% / 0.18), transparent 60%);
 }

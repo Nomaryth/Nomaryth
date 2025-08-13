@@ -7,7 +7,7 @@ import { ArrowRight, Star, Clock } from "lucide-react";
 import { useTranslation } from "@/context/i18n-context";
 import { useAuth } from '@/context/auth-context';
 import { NewsDetailPopover } from "./news-detail-popover";
-// Tipo público simplificado para a listagem
+
 interface PublicNewsItem {
   id: string;
   title: string;
@@ -100,7 +100,7 @@ export function MinimalNews({ className }: MinimalNewsProps) {
   };
 
   const filteredNews = newsItems
-    .filter(item => item.published !== false) // Mostrar apenas notícias publicadas
+    .filter(item => item.published !== false)
     .filter(item => selectedType === 'all' || item.type === selectedType);
 
   if (!isClient) {
@@ -229,10 +229,7 @@ export function MinimalNews({ className }: MinimalNewsProps) {
         </div>
 
         <div className="text-center mt-8">
-          <Button variant="outline" size="sm" className="text-xs">
-            {t('home.news.view_all')}
-            <ArrowRight className="w-3 h-3 ml-2" />
-          </Button>
+          
         </div>
       </div>
     </section>

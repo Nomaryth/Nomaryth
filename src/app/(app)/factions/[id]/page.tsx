@@ -109,20 +109,30 @@ export default function FactionDetailPage() {
     setActionLoading(true);
     try {
         const idToken = await user.getIdToken();
-        const response = await fetch(`/api/factions/${factionId}`, {
+        if (faction?.recruitmentMode === 'application') {
+          const res = await fetch(`/api/factions/${factionId}/applications`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${idToken}` }
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error);
-        toast({ title: result.title, description: result.description});
-        await fetchFactionDetails(); 
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to apply');
+          toast({ title: t('common.success'), description: t('factions.application_sent_button') });
+        } else {
+          const res = await fetch(`/api/factions/${factionId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${idToken}` }
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to join');
+          toast({ title: t('common.success'), description: data.message || t('factions.join_button') });
+        }
+        await fetchFactionDetails();
     } catch (error) {
         const actionType = faction?.recruitmentMode === 'application' ? t('factions.apply') : t('factions.join');
         toast({ 
             variant: 'destructive', 
-            title: t('factions.errors.action_failed_title'), 
-            description: error instanceof Error ? error.message : t('factions.errors.action_failed_desc') 
+            title: t('factions.errors.action_failed_title', { action: actionType }), 
+            description: error instanceof Error ? error.message : t('factions.errors.action_failed_desc', { action: actionType }) 
         });
     } finally {
         setActionLoading(false);
@@ -135,12 +145,13 @@ export default function FactionDetailPage() {
     try {
         const idToken = await user.getIdToken();
         const response = await fetch(`/api/factions/${factionId}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${idToken}` }
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${idToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'leave' })
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
-        toast({ title: t('factions.leave_success_title'), description: t('factions.leave_success_desc') });
+        toast({ title: t('factions.leave_success_title'), description: t('factions.leave_success_desc', { factionName: faction?.name || '' }) });
         await fetchFactionDetails(); 
     } catch (error) {
         toast({ variant: 'destructive', title: t('factions.errors.leave_failed_title'), description: error instanceof Error ? error.message : t('factions.errors.leave_failed_desc') });
@@ -160,7 +171,7 @@ export default function FactionDetailPage() {
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
-        toast({ title: t('factions.disband_success_title'), description: t('factions.disband_success_desc') });
+         toast({ title: t('factions.disband_success_title'), description: t('factions.disband_success_desc', { factionName: faction?.name || '' }) });
         router.push('/factions');
      } catch(error) {
         toast({ variant: 'destructive', title: t('factions.errors.disband_failed_title'), description: error instanceof Error ? error.message : t('factions.errors.disband_failed_desc') });
@@ -171,10 +182,11 @@ export default function FactionDetailPage() {
   
   const handleMemberUpdate = useCallback(() => {
     fetchFactionDetails();
-    const stillOwner = faction?.ownerUid === user?.uid;
-    if (!stillOwner) {
+      const stillOwner = faction?.ownerUid === user?.uid;
+      if (!stillOwner) {
       setIsManageMembersOpen(false);
     }
+      fetchFactionDetails();
   }, [fetchFactionDetails, faction?.ownerUid, user?.uid]);
 
   if (loading || authLoading) {
@@ -221,11 +233,11 @@ export default function FactionDetailPage() {
                                 <Link key={member.uid} href={`/users/${member.uid}`} className="block">
                                 <div className="flex items-center gap-3 p-2 rounded-md hover:bg-muted">
                                     <Avatar>
-                                        <AvatarImage src={member.photoURL} alt={member.displayName} />
-                                        <AvatarFallback>{member.displayName.charAt(0)}</AvatarFallback>
+                                        <AvatarImage src={member.photoURL || ''} alt={member.displayName || 'User'} />
+                                        <AvatarFallback>{(member.displayName || 'U').charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-semibold text-sm">{member.displayName}</p>
+                                        <p className="font-semibold text-sm">{member.displayName || 'Unknown'}</p>
                                         <div className="text-xs text-muted-foreground flex items-center gap-1">
                                          {member.role === 'owner' && <Crown className="h-3 w-3 text-amber-400" />}
                                          <span>{roleTranslations[member.role] || member.role}</span>
@@ -300,9 +312,9 @@ export default function FactionDetailPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('factions.disband_confirm_title')}</AlertDialogTitle>
+                                    <AlertDialogTitle>{t('factions.disband_confirm_title', { factionName: faction.name })}</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        {t('factions.disband_confirm_desc')}
+                                        {t('factions.disband_confirm_desc', { factionName: faction.name })}
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

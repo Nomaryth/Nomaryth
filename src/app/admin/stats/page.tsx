@@ -129,44 +129,11 @@ export default function AdminStatsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="totalUsers">Usuários Ativos</Label>
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-blue-600" />
-                  <Input
-                    id="totalUsers"
-                    type="number"
-                    value={stats?.totalUsers || 0}
-                    onChange={(e) => handleInputChange('totalUsers', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
+              
 
-              <div className="space-y-2">
-                <Label htmlFor="activeFactions">Facções Ativas</Label>
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-green-600" />
-                  <Input
-                    id="activeFactions"
-                    type="number"
-                    value={stats?.activeFactions || 0}
-                    onChange={(e) => handleInputChange('activeFactions', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
+              
 
-              <div className="space-y-2">
-                <Label htmlFor="totalNews">Notícias Publicadas</Label>
-                <div className="flex items-center gap-2">
-                  <Map className="w-4 h-4 text-purple-600" />
-                  <Input
-                    id="totalNews"
-                    type="number"
-                    value={stats?.totalNews || 0}
-                    onChange={(e) => handleInputChange('totalNews', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
+              
 
               <div className="space-y-2">
                 <Label htmlFor="worldProgress">Progresso Mundial (%)</Label>

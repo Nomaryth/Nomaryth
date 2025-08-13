@@ -153,30 +153,59 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
         
         const factionData = factionDoc.data();
-        if (factionData?.ownerUid !== uid) {
-            return NextResponse.json({ error: 'Você não tem permissão para editar esta facção.' }, { status: 403 });
-        }
 
         const body = await req.json();
-        const { name, description, tag, recruitmentMode, maxMembers } = body;
-
-        const updateData: any = {};
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
-        if (tag !== undefined) updateData.tag = tag;
-        if (recruitmentMode !== undefined) updateData.recruitmentMode = recruitmentMode;
-        if (maxMembers !== undefined) updateData.maxMembers = maxMembers;
-
-        if (Object.keys(updateData).length === 0) {
-            return NextResponse.json({ error: 'Nenhum campo válido para atualizar.' }, { status: 400 });
+        const action = String(body.action || '')
+        if (action !== 'leave' && factionData?.ownerUid !== uid) {
+            return NextResponse.json({ error: 'Você não tem permissão para editar esta facção.' }, { status: 403 });
         }
-
-        updateData.updatedAt = FieldValue.serverTimestamp();
-
-        await factionRef.update(updateData);
-
-        return NextResponse.json({ message: 'Facção atualizada com sucesso.' });
-
+        if (action === 'kick') {
+            const targetUid = String(body.targetUid || '')
+            if (!targetUid || targetUid === uid) {
+                return NextResponse.json({ error: 'Alvo inválido' }, { status: 400 })
+            }
+            const memberRef = factionRef.collection('members').doc(targetUid)
+            const userRef = adminDb.collection('users').doc(targetUid)
+            await adminDb.runTransaction(async (trx) => {
+                trx.delete(memberRef)
+                trx.update(userRef, { factionId: null, factionTag: null })
+                trx.update(factionRef, { memberCount: FieldValue.increment(-1) })
+            })
+            return NextResponse.json({ message: 'Membro removido.' })
+        }
+        if (action === 'transfer_ownership') {
+            const targetUid = String(body.targetUid || '')
+            if (!targetUid || targetUid === uid) {
+                return NextResponse.json({ error: 'Alvo inválido' }, { status: 400 })
+            }
+            const currentOwnerMemberRef = factionRef.collection('members').doc(uid)
+            const newOwnerMemberRef = factionRef.collection('members').doc(targetUid)
+            await adminDb.runTransaction(async (trx) => {
+                trx.update(factionRef, { ownerUid: targetUid, updatedAt: FieldValue.serverTimestamp() })
+                trx.set(newOwnerMemberRef, { role: 'owner' }, { merge: true })
+                trx.set(currentOwnerMemberRef, { role: 'member' }, { merge: true })
+            })
+            return NextResponse.json({ message: 'Liderança transferida.' })
+        }
+        if (action === 'set_recruitment_mode') {
+            const value = Boolean(body.value)
+            await factionRef.update({ recruitmentMode: value ? 'application' : 'open', updatedAt: FieldValue.serverTimestamp() })
+            return NextResponse.json({ message: 'Modo de recrutamento atualizado.' })
+        }
+        if (action === 'leave') {
+            if (factionData?.ownerUid === uid) {
+                return NextResponse.json({ error: 'O líder não pode usar sair. Use disband ou transfira a liderança.' }, { status: 400 })
+            }
+            const memberRef = factionRef.collection('members').doc(uid)
+            const userRef = adminDb.collection('users').doc(uid)
+            await adminDb.runTransaction(async (trx) => {
+                trx.delete(memberRef)
+                trx.update(userRef, { factionId: null, factionTag: null })
+                trx.update(factionRef, { memberCount: FieldValue.increment(-1) })
+            })
+            return NextResponse.json({ message: 'Você saiu da facção.' })
+        }
+        return NextResponse.json({ error: 'Nenhuma ação válida.' }, { status: 400 })
     } catch (error) {
         console.error("Error updating faction:", error);
         return NextResponse.json({ error: "Failed to update faction" }, { status: 500 });
@@ -223,6 +252,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         applicationsSnap.docs.forEach(doc => {
             batch.delete(doc.ref);
         });
+
+        const nameRef = adminDb.collection('faction_metadata').doc('names');
+        const tagRef  = adminDb.collection('faction_metadata').doc('tags');
+        const updates: any = {};
+        updates[`${factionData.name.toLowerCase()}`] = FieldValue.delete();
+        batch.set(nameRef, updates, { merge: true });
+        const tagUpdates: any = {};
+        tagUpdates[`${factionData.tag}`] = FieldValue.delete();
+        batch.set(tagRef, tagUpdates, { merge: true });
 
         batch.delete(factionRef);
 

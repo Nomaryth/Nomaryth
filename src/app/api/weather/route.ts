@@ -1,5 +1,26 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+const weatherRateLimit = new Map<string, { count: number; expires: number }>()
+
+function isWeatherRateLimited(ip: string): boolean {
+  const now = Date.now()
+  let entry = weatherRateLimit.get(ip)
+  if (!entry || entry.expires < now) {
+    entry = { count: 1, expires: now + 60000 }
+    weatherRateLimit.set(ip, entry)
+    return false
+  }
+  entry.count++
+  return entry.count > 60
+}
+
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, value] of weatherRateLimit.entries()) {
+    if (value.expires < now) weatherRateLimit.delete(key)
+  }
+}, 120000)
+
 interface WeatherData {
   current: {
     temp_c: number;
@@ -9,17 +30,26 @@ interface WeatherData {
 }
 
 export async function GET(req: NextRequest) {
-  const withTimeout = async (url: string, init?: RequestInit, ms = 5000) => {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), ms);
-    try {
-      return await fetch(url, { ...(init || {}), signal: controller.signal });
-    } finally {
-      clearTimeout(id);
-    }
-  };
-
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               req.headers.get('cf-connecting-ip') || 
+               'unknown'
+    
+    if (isWeatherRateLimited(ip)) {
+      return NextResponse.json({ success: false, error: 'rate_limited' }, { status: 429 })
+    }
+
+    const withTimeout = async (url: string, init?: RequestInit, ms = 5000) => {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), ms);
+      try {
+        return await fetch(url, { ...(init || {}), signal: controller.signal });
+      } finally {
+        clearTimeout(id);
+      }
+    };
+
     const { searchParams } = new URL(req.url);
     const q = searchParams.get('location');
 
@@ -79,7 +109,7 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json(payload);
-  } catch (error) {
+  } catch {
     try {
       const { searchParams } = new URL(req.url);
       const q = searchParams.get('location') || '';
@@ -102,8 +132,9 @@ export async function GET(req: NextRequest) {
         };
         return NextResponse.json(payload);
       }
-    } catch {}
-
-    return NextResponse.json({ success: false, error: 'weather_unavailable' });
+    } catch {
+      return NextResponse.json({ success: false, error: 'weather_service_unavailable' }, { status: 503 });
+    }
+    return NextResponse.json({ success: false, error: 'weather_failed' }, { status: 500 });
   }
 } 

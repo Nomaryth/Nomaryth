@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AvatarSelector } from "@/components/avatar-selector";
 import { Pen, LayoutDashboard, Swords } from "lucide-react";
+import { Github, Chrome } from "lucide-react";
+import { GoogleAuthProvider, GithubAuthProvider, linkWithPopup } from "firebase/auth";
 import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -46,6 +48,7 @@ function ProfilePageContent() {
     badges: [],
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [linking, setLinking] = useState<'google' | 'github' | null>(null);
   const profileUnsubscribe = useRef<Unsubscribe | null>(null);
 
   useEffect(() => {
@@ -72,7 +75,9 @@ function ProfilePageContent() {
                 badges: data.badges || [],
                 createdAt: data.createdAt,
                 factionId: data.factionId,
-                factionTag: data.factionTag,
+                 factionTag: data.factionTag,
+                 primaryProvider: (data as any).primaryProvider,
+                 linkedProviders: (data as any).linkedProviders,
              };
          } else {
              currentProfile = {
@@ -85,7 +90,20 @@ function ProfilePageContent() {
                 language: 'en',
                 email: user.email || '',
                 role: 'user',
-                badges: [],
+                 badges: [],
+                 primaryProvider: (user.providerData.find(p => p.providerId === 'google.com') ? 'google' : (user.providerData.find(p => p.providerId === 'github.com') ? 'github' : undefined)) as any,
+                 linkedProviders: {
+                   google: user.providerData.find(p => p.providerId === 'google.com') ? {
+                     email: user.email || undefined,
+                     displayName: user.displayName || undefined,
+                     photoURL: user.photoURL || undefined,
+                   } : undefined,
+                   github: user.providerData.find(p => p.providerId === 'github.com') ? {
+                     email: user.email || undefined,
+                     displayName: user.displayName || undefined,
+                     photoURL: user.photoURL || undefined,
+                   } : undefined,
+                 }
              };
          }
 
@@ -116,7 +134,7 @@ function ProfilePageContent() {
             }
          }
          
-         setProfile(currentProfile);
+          setProfile(currentProfile);
       });
 
       profileUnsubscribe.current = unsub;
@@ -208,6 +226,58 @@ function ProfilePageContent() {
     }
   };
 
+  const handleLinkProvider = async (provider: 'google' | 'github') => {
+    if (!auth?.currentUser || !db) return;
+    setLinking(provider);
+    try {
+      const prov = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
+      if (provider === 'google') { prov.addScope('email'); prov.addScope('profile'); }
+      if (provider === 'github') { (prov as GithubAuthProvider).addScope('read:user'); (prov as GithubAuthProvider).addScope('user:email'); }
+      const result = await linkWithPopup(auth.currentUser, prov);
+      const credUser = result.user;
+      const linkedData = {
+        email: credUser.email || undefined,
+        displayName: credUser.displayName || undefined,
+        photoURL: credUser.photoURL || undefined,
+        linkedAt: serverTimestamp(),
+      };
+      const userRef = doc(db, 'users', credUser.uid);
+      await setDoc(
+        userRef,
+        {
+          linkedProviders: {
+            [provider]: linkedData,
+          },
+        },
+        { merge: true }
+      );
+      setProfile(prev => prev ? {
+        ...prev,
+        linkedProviders: {
+          ...(prev.linkedProviders || {}),
+          [provider]: {
+            email: linkedData.email,
+            displayName: linkedData.displayName,
+            photoURL: linkedData.photoURL,
+          }
+        }
+      } : prev);
+      toast({ title: t('profile.connected.link_success_title'), description: t('profile.connected.link_success_desc', { provider }) });
+    } catch (err) {
+      const e = err as any;
+      let msg = t('profile.connected.link_error_desc', { provider });
+      if (e?.code === 'auth/credential-already-in-use' || e?.code === 'auth/account-exists-with-different-credential') {
+        msg = t('firebase_errors.auth/account-exists-with-different-credential') as string;
+      }
+      if (e?.code === 'auth/popup-closed-by-user') {
+        msg = 'Popup closed.';
+      }
+      toast({ variant: 'destructive', title: t('profile.connected.link_error_title'), description: msg });
+    } finally {
+      setLinking(null);
+    }
+  };
+
   const unlockedBadgeIds = useMemo(() => new Set(profile.badges || []), [profile.badges]);
 
   if (loading || !user) {
@@ -268,10 +338,26 @@ function ProfilePageContent() {
           <Card>
             <CardHeader className="items-center text-center p-6">
               <div className="relative group">
-                <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src={profile.photoURL} alt={profile.displayName || 'User'} />
-                  <AvatarFallback>{profile.displayName?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-24 w-24 mb-4">
+                    <AvatarImage src={profile.photoURL} alt={profile.displayName || 'User'} />
+                    <AvatarFallback>{profile.displayName?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex -space-x-2">
+                    {profile.linkedProviders?.google?.photoURL && (
+                      <Avatar className="h-7 w-7 ring-2 ring-background">
+                        <AvatarImage src={profile.linkedProviders.google.photoURL} alt="Google" />
+                        <AvatarFallback>G</AvatarFallback>
+                      </Avatar>
+                    )}
+                    {profile.linkedProviders?.github?.photoURL && (
+                      <Avatar className="h-7 w-7 ring-2 ring-background">
+                        <AvatarImage src={profile.linkedProviders.github.photoURL} alt="GitHub" />
+                        <AvatarFallback>GH</AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                </div>
                 <AvatarSelector onAvatarSelect={handleAvatarSelect}>
                    <div className="absolute inset-0 h-24 w-24 mb-4 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                       <Pen className="h-8 w-8 text-white" />
@@ -279,7 +365,14 @@ function ProfilePageContent() {
                 </AvatarSelector>
               </div>
               <div className="flex items-center gap-2">
-                 <CardTitle className="text-xl">{profile.displayName || t('profile.username_value')}</CardTitle>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    {profile.displayName || t('profile.username_value')}
+                    {profile.primaryProvider && (
+                      <Badge variant="secondary" className="text-xs">
+                        {profile.primaryProvider === 'google' ? 'Google' : 'GitHub'}
+                      </Badge>
+                    )}
+                  </CardTitle>
                   {profile.factionId && profile.factionTag && (
                     <Link href={`/factions/${profile.factionId}`}>
                        <Badge variant="secondary" className="text-lg font-bold cursor-pointer hover:bg-primary/20">{profile.factionTag}</Badge>
@@ -429,6 +522,53 @@ function ProfilePageContent() {
                       </SelectContent>
                   </Select>
                 </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('profile.connected.title')}</CardTitle>
+              <CardDescription>{t('profile.connected.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid sm:grid-cols-2 gap-4">
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="flex items-center gap-3">
+                  <Chrome className="h-5 w-5 text-primary" />
+                  <div>
+                    <div className="text-sm font-medium">{t('profile.connected.google')}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {profile.linkedProviders?.google?.email ? t('profile.connected.connected_as', { email: profile.linkedProviders.google.email }) : t('profile.connected.not_connected')}
+                    </div>
+                  </div>
+                </div>
+                {profile.linkedProviders?.google?.email ? (
+                  <Badge variant="secondary" className="text-xs">{t('profile.connected.connected')}</Badge>
+                ) : (
+                  <Button size="sm" onClick={() => handleLinkProvider('google')} disabled={!!linking}>
+                    {linking === 'google' ? t('profile.connected.connecting_button') : t('profile.connected.connect_button')}
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="flex items-center gap-3">
+                  <Github className="h-5 w-5" />
+                  <div>
+                    <div className="text-sm font-medium">{t('profile.connected.github')}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {profile.linkedProviders?.github?.email ? t('profile.connected.connected_as', { email: profile.linkedProviders.github.email }) : t('profile.connected.not_connected')}
+                    </div>
+                  </div>
+                </div>
+                {profile.linkedProviders?.github?.email ? (
+                  <Badge variant="secondary" className="text-xs">{t('profile.connected.connected')}</Badge>
+                ) : (
+                  <Button size="sm" onClick={() => handleLinkProvider('github')} disabled={!!linking}>
+                    {linking === 'github' ? t('profile.connected.connecting_button') : t('profile.connected.connect_button')}
+                  </Button>
+                )}
+              </div>
+            <p className="text-xs text-muted-foreground mt-2">{t('profile.connected.requires_primary_note')}</p>
             </CardContent>
           </Card>
 

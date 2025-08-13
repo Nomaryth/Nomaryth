@@ -6,7 +6,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id: factionId } = await params;
+    const { id: factionId } = await params;
 
   try {
     const authHeader = req.headers.get('Authorization');
@@ -51,7 +51,7 @@ export async function POST(
       const applicationRef = factionRef.collection('applications').doc(targetUid);
       const applicationSnap = await applicationRef.get();
 
-      if (action === 'approve_application') {
+        if (action === 'approve_application') {
         if (!applicationSnap.exists) {
           return NextResponse.json({ error: 'Aplicação não encontrada.' }, { status: 404 });
         }
@@ -84,7 +84,7 @@ export async function POST(
         });
 
         return NextResponse.json({ message: 'Membro aprovado e adicionado à facção.' });
-      } else if (action === 'reject_application') {
+        } else if (action === 'reject_application') {
         if (!applicationSnap.exists) {
           return NextResponse.json({ message: 'Aplicação não encontrada ou já processada.' });
         }
@@ -101,19 +101,58 @@ export async function POST(
           timestamp: FieldValue.serverTimestamp(),
         });
 
+        const indexRef = adminDb.collection('applications_index').doc(targetUid)
+        await indexRef.delete().catch(() => {})
+
         return NextResponse.json({ message: 'Aplicação rejeitada.' });
       } else {
         return NextResponse.json({ error: 'Ação desconhecida.' }, { status: 400 });
       }
     }
 
-    await factionRef
-      .collection('applications')
-      .doc(userId)
-      .set({
-        userId,
-        appliedAt: FieldValue.serverTimestamp(),
-      });
+    const applicationRef = factionRef.collection('applications').doc(userId)
+    const indexRef = adminDb.collection('applications_index').doc(userId)
+
+    const [existingApp, existingIndex, userDoc] = await Promise.all([
+      applicationRef.get(),
+      indexRef.get(),
+      adminDb.collection('users').doc(userId).get()
+    ])
+
+    if (existingIndex.exists) {
+      const current = existingIndex.data()
+      if (current?.factionId && current.factionId !== factionId) {
+        return NextResponse.json({ error: 'pending_application_exists' }, { status: 409 })
+      }
+      await adminDb.collection('users').doc(userId).collection('notifications').doc().set({
+        title: `Pedido já enviado`,
+        message: `Sua solicitação para ${factionData.name} já está pendente. Aguarde a decisão do líder.`,
+        type: 'system',
+        isRead: false,
+        timestamp: FieldValue.serverTimestamp(),
+      })
+      return NextResponse.json({ success: true, message: 'already_applied' })
+    }
+
+    const cooldownMs = 60 * 60 * 1000
+    const lastRef = factionRef.collection('applications_meta').doc(userId)
+    const lastSnap = await lastRef.get()
+    const now = Date.now()
+    if (lastSnap.exists) {
+      const last = lastSnap.data()?.lastAppliedAt || 0
+      if (typeof last === 'number' && now - last < cooldownMs) {
+        return NextResponse.json({ error: 'cooldown_active' }, { status: 429 })
+      }
+    }
+
+    const displayName = userDoc.data()?.displayName || 'Unknown'
+    const photoURL = userDoc.data()?.photoURL || ''
+    await applicationRef.set({ uid: userId, displayName, photoURL, appliedAt: FieldValue.serverTimestamp() })
+    await indexRef.set({ factionId, appliedAt: now })
+    await lastRef.set({ lastAppliedAt: now })
+    const ownerUid = factionData.ownerUid
+    const notifRef = adminDb.collection('users').doc(ownerUid).collection('notifications').doc()
+    await notifRef.set({ title: 'New join request', message: `${displayName} requested to join ${factionData.name}`, type: 'system', isRead: false, timestamp: FieldValue.serverTimestamp() })
 
     return NextResponse.json({ success: true });
 

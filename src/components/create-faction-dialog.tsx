@@ -83,7 +83,10 @@ export function CreateFactionDialog({ isOpen, onOpenChange, onFactionCreated }: 
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.error || t('factions.errors.generic_create_failed'));
+            if (response.status === 409) {
+                throw new Error(result.error);
+            }
+            throw new Error(t('factions.errors.generic_create_failed'));
         }
 
         toast({

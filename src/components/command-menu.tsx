@@ -102,10 +102,11 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA';
 
-      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+      const key = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+      if (key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen(!open);
-      } else if (e.key.toLowerCase() === 'k' && !isInputFocused) {
+      } else if (key === 'k' && !isInputFocused) {
         e.preventDefault();
         setOpen(!open);
       }
@@ -128,7 +129,7 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
     {
       name: 'Projects',
       href: '/projects',
-      icon: <Swords className="mr-2 h-4 w-4" />,
+      icon: <File className="mr-2 h-4 w-4" />,
     },
     { name: 'Map', href: '/map', icon: <Map className="mr-2 h-4 w-4" /> },
   ];

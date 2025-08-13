@@ -1,106 +1,87 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase-admin';
 
-const DOCS_COLLECTION = 'docs';
-const DOCS_DOCUMENT = 'content';
+const docsRateLimit = new Map<string, { count: number; expires: number }>()
 
-async function isUserAdmin(uid: string): Promise<boolean> {
-  try {
-    if (!adminDb) {
-      return false;
-    }
-
-    const adminDoc = await adminDb.collection('admins').doc(uid).get();
-    const data = adminDoc.data();
-    return adminDoc.exists && Boolean(data);
-  } catch (error) {
-    console.error("Error checking admin status:", error);
-    return false;
+function isDocsRateLimited(ip: string): boolean {
+  const now = Date.now()
+  let entry = docsRateLimit.get(ip)
+  if (!entry || entry.expires < now) {
+    entry = { count: 1, expires: now + 60000 }
+    docsRateLimit.set(ip, entry)
+    return false
   }
+  entry.count++
+  return entry.count > 30
 }
 
-async function getDocsData() {
-  try {
-    
-    if (!adminDb) {
-      return [];
-    }
-
-    const docRef = adminDb.collection(DOCS_COLLECTION).doc(DOCS_DOCUMENT);
-    const docSnap = await docRef.get();
-
-    if (docSnap.exists) {
-      return docSnap.data()?.content || [];
-    } else {
-      
-      const defaultData = [
-        {
-          categorySlug: "introduction",
-          categoryTitle: "Introduction",
-          documents: [
-            {
-              slug: "welcome-to-nomaryth",
-              title: "Welcome to Nomaryth",
-              content: "# A World of Magic and Conflict\n\nWelcome to the official documentation for the world of Nomaryth. Here you will find information about its history, its inhabitants, and the forces that shape this universe."
-            }
-          ]
-        }
-      ];
-      await docRef.set({ content: defaultData });
-      return defaultData;
-    }
-  } catch (error) {
-    return [];
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, value] of docsRateLimit.entries()) {
+    if (value.expires < now) docsRateLimit.delete(key)
   }
-}
-
-
-async function saveDocsData(data: any) {
-  const docRef = adminDb.collection(DOCS_COLLECTION).doc(DOCS_DOCUMENT);
-  await docRef.set({ content: data });
-}
+}, 120000)
 
 export async function GET(req: NextRequest) {
   try {
-    const data = await getDocsData();
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to read documentation data' }, { status: 500 });
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               req.headers.get('cf-connecting-ip') || 
+               'unknown'
+    
+    if (isDocsRateLimited(ip)) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
+
+    const docRef = adminDb.collection('docs').doc('content');
+    const docSnap = await docRef.get();
+    
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      const content = data?.content;
+      return NextResponse.json(Array.isArray(content) ? content : []);
+    }
+
+    return NextResponse.json([]);
+  } catch {
+    return NextResponse.json({ error: 'Failed to fetch docs' }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               req.headers.get('cf-connecting-ip') || 
+               'unknown'
     
+    if (isDocsRateLimited(ip)) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
+
     const authHeader = req.headers.get('Authorization');
-    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
     }
-    
-    const idToken = authHeader.split('Bearer ')[1];
 
-    if(!idToken) {
-       return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
-    }
+    const idToken = authHeader.split('Bearer ')[1];
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const adminDoc = await adminDb.collection('admins').doc(decoded.uid).get();
     
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
-    
-    const isAdmin = await isUserAdmin(decodedToken.uid);
-    if (!isAdmin) {
+    if (!adminDoc.exists) {
       return NextResponse.json({ error: 'Forbidden: User is not an admin' }, { status: 403 });
     }
-    
-    const newData = await req.json();
-    await saveDocsData(newData);
-    
-    return NextResponse.json({ message: 'Documentation updated successfully' });
 
-  } catch (error: any) {
-    console.error('Error in POST /api/docs:', error);
-    if (error.code === 'auth/id-token-expired' || error.code === 'auth/argument-error' || error.code === 'auth/id-token-revoked') {
-      return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
-    }
-    return NextResponse.json({ error: 'An internal server error occurred' }, { status: 500 });
+    const docsData = await req.json();
+    
+    await adminDb.collection('docs').doc('content').set({
+      content: docsData,
+      updatedAt: new Date(),
+      updatedBy: decoded.uid
+    });
+
+    return NextResponse.json({ success: true, message: 'Documentation updated successfully' });
+  } catch {
+    return NextResponse.json({ error: 'Failed to update documentation' }, { status: 500 });
   }
 }

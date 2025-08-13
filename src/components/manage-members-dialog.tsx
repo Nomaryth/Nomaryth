@@ -111,15 +111,15 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
             
             {applications.length > 0 && (
                 <div className="space-y-3">
-                    <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.pending_applications')}</h4>
-                     {applications.map(app => (
+                     <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.pending_applications', { count: applications.length })}</h4>
+                      {applications.map(app => (
                         <div key={app.uid} className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
                             <div className="flex items-center gap-3">
                                 <Avatar>
-                                    <AvatarImage src={app.photoURL} alt={app.displayName} />
-                                    <AvatarFallback>{app.displayName.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={app.photoURL || ''} alt={app.displayName || 'User'} />
+                                    <AvatarFallback>{(app.displayName || 'U').charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <p className="font-semibold">{app.displayName}</p>
+                                <p className="font-semibold">{app.displayName || 'Unknown'}</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Button size="sm" variant="ghost" className="text-green-500 hover:text-green-500 hover:bg-green-500/10" disabled={!!loadingAction} onClick={() => handleApplicationAction('approve_application', app.uid)}>
@@ -137,7 +137,7 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
             )}
             
             <div className="space-y-3">
-                <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.members_title')}</h4>
+                <h4 className="font-semibold text-foreground">{t('factions.manage_dialog.members_title', { count: membersToManage.length })}</h4>
                 {membersToManage.length > 0 ? membersToManage.map(member => (
                     <div key={member.uid} className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
                         <div className="flex items-center gap-3">
@@ -158,11 +158,11 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('factions.manage_dialog.transfer_confirm_title')}</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {t('factions.manage_dialog.transfer_confirm_desc')}
-                                    </AlertDialogDescription>
+                                     <AlertDialogHeader>
+                                     <AlertDialogTitle>{t('factions.manage_dialog.transfer_confirm_title')}</AlertDialogTitle>
+                                     <AlertDialogDescription>
+                                       <span dangerouslySetInnerHTML={{ __html: t('factions.manage_dialog.transfer_confirm_desc', { memberName: member.displayName }) }} />
+                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                     <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
@@ -177,11 +177,11 @@ export function ManageMembersDialog({ isOpen, onOpenChange, faction, onUpdate }:
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('factions.manage_dialog.kick_confirm_title')}</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {t('factions.manage_dialog.kick_confirm_desc')}
-                                    </AlertDialogDescription>
+                                     <AlertDialogHeader>
+                                     <AlertDialogTitle>{t('factions.manage_dialog.kick_confirm_title', { memberName: member.displayName })}</AlertDialogTitle>
+                                     <AlertDialogDescription>
+                                       <span dangerouslySetInnerHTML={{ __html: t('factions.manage_dialog.kick_confirm_desc', { memberName: member.displayName }) }} />
+                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                     <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>

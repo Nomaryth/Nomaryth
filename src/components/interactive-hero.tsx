@@ -1,245 +1,299 @@
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { BookOpen, Map } from "lucide-react";
+import { BookOpen, Map, Play, Users, FileText, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { OptimizedImage } from "@/components/optimized-image";
+import { CloudinaryImage } from "@/components/cloudinary-image";
 import { useTranslation } from "@/context/i18n-context";
+import { Particles } from "@/components/particles";
 
 interface InteractiveHeroProps {
   className?: string;
 }
 
-const generateParticlePositions = () => {
-  const positions = [];
-  for (let i = 0; i < 50; i++) {
-    positions.push({
-      left: `${(i * 7) % 100}%`,
-      top: `${(i * 13) % 100}%`,
-      delay: `${(i * 0.1) % 3}s`,
-      duration: `${2 + (i % 3)}s`
-    });
-  }
-  return positions;
-};
-
-const generateFloatingPositions = () => {
-  const positions = [];
-  for (let i = 0; i < 8; i++) {
-    positions.push({
-      left: `${20 + (i * 10)}%`,
-      top: `${30 + (i * 5)}%`,
-      delay: `${i * 0.5}s`
-    });
-  }
-  return positions;
-};
+interface WorldStats {
+  totalUsers: number;
+  activeFactions: number;
+  totalNews: number;
+  worldProgress: number;
+  monthlyGrowth: number;
+  targetAchieved: number;
+  onlineTime: string;
+}
 
 export function InteractiveHero({ className }: InteractiveHeroProps) {
   const { t } = useTranslation();
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
-  const [isClient, setIsClient] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
-
-  const particlePositions = useMemo(() => generateParticlePositions(), []);
-  const floatingPositions = useMemo(() => generateFloatingPositions(), []);
+  const [stats, setStats] = useState<WorldStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        setMousePosition({ x, y });
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/public/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    fetchStats();
+  }, []);
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isClient]);
-
-  useEffect(() => {
-    if (!isClient) return;
-
-    const timer = setTimeout(() => {
-      setIsTyping(true);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [isClient]);
-
-  const parallaxX = mousePosition.x * 20;
-  const parallaxY = mousePosition.y * 20;
-  const scrollParallax = scrollY * 0.5;
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
 
   return (
-    <div 
-      ref={heroRef}
-      className={`relative h-[calc(100vh-4rem)] w-full flex items-center justify-center overflow-hidden ${className}`}
-    >
+    <div className={`relative min-h-screen w-full bg-gradient-to-br from-background via-background to-muted/20 ${className}`}>
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
+      <div className="absolute inset-0 pointer-events-none opacity-70">
+        <Particles quantity={60} color="#f5d25f" />
+      </div>
+      <div className="absolute inset-0 pointer-events-none [mask-image:radial-gradient(ellipse_at_center,white,transparent_70%)] bg-[radial-gradient(1000px_600px_at_85%_25%,hsl(var(--accent)/0.20),transparent),radial-gradient(800px_500px_at_15%_75%,hsl(var(--primary)/0.12),transparent)]" />
+      
+      <div className="relative z-10 container mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+          
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="space-y-4">
       <motion.div 
-        className="absolute inset-0 z-10"
-        style={{
-          transform: isClient ? `translate(${parallaxX}px, ${parallaxY - scrollParallax}px)` : 'none'
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.1 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        <OptimizedImage
-          src="https://github.com/Nomaryth/nomaryth/blob/main/assets/NomaBanner1.png?raw=true"
-          alt="A mystical landscape from Nomaryth"
-          fill
-          className="opacity-10 object-cover"
-          data-ai-hint="fantasy landscape"
-          priority
-        />
+                className="flex items-center space-x-3 text-sm text-muted-foreground"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="flex -space-x-2">
+                  <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-primary/30" />
+                  <div className="w-6 h-6 rounded-full bg-accent/20 border-2 border-accent/30" />
+                  <div className="w-6 h-6 rounded-full bg-chart-3/20 border-2 border-chart-3/30" />
+                </div>
+                <span className="font-medium">
+                  {!isLoading && stats ? `${formatNumber(stats.totalUsers)}+ Explorers` : 'Growing Community'}
+                </span>
       </motion.div>
 
-      {isClient && (
-        <div className="absolute inset-0 z-15 pointer-events-none">
-          {particlePositions.map((pos, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-accent/30 rounded-full animate-pulse"
-              style={{
-                left: pos.left,
-                top: pos.top,
-                animationDelay: pos.delay,
-                animationDuration: pos.duration,
-                transform: `translate(${parallaxX * 0.1}px, ${parallaxY * 0.1}px)`,
-                transition: 'transform 0.1s ease-out'
-              }}
-            />
-          ))}
-        </div>
-      )}
+              <motion.h1 
+                className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <span className="text-foreground">Explore the</span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
+                  History
+                </span>
+              </motion.h1>
 
-      {isClient && (
-        <div 
-          className="absolute inset-0 z-15 pointer-events-none"
-          style={{
-            transform: `translate(${parallaxX * 0.5}px, ${parallaxY * 0.5}px)`,
-            transition: 'transform 0.2s ease-out'
-          }}
-        >
-          {floatingPositions.map((pos, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-accent/20 rounded-full"
-              style={{
-                left: pos.left,
-                top: pos.top,
-                animationDelay: pos.delay,
-                animation: 'float 6s ease-in-out infinite'
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      <div className="relative z-20 text-center p-4">
-         <h1 
-           className={`text-6xl md:text-8xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-accent mb-4 drop-shadow-[0_0_20px_hsl(var(--accent)/0.8)] ${
-             isTyping ? 'animate-typing' : 'opacity-0'
-           }`}
-           style={{
-             animationDuration: isTyping ? '2s, 2s' : '0s',
-             animationTimingFunction: isTyping ? 'steps(8), ease-in-out' : 'ease',
-             animationFillMode: isTyping ? 'forwards, none' : 'none',
-             animationName: isTyping ? 'typing, glow' : 'none',
-             animationIterationCount: isTyping ? '1, infinite' : '1',
-             animationDirection: isTyping ? 'normal, alternate' : 'normal'
-           }}
-         >
-          NOMARYTH
-        </h1>
-
-         <p 
-           className={`text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 ${
-             isTyping ? 'animate-fadeIn' : 'opacity-0'
-           }`}
-           style={{ 
-             animationDelay: '1s',
-             animationDuration: isTyping ? '1s' : '0s',
-             animationTimingFunction: 'ease-out',
-             animationFillMode: 'forwards',
-             animationName: isTyping ? 'fadeIn' : 'none'
-           }}
+              <motion.p 
+                className="text-xl text-muted-foreground max-w-2xl leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
          >
           {t('home.tagline')}
-        </p>
+              </motion.p>
+            </div>
 
-          <div 
-           className={`${isTyping ? 'animate-fadeIn' : 'opacity-0'}`}
-           style={{ 
-             animationDelay: '1.5s',
-             animationDuration: isTyping ? '1s' : '0s',
-             animationTimingFunction: 'ease-out',
-             animationFillMode: 'forwards',
-             animationName: isTyping ? 'fadeIn' : 'none'
-           }}
-         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 justify-center items-center">
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
             <Button 
             asChild 
             size="lg" 
-              className="justify-center bg-accent text-accent-foreground hover:bg-accent/90 transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-accent/25 px-6 max-w-[240px] w-auto sm:justify-self-end sm:mr-1"
+                className="rounded-xl px-8 py-6 text-lg font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <Link href="/docs">
-              <BookOpen className="mr-2 h-5 w-5" />
-              {t('home.explore_lore')}
+                  <BookOpen className="mr-3 h-6 w-6" />
+                  Explore the History
             </Link>
           </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              
             <Button 
             asChild 
             size="lg" 
-            variant="secondary"
-                className="justify-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg px-6 max-w-[240px] w-auto sm:justify-self-start sm:ml-1"
+                variant="outline"
+                className="rounded-xl px-8 py-6 text-lg font-semibold border-amber-400/60 hover:bg-amber-50/60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <Link href="/projects">
-              <Map className="mr-2 h-5 w-5" />
-              {t('home.discover_projects')}
+                  <Map className="mr-3 h-6 w-6" />
+                  Discover our Projects
             </Link>
           </Button>
             </motion.div>
-          <div className="sm:col-span-2 flex justify-center pt-2">
+
+            <motion.div 
+              className="flex justify-center sm:justify-start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
             <Button 
               asChild 
               size="lg" 
-              variant="outline"
-              className="transform hover:scale-105 transition-all duration-300 hover:shadow-lg"
-            >
-              <Link href="https://launcher.gghorizon.com">Open Launcher</Link>
-            </Button>
-          </div>
-          </div>
-        </div>
-      </div>
+  className="
+    relative overflow-hidden px-8 py-6 text-lg font-semibold
+    rounded-xl
+    bg-primary text-primary-foreground
+    shadow-lg shadow-primary/25 hover:bg-primary/90
+    transition-all duration-300 group
+    focus-visible:outline-none
+    focus-visible:ring-4 focus-visible:ring-amber-300/70
+    focus-visible:ring-offset-2 focus-visible:ring-offset-background
+  "
+>
+  <Link
+    href="https://launcher.gghorizon.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="relative flex items-center select-none"
+  >
+    <span aria-hidden="true" className="absolute -inset-y-2 -left-2 w-1/3 bg-white/40 blur-lg -skew-x-12 transform transition-transform duration-700 translate-x-[-120%] group-hover:translate-x-[280%] pointer-events-none" />
+    <span aria-hidden="true" className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.22),transparent_60%)] pointer-events-none" />
+     <Play className="relative mr-3 h-6 w-6 drop-shadow-md" />
+     Open Launcher
+  </Link>
+</Button>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10" />
+            </motion.div>
+          </motion.div>
+
+          <motion.div 
+            className="relative"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <div
+              className="relative w-full h-[500px] lg:h-[600px]"
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <CloudinaryImage
+                src="https://res.cloudinary.com/dlfc3hhsr/image/upload/e_background_removal/f_png/v1754822458/20250810_0405_image_fzxuik.png"
+                alt="Nomaryth character"
+                fill
+                className="object-contain drop-shadow-2xl select-none pointer-events-none"
+                priority
+                quality={90}
+                responsive={true}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+
+
+            <motion.div 
+              className="absolute top-8 -right-4 lg:right-8"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 1 }}
+            >
+              <div className="bg-primary text-primary-foreground rounded-2xl p-4 shadow-xl">
+                <div className="text-2xl font-bold">
+                  {!isLoading && stats ? `${stats.worldProgress}%` : '98%'}
+                </div>
+                <div className="text-sm opacity-90">World Progress</div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="absolute bottom-20 -left-4 lg:left-8"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+            >
+              <div className="bg-card border-2 border-border rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="flex -space-x-2">
+                    <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30" />
+                    <div className="w-6 h-6 rounded-full bg-accent/20 border border-accent/30" />
+                    <div className="w-6 h-6 rounded-full bg-chart-3/20 border border-chart-3/30" />
+                    <div className="w-6 h-6 rounded-full bg-chart-4/20 border border-chart-4/30" />
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold">
+                      {!isLoading && stats ? formatNumber(stats.activeFactions) : '8.5K+'}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Active Factions</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="absolute bottom-8 right-8 lg:right-16"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 1.4 }}
+            >
+              <div className="bg-card border-2 border-border rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">Documentation</div>
+                    <div className="text-lg font-semibold">Available</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        <motion.div 
+          className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
+          <div className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-lg transition-shadow">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Users className="h-6 w-6 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Community</h3>
+            <p className="text-muted-foreground">
+              {!isLoading && stats ? `${formatNumber(stats.totalUsers)} active explorers` : 'Growing community'}
+            </p>
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-lg transition-shadow">
+            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Map className="h-6 w-6 text-accent" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Quantity of Clans</h3>
+            <p className="text-muted-foreground">
+              {!isLoading && stats ? `${formatNumber(stats.activeFactions)} active factions` : 'Multiple projects'}
+            </p>
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-lg transition-shadow">
+            <div className="w-12 h-12 bg-chart-2/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <TrendingUp className="h-6 w-6 text-chart-2" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Conclusion Progress</h3>
+            <p className="text-muted-foreground">
+              {!isLoading && stats ? `${stats.worldProgress}% world completion` : 'Ongoing development'}
+            </p>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { getNewsFromGitHub } from '@/lib/github-api';
 
 export async function GET() {
   try {
-    // Evita necessidade de índice composto: filtra published e ordena em memória
     const snapshot = await adminDb
       .collection('news')
       .where('published', '==', true)
@@ -41,7 +40,6 @@ export async function GET() {
       githubIssueId: (n as any).githubIssueId ?? null,
     }));
 
-    // Deduplicação preferindo Firebase quando ele já aponta para um GitHub issue
     const firebaseGhIds = new Set<string>(
       firebaseItems
         .map(it => (it.githubIssueId != null ? String(it.githubIssueId) : null))
@@ -54,7 +52,6 @@ export async function GET() {
       return true;
     });
 
-    // Deduplicação adicional por título normalizado (para casos sem link explícito)
     const normalize = (s: string) => s.trim().toLowerCase();
     const seenTitles = new Set<string>();
     const merged = [...firebaseItems, ...prunedGithub]

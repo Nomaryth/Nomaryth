@@ -8,7 +8,8 @@ export const imageConfig = {
     's3.nyeki.dev',
     'avatar.vercel.sh',
     'images.unsplash.com',
-    'via.placeholder.com'
+    'res.cloudinary.com',
+
   ],
   formats: ['image/webp', 'image/avif'],
   deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -27,4 +28,4 @@ export function isValidImageUrl(url: string): boolean {
   }
 }
 
-export const fallbackImageUrl = 'https://via.placeholder.com/800x400/1f2937/ffffff?text=Nomaryth'; 
+export const fallbackImageUrl = 'https://raw.githubusercontent.com/Nomaryth/Nomaryth/refs/heads/main/assets/NomaChara1.png'; 
