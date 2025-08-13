@@ -1,0 +1,33 @@
+name: Close Unauthorized Issues
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  close_issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Close if unauthorized
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const allowedUsers = ["linwaru"];
+            const author = context.payload.issue.user.login;
+
+            if (!allowedUsers.includes(author)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                body: "⛔ Esta issue foi fechada automaticamente pois você não tem permissão para abri-la."
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                state: "closed"
+              });
+            }
