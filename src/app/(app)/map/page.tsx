@@ -84,7 +84,7 @@ export default function MapPage() {
                    A Passagem foi Selada
                 </CardTitle>
                 <CardDescription>
-                    O caminho à frente está consumido pelo miasma. Volte mais tarde, se ainda houver um 'mais tarde'.
+                    O caminho à frente está consumido pelo miasma. Volte mais tarde, se ainda houver um &apos;mais tarde&apos;.
                 </CardDescription>
             </CardHeader>
         </Card>

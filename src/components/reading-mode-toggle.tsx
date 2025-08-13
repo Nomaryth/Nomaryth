@@ -30,4 +30,16 @@ export function ReadingModeToggle({ onModeChange, className }: ReadingModeToggle
     localStorage.setItem('nomaryth-reading-mode', JSON.stringify(newMode));
     onModeChange(newMode);
   };
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={toggleReadingMode}
+      className={cn("flex items-center gap-2", className)}
+    >
+      {isReadingMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      {isReadingMode ? 'Normal Mode' : 'Reading Mode'}
+    </Button>
+  );
 } 

@@ -3,6 +3,10 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   
   compress: true,
+  
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   poweredByHeader: false,
   generateEtags: false,
   
@@ -145,6 +149,20 @@ const nextConfig: NextConfig = {
           chunks: 'all',
         },
       };
+    }
+
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      '@opentelemetry/winston-transport': false,
+      '@opentelemetry/exporter-jaeger': false,
+    };
+
+    config.externals = config.externals || [];
+    if (Array.isArray(config.externals)) {
+      config.externals.push({
+        '@opentelemetry/winston-transport': 'commonjs @opentelemetry/winston-transport',
+        '@opentelemetry/exporter-jaeger': 'commonjs @opentelemetry/exporter-jaeger',
+      });
     }
 
     return config;

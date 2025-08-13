@@ -76,8 +76,8 @@ function ProfilePageContent() {
                 createdAt: data.createdAt,
                 factionId: data.factionId,
                  factionTag: data.factionTag,
-                 primaryProvider: data.primaryProvider as string,
-                 linkedProviders: data.linkedProviders as string[],
+                 primaryProvider: data.primaryProvider as 'google' | 'github' | undefined,
+                 linkedProviders: data.linkedProviders || {},
              };
          } else {
              currentProfile = {
@@ -91,7 +91,7 @@ function ProfilePageContent() {
                 email: user.email || '',
                 role: 'user',
                  badges: [],
-                 primaryProvider: (user.providerData.find(p => p.providerId === 'google.com') ? 'google' : (user.providerData.find(p => p.providerId === 'github.com') ? 'github' : undefined)) as any,
+                 primaryProvider: (user.providerData.find(p => p.providerId === 'google.com') ? 'google' : (user.providerData.find(p => p.providerId === 'github.com') ? 'github' : undefined)) as 'google' | 'github' | undefined,
                  linkedProviders: {
                    google: user.providerData.find(p => p.providerId === 'google.com') ? {
                      email: user.email || undefined,

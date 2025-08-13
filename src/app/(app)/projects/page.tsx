@@ -13,7 +13,7 @@ import { Star, Code, GitFork, TriangleAlert, Activity, Clock, Filter, SortAsc, S
 import Link from "next/link";
 import { useTranslation } from "@/context/i18n-context";
 import { useEffect, useMemo, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { DetailsDialog } from "@/components/details-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ async function getRepos(): Promise<Repo[]> {
       throw new Error(`Failed to fetch repos. Status: ${res.status}`);
     }
     
-    let repos: Repo[] = await res.json();
+    const repos: Repo[] = await res.json();
 
     const reposWithLanguages = await Promise.all(
         repos.map(async (repo) => {
@@ -114,7 +114,7 @@ function ProjectsPageContent() {
   const [search, setSearch] = useState("");
   const [language, setLanguage] = useState("all");
   const [activeTags, setActiveTags] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<"stars"|"updated"|"name">("stars");
+  const [sortBy, setSortBy] = useState<"stars"|"updated"|"name"|"forks">("stars");
   const [sortDir, setSortDir] = useState<"desc"|"asc">("desc");
   const [visible, setVisible] = useState(9);
 
@@ -225,7 +225,7 @@ function ProjectsPageContent() {
         </Select>
         </motion.div>
         <motion.div initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2, delay: 0.1 }}>
-        <Select value={sortBy} onValueChange={(v)=>setSortBy(v as any)}>
+        <Select value={sortBy} onValueChange={(v)=>setSortBy(v as 'name' | 'stars' | 'updated' | 'forks')}>
           <SelectTrigger className="w-[160px]"><SelectValue placeholder="Sort by" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="stars">Stars</SelectItem>

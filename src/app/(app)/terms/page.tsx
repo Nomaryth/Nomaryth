@@ -71,7 +71,7 @@ export default function TermsOfService() {
               <li>Use the materials for any commercial purpose or for any public display</li>
               <li>Attempt to reverse engineer any software contained on the website</li>
               <li>Remove any copyright or other proprietary notations from the materials</li>
-              <li>Transfer the materials to another person or "mirror" the materials on any other server</li>
+              <li>Transfer the materials to another person or &quot;mirror&quot; the materials on any other server</li>
             </ul>
           </section>
 
