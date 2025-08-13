@@ -5,7 +5,6 @@ import { StructuredData } from "@/components/structured-data";
 import { BreadcrumbSchema } from "@/components/breadcrumb-schema";
 
 export default function PrivacyPolicy() {
-  const { t } = useTranslation();
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
@@ -141,7 +140,7 @@ export default function PrivacyPolicy() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-primary mb-4">
-              7. Children's Privacy
+              7. Children&apos;s Privacy
             </h2>
             <p className="text-muted-foreground">
               Our services are not intended for children under 13 years of age. We do not knowingly 
@@ -156,7 +155,7 @@ export default function PrivacyPolicy() {
             </h2>
             <p className="text-muted-foreground">
               We may update this privacy policy from time to time. We will notify you of any changes 
-              by posting the new policy on this page and updating the "Last updated" date.
+              by posting the new policy on this page and updating the &quot;Last updated&quot; date.
             </p>
           </section>
 

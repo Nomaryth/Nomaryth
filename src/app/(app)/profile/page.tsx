@@ -76,8 +76,8 @@ function ProfilePageContent() {
                 createdAt: data.createdAt,
                 factionId: data.factionId,
                  factionTag: data.factionTag,
-                 primaryProvider: (data as any).primaryProvider,
-                 linkedProviders: (data as any).linkedProviders,
+                 primaryProvider: data.primaryProvider as string,
+                 linkedProviders: data.linkedProviders as string[],
              };
          } else {
              currentProfile = {
