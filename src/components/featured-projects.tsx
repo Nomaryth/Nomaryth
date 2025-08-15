@@ -20,6 +20,7 @@ type Repo = {
   topics?: string[];
   owner: { login: string };
   updated_at: string;
+  languages_data?: LanguageData; // Campo necessário para processamento de linguagens
 };
 
 function formatTopics(topics?: string[]) {
@@ -46,28 +47,34 @@ export function FeaturedProjects() {
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        const res = await fetch('https://api.github.com/orgs/Nomaryth/repos', { cache: 'no-store' });
+        const res = await fetch('/api/public/repos', { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed repos');
-        const data: Repo[] = await res.json();
-        const withLangs = await Promise.all(
-          data.map(async (r) => {
-            try {
-              const lr = await fetch(r.languages_url);
-              if (!lr.ok) return { ...r };
-              const langData: LanguageData = await lr.json();
-              const top = Object.entries(langData).sort((a,b)=>b[1]-a[1])[0]?.[0] || r.language || null;
-              return { ...r, language: top } as Repo;
-            } catch {
-              return r;
-            }
-          })
-        );
-        const sorted = withLangs
+        
+        const data = await res.json();
+        let repos: Repo[] = [];
+        
+        if (data.error && Array.isArray(data.repos)) {
+          repos = data.repos;
+        } else if (Array.isArray(data)) {
+          repos = data;
+        }
+        
+        const withTopLang = repos.map(r => {
+          if (r.languages_data && Object.keys(r.languages_data).length > 0) {
+            const languageEntries = Object.entries(r.languages_data);
+            const topLanguage = languageEntries.sort(([, a], [, b]) => b - a)[0]?.[0] || r.language || null;
+            return { ...r, language: topLanguage };
+          }
+          return r;
+        });
+        
+        const sorted = withTopLang
           .filter(r => !r.name.startsWith('.'))
           .sort((a, b) => b.stargazers_count - a.stargazers_count || new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
           .slice(0, 8);
         setRepos(sorted);
-      } catch {
+      } catch (error) {
+        console.error('Error fetching featured repos:', error);
         setRepos([]);
       } finally {
         setLoading(false);
@@ -161,5 +168,3 @@ export function FeaturedProjects() {
     </section>
   );
 }
-
-

@@ -44,33 +44,28 @@ export interface Repo {
 
 async function getRepos(): Promise<Repo[]> {
   try {
-    const res = await fetch("https://api.github.com/orgs/Nomaryth/repos", {
-      next: { revalidate: 3600 },
+    const res = await fetch("/api/public/repos", {
+      next: { revalidate: 1800 },
     });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch repos. Status: ${res.status}`);
     }
     
-    const repos: Repo[] = await res.json();
-
-    const reposWithLanguages = await Promise.all(
-        repos.map(async (repo) => {
-            try {
-                const langRes = await fetch(repo.languages_url);
-                if (!langRes.ok) {
-                  return { ...repo, languages_data: {} };
-                }
-                const languages_data: LanguageData = await langRes.json();
-                return { ...repo, languages_data };
-            } catch (error) {
-                console.error(`Failed to fetch languages for ${repo.name}:`, error);
-                return { ...repo, languages_data: {} };
-            }
-        })
-    );
-
-    return reposWithLanguages.sort((a, b) => b.stargazers_count - a.stargazers_count);
+    const data = await res.json();
+  
+    if (data.error && Array.isArray(data.repos)) {
+      console.warn('API returned error but has fallback repos:', data.error);
+      return data.repos;
+    }
+    
+    if (Array.isArray(data)) {
+      return data;
+    }
+    
+    console.error('Unexpected API response format:', data);
+    return [];
+    
   } catch (error) {
     console.error("Error fetching repositories:", error);
     return [];
