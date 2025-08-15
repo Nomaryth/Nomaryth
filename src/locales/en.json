@@ -390,6 +390,15 @@
   "notifications": {
     "badge_unlocked": "Badge Unlocked: {{badgeName}}"
   },
+  "command_menu": {
+    "placeholder": "Type a command or search...",
+    "no_results": "No results found.",
+    "navigation": "Navigation",
+    "quick_actions": "Quick Actions",
+    "account": "Account",
+    "admin": "Admin",
+    "features": "Features"
+  },
   "factions": {
     "page_title": "Factions",
     "page_subtitle": "Forge alliances or crush your enemies. Destiny is in your hands.",
@@ -562,6 +571,127 @@
         "profile_update_failed": "Failed to update user profile.",
         "generic_update_failed": "Could not save user changes."
       }
+    }
+  },
+  "feedback": {
+    "title": "We Value Your Feedback",
+    "subtitle": "Help us shape the future of Nomaryth. Your insights drive our continuous improvement and innovation.",
+    "success_title": "Feedback Submitted Successfully!",
+    "success_message": "Thank you for helping us improve Nomaryth. Your feedback has been received and will be reviewed by our team.",
+    "return_home": "Return Home",
+    "submit_another": "Submit Another",
+    "steps": {
+      "type_category": "Type & Category",
+      "details": "Details",
+      "contact_info": "Contact Info",
+      "review_submit": "Review & Submit"
+    },
+    "progress": {
+      "step_of": "Step {{current}} of {{total}}",
+      "complete": "{{percent}}% Complete"
+    },
+    "types": {
+      "bug": {
+        "title": "Bug Report",
+        "description": "Something isn't working as expected"
+      },
+      "feature": {
+        "title": "Feature Request",
+        "description": "Suggest a new feature or enhancement"
+      },
+      "improvement": {
+        "title": "Improvement",
+        "description": "How we can make existing features better"
+      },
+      "ui": {
+        "title": "UI/UX",
+        "description": "Design, usability, or interface feedback"
+      },
+      "content": {
+        "title": "Content",
+        "description": "Lore, documentation, or text-related feedback"
+      },
+      "general": {
+        "title": "General",
+        "description": "Questions, compliments, or other feedback"
+      }
+    },
+    "categories": {
+      "gameplay": "Gameplay & Mechanics",
+      "technical": "Technical Issues",
+      "content": "Content & Lore",
+      "community": "Community Features",
+      "accessibility": "Accessibility",
+      "performance": "Performance"
+    },
+    "priorities": {
+      "low": {
+        "label": "Low",
+        "description": "Minor issue or nice-to-have"
+      },
+      "medium": {
+        "label": "Medium",
+        "description": "Moderate impact on experience"
+      },
+      "high": {
+        "label": "High",
+        "description": "Significant impact, needs attention"
+      },
+      "critical": {
+        "label": "Critical",
+        "description": "Breaks functionality, urgent fix needed"
+      }
+    },
+    "form": {
+      "what_type": "What type of feedback do you have?",
+      "which_area": "Which area does this relate to?",
+      "how_urgent": "How urgent is this?",
+      "tell_more": "Tell us more about it",
+      "contact_info": "Contact Information",
+      "review_feedback": "Review Your Feedback",
+      "title_label": "Title",
+      "title_placeholder": "e.g., Map loading takes too long on mobile devices",
+      "title_helper": "A brief, descriptive title for your feedback",
+      "title_counter": "{{current}}/100 characters (minimum 5)",
+      "description_label": "Description",
+      "description_placeholder": "Please describe your feedback in detail. Include what you expected to happen vs what actually happened, or your suggestions for improvement...",
+      "description_helper": "Provide detailed information about your feedback",
+      "description_counter": "{{current}}/1000 characters (minimum 20)",
+      "reproduction_label": "Steps to Reproduce",
+      "reproduction_placeholder": "1. Go to...\n2. Click on...\n3. Notice that...",
+      "reproduction_helper": "Help us understand how to reproduce this issue",
+      "email_label": "Email Address",
+      "email_placeholder": "your.email@example.com",
+      "email_helper": "We'll use this to follow up on your feedback if needed",
+      "allow_contact": "Allow us to contact you about this feedback for clarification or updates",
+      "subscribe_newsletter": "Subscribe to our newsletter for Nomaryth updates and announcements",
+      "include_system_info": "Include my browser and device information to help debug technical issues",
+      "system_info_preview": "System Info to be included:",
+      "browser": "Browser",
+      "device": "Device",
+      "type": "Type",
+      "priority": "Priority",
+      "title": "Title",
+      "description": "Description",
+      "reproduction_steps": "Reproduction Steps",
+      "contact": "Contact",
+      "contact_allowed": "Contact allowed",
+      "no_contact": "No contact",
+      "subscribed_newsletter": "Subscribed to newsletter",
+      "system_info_included": "System info included"
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "submitting": "Submitting...",
+      "submit_feedback": "Submit Feedback"
+    },
+    "messages": {
+      "thank_you": "Thank you for taking the time to provide feedback! Your insights help us continuously improve Nomaryth.",
+      "required_field": "This field is required",
+      "invalid_email": "Please enter a valid email address",
+      "title_too_short": "Title must be at least 5 characters",
+      "description_too_short": "Description must be at least 20 characters"
     }
   }
 }

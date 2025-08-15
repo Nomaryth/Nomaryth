@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wand2, Shield, Gem } from "lucide-react";
+import { Wand2, Scroll, Gem } from "lucide-react";
 import { useTranslation } from "@/context/i18n-context";
 import { StructuredData, websiteSchema, organizationSchema, creativeWorkSchema } from "@/components/structured-data";
 import { InteractiveHero } from "@/components/interactive-hero";
@@ -19,7 +19,7 @@ function HomeContent() {
       description: t('features.magic.description'),
     },
     {
-      icon: <Shield className="w-8 h-8 text-accent" />,
+      icon: <Scroll className="w-8 h-8 text-accent" />,
       title: t('features.factions.title'),
       description: t('features.factions.description'),
     },

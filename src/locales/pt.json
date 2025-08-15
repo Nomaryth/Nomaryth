@@ -390,6 +390,15 @@
   "notifications": {
     "badge_unlocked": "Conquista Desbloqueada: {{badgeName}}"
   },
+  "command_menu": {
+    "placeholder": "Digite um comando ou pesquise...",
+    "no_results": "Nenhum resultado encontrado.",
+    "navigation": "Navegação",
+    "quick_actions": "Ações Rápidas",
+    "account": "Conta",
+    "admin": "Admin",
+    "features": "Recursos"
+  },
   "factions": {
     "page_title": "Facções",
     "page_subtitle": "Forje alianças ou esmague seus inimigos. O destino está em suas mãos.",
@@ -561,6 +570,127 @@
         "profile_update_failed": "Falha ao atualizar o perfil do usuário.",
         "generic_update_failed": "Não foi possível salvar as alterações do usuário."
       }
+    }
+  },
+  "feedback": {
+    "title": "Valorizamos Seu Feedback",
+    "subtitle": "Ajude-nos a moldar o futuro de Nomaryth. Suas ideias impulsionam nossa melhoria contínua e inovação.",
+    "success_title": "Feedback Enviado com Sucesso!",
+    "success_message": "Obrigado por nos ajudar a melhorar Nomaryth. Seu feedback foi recebido e será analisado por nossa equipe.",
+    "return_home": "Voltar ao Início",
+    "submit_another": "Enviar Outro",
+    "steps": {
+      "type_category": "Tipo e Categoria",
+      "details": "Detalhes",
+      "contact_info": "Informações de Contato",
+      "review_submit": "Revisar e Enviar"
+    },
+    "progress": {
+      "step_of": "Etapa {{current}} de {{total}}",
+      "complete": "{{percent}}% Concluído"
+    },
+    "types": {
+      "bug": {
+        "title": "Relatar Bug",
+        "description": "Algo não está funcionando como esperado"
+      },
+      "feature": {
+        "title": "Solicitar Funcionalidade",
+        "description": "Sugerir uma nova funcionalidade ou melhoria"
+      },
+      "improvement": {
+        "title": "Melhoria",
+        "description": "Como podemos melhorar funcionalidades existentes"
+      },
+      "ui": {
+        "title": "UI/UX",
+        "description": "Feedback sobre design, usabilidade ou interface"
+      },
+      "content": {
+        "title": "Conteúdo",
+        "description": "Feedback sobre lore, documentação ou textos"
+      },
+      "general": {
+        "title": "Geral",
+        "description": "Perguntas, elogios ou outros comentários"
+      }
+    },
+    "categories": {
+      "gameplay": "Jogabilidade e Mecânicas",
+      "technical": "Problemas Técnicos",
+      "content": "Conteúdo e Lore",
+      "community": "Funcionalidades da Comunidade",
+      "accessibility": "Acessibilidade",
+      "performance": "Performance"
+    },
+    "priorities": {
+      "low": {
+        "label": "Baixa",
+        "description": "Problema menor ou nice-to-have"
+      },
+      "medium": {
+        "label": "Média",
+        "description": "Impacto moderado na experiência"
+      },
+      "high": {
+        "label": "Alta",
+        "description": "Impacto significativo, precisa de atenção"
+      },
+      "critical": {
+        "label": "Crítica",
+        "description": "Quebra funcionalidade, correção urgente necessária"
+      }
+    },
+    "form": {
+      "what_type": "Que tipo de feedback você tem?",
+      "which_area": "A qual área isso se relaciona?",
+      "how_urgent": "Quão urgente é isso?",
+      "tell_more": "Conte-nos mais sobre isso",
+      "contact_info": "Informações de Contato",
+      "review_feedback": "Revisar Seu Feedback",
+      "title_label": "Título",
+      "title_placeholder": "ex: Carregamento do mapa demora muito em dispositivos móveis",
+      "title_helper": "Um título breve e descritivo para seu feedback",
+      "title_counter": "{{current}}/100 caracteres (mínimo 5)",
+      "description_label": "Descrição",
+      "description_placeholder": "Por favor, descreva seu feedback em detalhes. Inclua o que você esperava que acontecesse vs o que realmente aconteceu, ou suas sugestões de melhoria...",
+      "description_helper": "Forneça informações detalhadas sobre seu feedback",
+      "description_counter": "{{current}}/1000 caracteres (mínimo 20)",
+      "reproduction_label": "Passos para Reproduzir",
+      "reproduction_placeholder": "1. Vá para...\n2. Clique em...\n3. Observe que...",
+      "reproduction_helper": "Ajude-nos a entender como reproduzir este problema",
+      "email_label": "Endereço de Email",
+      "email_placeholder": "seu.email@exemplo.com",
+      "email_helper": "Usaremos isso para acompanhar seu feedback se necessário",
+      "allow_contact": "Permitir que entremos em contato sobre este feedback para esclarecimentos ou atualizações",
+      "subscribe_newsletter": "Inscrever-se em nossa newsletter para atualizações e anúncios do Nomaryth",
+      "include_system_info": "Incluir informações do meu navegador e dispositivo para ajudar a debuggar problemas técnicos",
+      "system_info_preview": "Informações do sistema a serem incluídas:",
+      "browser": "Navegador",
+      "device": "Dispositivo",
+      "type": "Tipo",
+      "priority": "Prioridade",
+      "title": "Título",
+      "description": "Descrição",
+      "reproduction_steps": "Passos para Reproduzir",
+      "contact": "Contato",
+      "contact_allowed": "Contato permitido",
+      "no_contact": "Sem contato",
+      "subscribed_newsletter": "Inscrito na newsletter",
+      "system_info_included": "Informações do sistema incluídas"
+    },
+    "buttons": {
+      "previous": "Anterior",
+      "next": "Próximo",
+      "submitting": "Enviando...",
+      "submit_feedback": "Enviar Feedback"
+    },
+    "messages": {
+      "thank_you": "Obrigado por dedicar tempo para fornecer feedback! Suas ideias nos ajudam a melhorar continuamente o Nomaryth.",
+      "required_field": "Este campo é obrigatório",
+      "invalid_email": "Por favor, insira um endereço de email válido",
+      "title_too_short": "O título deve ter pelo menos 5 caracteres",
+      "description_too_short": "A descrição deve ter pelo menos 20 caracteres"
     }
   }
 }

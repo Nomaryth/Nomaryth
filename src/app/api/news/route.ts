@@ -1,37 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getNewsFromFirebase, createNews, updateNews } from '@/lib/news-manager';
 import { adminDb, adminAuth } from '@/lib/firebase-admin';
-
-const newsRateLimit = new Map<string, { count: number; expires: number }>()
-
-function isNewsRateLimited(ip: string): boolean {
-  const now = Date.now()
-  let entry = newsRateLimit.get(ip)
-  if (!entry || entry.expires < now) {
-    entry = { count: 1, expires: now + 60000 }
-    newsRateLimit.set(ip, entry)
-    return false
-  }
-  entry.count++
-  return entry.count > 30
-}
-
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, value] of newsRateLimit.entries()) {
-    if (value.expires < now) newsRateLimit.delete(key)
-  }
-}, 120000)
+import { rateLimiters, getClientIP, createRateLimitResponse } from '@/lib/rate-limiter';
+import { requireCSRFToken } from '@/lib/csrf-protection';
 
 export async function GET(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-               request.headers.get('x-real-ip') || 
-               request.headers.get('cf-connecting-ip') || 
-               'unknown'
+    const ip = getClientIP(request);
     
-    if (isNewsRateLimited(ip)) {
-      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    if (rateLimiters.admin.isLimited(ip)) {
+      return createRateLimitResponse(rateLimiters.admin.getResetTime(ip));
     }
 
     const authHeader = request.headers.get('Authorization');
@@ -57,13 +35,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-               request.headers.get('x-real-ip') || 
-               request.headers.get('cf-connecting-ip') || 
-               'unknown'
+    const ip = getClientIP(request);
     
-    if (isNewsRateLimited(ip)) {
-      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    if (rateLimiters.admin.isLimited(ip)) {
+      return createRateLimitResponse(rateLimiters.admin.getResetTime(ip));
     }
 
     const authHeader = request.headers.get('Authorization');
@@ -75,6 +50,10 @@ export async function POST(request: NextRequest) {
     const adminDoc = await adminDb.collection('admins').doc(decoded.uid).get();
     if (!adminDoc.exists) {
       return NextResponse.json({ error: 'Forbidden: User is not an admin' }, { status: 403 });
+    }
+
+    if (!requireCSRFToken(request, decoded.uid)) {
+      return NextResponse.json({ error: 'CSRF token required' }, { status: 403 });
     }
 
     const body = await request.json();

@@ -1,9 +1,11 @@
 'use client';
 
+import React, { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Particles } from "@/components/particles";
 import { StatusFooter } from "@/components/status-footer";
+import { FloatingActionButton } from "@/components/floating-action-button";
 
 export default function AppLayout({
   children,
@@ -27,6 +29,7 @@ export default function AppLayout({
           <Footer />
           <StatusFooter />
         </div>
+        <FloatingActionButton />
      </div>
   );
 }

@@ -36,33 +36,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, reason: 'rate_limited' }, { status: 429 })
     }
 
+    const body = await req.json()
+    
+    const sanitizedEvent = {
+      ip: String(body.ip || ip),
+      userAgent: String(body.userAgent || '').substring(0, 500),
+      path: String(body.path || '').substring(0, 200),
+      method: String(body.method || 'GET').substring(0, 10),
+      timestamp: new Date().toISOString(),
+      isAuthenticated: Boolean(body.isAuthenticated || false),
+      userId: body.userId && body.isAuthenticated ? String(body.userId).substring(0, 50) : null,
+      email: null,
+      referer: body.referer ? String(body.referer).substring(0, 200) : null,
+      origin: body.origin ? String(body.origin).substring(0, 100) : null,
+      agentHint: body.agentHint ? String(body.agentHint).substring(0, 200) : null,
+      severity: body.type === 'unauthorized' || body.type === 'rate_limit' ? 'high' : 'medium',
+      eventType: String(body.type || 'access').substring(0, 50)
+    }
+
     const rtdb = getSecondRtdb()
     if (rtdb) {
-      const now = new Date()
-      const body = await req.json()
       const ref = rtdb.ref('sec_events').push()
-      await ref.set({
-        ip: String(body.ip || ''),
-        userAgent: String(body.userAgent || ''),
-        path: String(body.path || ''),
-        method: String(body.method || ''),
-        timestamp: now.toISOString(),
-        isAuthenticated: Boolean(body.isAuthenticated || false),
-        userId: body.userId ? String(body.userId) : null,
-        email: body.email ? String(body.email) : null,
-        referer: body.referer ? String(body.referer) : null,
-        origin: body.origin ? String(body.origin) : null,
-        agentHint: body.agentHint ? String(body.agentHint) : null,
-      })
+      await ref.set(sanitizedEvent)
       return NextResponse.json({ ok: true, id: ref.key })
     }
+    
     const secondAdminDb = getSecondDb()
     if (!secondAdminDb) return NextResponse.json({ ok: false, reason: 'second_db_unavailable' }, { status: 503 })
-    const doc = {
-      ip: String((await req.json()).ip || ''),
-    }
+    
     const col = secondAdminDb.collection('sec_events')
-    const ref = await col.add(doc)
+    const ref = await col.add(sanitizedEvent)
     return NextResponse.json({ ok: true, id: ref.id })
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 })

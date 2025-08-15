@@ -17,7 +17,6 @@ export function CookieFeedbackToast({ type, onDismiss, onOpenSettings }: CookieF
   useEffect(() => {
     if (type) {
       setIsVisible(true);
-      // Auto dismiss after 5 seconds
       const timer = setTimeout(() => {
         handleDismiss();
       }, 5000);
@@ -29,7 +28,7 @@ export function CookieFeedbackToast({ type, onDismiss, onOpenSettings }: CookieF
     setIsVisible(false);
     setTimeout(() => {
       onDismiss();
-    }, 300); // Wait for animation to complete
+    }, 300);
   };
 
   const getToastConfig = () => {
@@ -84,7 +83,6 @@ export function CookieFeedbackToast({ type, onDismiss, onOpenSettings }: CookieF
             relative overflow-hidden rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm
             ${config.bgColor} ${config.borderColor}
           `}>
-            {/* Content */}
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
                 {config.icon}
@@ -121,7 +119,6 @@ export function CookieFeedbackToast({ type, onDismiss, onOpenSettings }: CookieF
               </div>
             </div>
 
-            {/* Progress bar */}
             <motion.div
               initial={{ width: "100%" }}
               animate={{ width: "0%" }}
@@ -131,8 +128,6 @@ export function CookieFeedbackToast({ type, onDismiss, onOpenSettings }: CookieF
                 type === 'rejected' ? 'bg-blue-400' : 'bg-purple-400'
               } opacity-60`}
             />
-
-            {/* Decorative elements */}
             <div className={`absolute -top-1 -right-1 w-8 h-8 rounded-full blur-md opacity-20 ${
               type === 'accepted' ? 'bg-green-400' :
               type === 'rejected' ? 'bg-blue-400' : 'bg-purple-400'

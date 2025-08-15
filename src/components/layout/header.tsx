@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Search, BookOpen, Swords, User, X, Languages, LogOut, Map as MapIcon, Bell, LayoutDashboard, Check, Trash2, Loader2 } from "lucide-react";
+import { Menu, Search, BookOpen, Swords, User, X, Languages, LogOut, Map as MapIcon, Bell, LayoutDashboard, Check, Trash2, Loader2, MessageCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { usePathname } from 'next/navigation';
@@ -30,6 +30,7 @@ const navLinks = [
   { href: "/", labelKey: "nav.home", icon: <Swords className="h-5 w-5" /> },
   { href: "/docs", labelKey: "nav.docs", icon: <BookOpen className="h-5 w-5" /> },
   { href: "/map", labelKey: "nav.map", icon: <MapIcon className="h-5 w-5" /> },
+  { href: "/feedback", labelKey: "Feedback", icon: <MessageCircle className="h-5 w-5" /> },
   { href: "/projects", labelKey: "nav.projects", icon: <Swords className="h-5 w-5" /> },
 ];
 
@@ -380,6 +381,8 @@ export function Header() {
   const { t } = useTranslation();
   const [openCommandMenu, setOpenCommandMenu] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(16);
 
   useEffect(() => {
     if (pathname.startsWith('/docs')) {
@@ -388,62 +391,130 @@ export function Header() {
     }
 
     const handleScroll = () => {
+      const scrollY = window.scrollY;
       const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const progress = (window.scrollY / totalHeight) * 100;
+      const progress = (scrollY / totalHeight) * 100;
       setScrollProgress(progress);
+      
+      const scrolled = scrollY > 50;
+      setIsScrolled(scrolled);
+      setHeaderHeight(scrolled ? 14 : 16);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [pathname]);
 
+  const getContextualTheme = () => {
+    if (pathname.startsWith('/docs')) return { accent: 'from-blue-500 to-indigo-500', bg: 'bg-blue-500/5' };
+    if (pathname.startsWith('/factions')) return { accent: 'from-purple-500 to-pink-500', bg: 'bg-purple-500/5' };
+    if (pathname.startsWith('/map')) return { accent: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-500/5' };
+    if (pathname.startsWith('/admin')) return { accent: 'from-red-500 to-orange-500', bg: 'bg-red-500/5' };
+    return { accent: 'from-accent to-primary', bg: 'bg-accent/5' };
+  };
+
+  const theme = getContextualTheme();
+
   const NavLinks = ({ className }: { className?: string }) => (
-    <nav className={cn("flex items-center gap-4 lg:gap-6", className)}>
-      {navLinks.map(({ href, labelKey }) => (
-        <Link
-          key={href}
-          href={href}
-          className={cn(
-            "transition-colors text-lg lg:text-sm hover:text-accent",
-            pathname.startsWith(href) && href !== "/" || pathname === href ? "text-accent font-semibold" : "text-muted-foreground"
-          )}
-        >
-          {t(labelKey)}
-        </Link>
-      ))}
+    <nav className={cn("flex items-center gap-1", className)}>
+      {navLinks.map(({ href, labelKey }) => {
+        const isActive = pathname.startsWith(href) && href !== "/" || pathname === href;
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={cn(
+              "relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300",
+              "hover:bg-accent/10 hover:text-accent hover:scale-105",
+              isActive 
+                ? "text-accent bg-accent/10 scale-105" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {t(labelKey)}
+            {isActive && (
+              <div className={cn(
+                "absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4 h-0.5 rounded-full bg-gradient-to-r",
+                theme.accent,
+                "animate-pulse"
+              )} />
+            )}
+          </Link>
+        );
+      })}
     </nav>
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-      <div className="container flex h-16 items-center justify-between px-4">
+    <header 
+      className={cn(
+        "sticky top-0 z-50 w-full border-b transition-all duration-500",
+        isScrolled 
+          ? "bg-card/95 backdrop-blur-xl shadow-lg" 
+          : "bg-card/80 backdrop-blur-xl shadow-sm",
+        theme.bg
+      )}
+      style={{ height: `${headerHeight * 0.25}rem` }}
+    >
+      <div className={cn(
+        "absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent transition-opacity duration-500",
+        isScrolled ? "opacity-100" : "opacity-60"
+      )} />
+      
+      <div className={cn(
+        "absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r transition-opacity duration-500",
+        theme.accent,
+        pathname === '/' ? "opacity-0" : "opacity-30"
+      )} />
+      
+      <div className={cn(
+        "container flex items-center justify-between px-4 transition-all duration-500",
+        `h-${headerHeight}`
+      )}>
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo />
-             <span className="font-bold font-headline text-lg hidden sm:inline-block">
-                Nomaryth
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="relative">
+              <Logo />
+              <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 via-primary/20 to-accent/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+            </div>
+            <span className="font-bold font-headline text-lg hidden sm:inline-block group-hover:text-accent transition-colors duration-200">
+              Nomaryth
             </span>
           </Link>
-          <NavLinks className="hidden md:flex" />
+          
+          <div className="hidden md:flex items-center">
+            <NavLinks className="flex" />
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-           <Button variant="outline" size="sm" className="gap-2 hidden sm:flex" onClick={() => setOpenCommandMenu(true)}>
-             <Search className="h-4 w-4" />
-             <span className="text-muted-foreground">{t('header.search_docs')}</span>
-             <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+        <div className="flex items-center gap-1">
+          <div className="relative group hidden sm:block">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/50 via-primary/50 to-accent/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="relative gap-2 bg-card/50 backdrop-blur-sm border-border/50 hover:bg-accent/10 hover:border-accent/50 transition-all duration-200" 
+              onClick={() => setOpenCommandMenu(true)}
+            >
+              <Search className="h-4 w-4" />
+              <span className="text-muted-foreground">{t('header.search_docs')}</span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted/50 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                 <span className="text-xs">⌘</span>K
-             </kbd>
-           </Button>
-            <Button variant="ghost" size="icon" className="sm:hidden" onClick={() => setOpenCommandMenu(true)}>
-                <Search className="h-5 w-5" />
-                <span className="sr-only">{t('header.search_docs')}</span>
+              </kbd>
             </Button>
-            
-          <NotificationBell />
-          <LanguageSwitcher />
-          <ThemeToggle />
-          <UserNav />
+          </div>
+
+          <Button variant="ghost" size="icon" className="sm:hidden hover:bg-accent/10 transition-colors" onClick={() => setOpenCommandMenu(true)}>
+            <Search className="h-5 w-5" />
+            <span className="sr-only">{t('header.search_docs')}</span>
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <LanguageSwitcher />
+            <ThemeToggle />
+            <UserNav />
+          </div>
 
           <div className="md:hidden">
             <Sheet>

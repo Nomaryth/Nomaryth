@@ -43,17 +43,14 @@ const DesolateTraveler = () => (
             }
         `}
         </style>
-        {/* Miasma/Wind */}
         <path className="wind-path" d="M10 130 Q 50 120, 90 135 T 180 140" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4"/>
         <path className="wind-path" d="M20 150 Q 70 160, 110 145 T 190 155" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4"/>
         <path className="wind-path" d="M5 165 Q 50 155, 100 170 T 180 160" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4"/>
 
-        {/* Ground */}
         <path d="M0 180 H 200" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
         <path d="M50 180 L 60 170 L 70 180" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
         <path d="M130 180 L 140 175 L 150 180" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
 
-        {/* Traveler */}
         <g className="traveler-breath">
             <path d="M90 150 C 90 140, 110 140, 110 150 L 115 180 H 85 L 90 150 Z" fill="currentColor" opacity="0.8"/>
             <circle cx="100" cy="135" r="10" fill="currentColor" opacity="0.8"/>

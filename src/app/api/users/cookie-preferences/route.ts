@@ -22,15 +22,12 @@ export async function POST(req: NextRequest) {
 
     const cookiePreferences: CookiePreferences = await req.json();
 
-    // Validate the preferences
     if (typeof cookiePreferences !== 'object' || !cookiePreferences.acceptedAt) {
       return NextResponse.json({ error: 'Invalid cookie preferences data' }, { status: 400 });
     }
 
-    // Ensure necessary cookies are always true
     cookiePreferences.necessary = true;
 
-    // Save to user's profile
     const userRef = adminDb.collection('users').doc(uid);
     await userRef.update({
       cookiePreferences: {
@@ -64,7 +61,6 @@ export async function GET(req: NextRequest) {
     const decoded = await adminAuth.verifyIdToken(idToken);
     const uid = decoded.uid;
 
-    // Get user's cookie preferences
     const userDoc = await adminDb.collection('users').doc(uid).get();
     
     if (!userDoc.exists) {

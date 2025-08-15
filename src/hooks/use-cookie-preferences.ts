@@ -29,7 +29,6 @@ export function useCookiePreferences() {
     let loadedPreferences: CookiePreferences | null = null;
 
     try {
-      // First, try to load from user profile if logged in
       if (user) {
         try {
           const idToken = await user.getIdToken();
@@ -53,7 +52,6 @@ export function useCookiePreferences() {
         }
       }
 
-      // Fallback to localStorage if no user preferences found
       if (!loadedPreferences) {
         const localPreferences = localStorage.getItem('nomaryth-cookie-preferences');
         if (localPreferences) {
@@ -81,10 +79,8 @@ export function useCookiePreferences() {
 
   const savePreferences = useCallback(async (newPreferences: CookiePreferences) => {
     try {
-      // Always save to localStorage
       localStorage.setItem('nomaryth-cookie-preferences', JSON.stringify(newPreferences));
 
-      // If user is logged in, also save to their profile
       if (user) {
         try {
           const idToken = await user.getIdToken();
@@ -98,7 +94,6 @@ export function useCookiePreferences() {
           });
         } catch (error) {
           console.error('Error saving cookie preferences to profile:', error);
-          // Continue with localStorage only
         }
       }
 

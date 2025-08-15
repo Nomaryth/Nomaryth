@@ -18,7 +18,7 @@ interface CookiePreferences {
 }
 
 const defaultPreferences: CookiePreferences = {
-  necessary: true, // Always true, can't be disabled
+  necessary: true,
   analytics: false,
   marketing: false,
   personalization: false,
@@ -34,12 +34,10 @@ export function CookieBanner() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    // Check if user has already made a choice
     const checkCookiePreferences = async () => {
       let hasPreferences = false;
 
       if (user) {
-        // Check user profile for cookie preferences
         try {
           const idToken = await user.getIdToken();
           const response = await fetch('/api/users/cookie-preferences', {
@@ -60,7 +58,6 @@ export function CookieBanner() {
         }
       }
 
-      // Check localStorage
       const localPreferences = localStorage.getItem('nomaryth-cookie-preferences');
       if (localPreferences) {
         try {
@@ -74,9 +71,7 @@ export function CookieBanner() {
         }
       }
 
-      // Show banner if no preferences found
       if (!hasPreferences) {
-        // Delay to avoid showing immediately on page load
         setTimeout(() => setIsVisible(true), 1500);
       }
     };
@@ -86,10 +81,8 @@ export function CookieBanner() {
 
   const saveCookiePreferences = async (newPreferences: CookiePreferences) => {
     try {
-      // Save to localStorage
       localStorage.setItem('nomaryth-cookie-preferences', JSON.stringify(newPreferences));
 
-      // If user is logged in, save to their profile
       if (user) {
         try {
           const idToken = await user.getIdToken();
@@ -103,14 +96,12 @@ export function CookieBanner() {
           });
         } catch (error) {
           console.error('Error saving cookie preferences to profile:', error);
-          // Continue with localStorage only
         }
       }
 
       setPreferences(newPreferences);
       setIsVisible(false);
       
-      // Show feedback toast
       const hasAcceptedAll = newPreferences.analytics && newPreferences.marketing && newPreferences.personalization;
       const hasRejectedAll = !newPreferences.analytics && !newPreferences.marketing && !newPreferences.personalization;
       
@@ -151,14 +142,14 @@ export function CookieBanner() {
   const handleSavePreferences = () => {
     const updatedPreferences: CookiePreferences = {
       ...preferences,
-      necessary: true, // Always true
+      necessary: true,
       acceptedAt: new Date()
     };
     saveCookiePreferences(updatedPreferences);
   };
 
   const togglePreference = (key: keyof CookiePreferences) => {
-    if (key === 'necessary' || key === 'acceptedAt') return; // Can't toggle these
+    if (key === 'necessary' || key === 'acceptedAt') return;
     setPreferences(prev => ({
       ...prev,
       [key]: !prev[key]
@@ -169,7 +160,6 @@ export function CookieBanner() {
     <AnimatePresence>
       {isVisible && (
         <React.Fragment key="cookie-banner-modal">
-          {/* Backdrop */}
           <motion.div
             key="cookie-backdrop"
             initial={{ opacity: 0 }}
@@ -178,7 +168,6 @@ export function CookieBanner() {
             className="fixed inset-0 bg-black/40 backdrop-blur-md z-[9998]"
           />
 
-          {/* Cookie Banner */}
           <div 
             key="cookie-banner-container"
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
@@ -197,7 +186,6 @@ export function CookieBanner() {
               onClick={(e) => e.stopPropagation()}
             >
             <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-card/95 to-accent/10 border-2 border-primary/30 shadow-2xl backdrop-blur-md ring-1 ring-white/20 dark:from-primary/20 dark:to-accent/20 dark:border-primary/40">
-              {/* Close button */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -208,17 +196,14 @@ export function CookieBanner() {
               </Button>
 
               <div className="p-6">
-                {/* Header with Cookie Monster GIF */}
                 <div className="flex items-start gap-4 mb-4">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center overflow-hidden">
-                      {/* Cookie Monster GIF placeholder - you can replace with actual GIF */}
                       <img
                         src="https://media.giphy.com/media/EKUvB9uFnm2Xe/giphy.gif"
                         alt="Cookie Monster"
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          // Fallback to Cookie icon if GIF fails to load
                           (e.target as HTMLImageElement).style.display = 'none';
                           (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
                         }}
@@ -242,7 +227,6 @@ export function CookieBanner() {
                   </div>
                 </div>
 
-                {/* Detailed Preferences */}
                 <AnimatePresence>
                   {showDetails && (
                     <motion.div
@@ -252,7 +236,6 @@ export function CookieBanner() {
                       transition={{ duration: 0.3 }}
                       className="mb-4 space-y-3 border-t border-border/50 pt-4"
                     >
-                      {/* Necessary Cookies */}
                       <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -273,7 +256,6 @@ export function CookieBanner() {
                         </div>
                       </div>
 
-                      {/* Analytics Cookies */}
                       <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -296,7 +278,6 @@ export function CookieBanner() {
                         </div>
                       </div>
 
-                      {/* Marketing Cookies */}
                       <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -319,7 +300,6 @@ export function CookieBanner() {
                         </div>
                       </div>
 
-                      {/* Personalization Cookies */}
                       <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -345,7 +325,6 @@ export function CookieBanner() {
                   )}
                 </AnimatePresence>
 
-                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   {showDetails ? (
                     <>
@@ -390,7 +369,6 @@ export function CookieBanner() {
                   )}
                 </div>
 
-                {/* Privacy Policy Link */}
                 <div className="mt-4 pt-3 border-t border-border/50">
                   <p className="text-xs text-muted-foreground text-center">
                     By continuing, you agree to our{' '}
@@ -411,7 +389,6 @@ export function CookieBanner() {
                 </div>
               </div>
 
-              {/* Decorative Elements */}
               <div className="absolute -top-1 -right-1 w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-xl opacity-60" />
               <div className="absolute -bottom-1 -left-1 w-16 h-16 bg-gradient-to-tr from-accent/20 to-primary/20 rounded-full blur-lg opacity-60" />
             </Card>
@@ -420,7 +397,6 @@ export function CookieBanner() {
         </React.Fragment>
       )}
       
-      {/* Feedback Toast */}
       <CookieFeedbackToast 
         type={feedbackType}
         onDismiss={() => setFeedbackType(null)}

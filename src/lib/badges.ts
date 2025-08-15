@@ -63,11 +63,6 @@ export const badgeRegistry: Record<string, Badge> = {
   }
 };
 
-/**
- * @param
- * @param
- * @returns
- */
 export function getAutomaticallyUnlockedBadges(profile: UserProfile, firebaseUser: User | null): string[] {
   return Object.values(badgeRegistry)
     .filter(badge => !badge.secret && badge.isUnlocked(profile, firebaseUser))

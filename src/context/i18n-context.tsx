@@ -55,12 +55,29 @@ const setSecureStorage = (key: string, value: string): void => {
 
 export const TranslationsProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>('en');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const savedLanguage = getSecureStorage('language') as Language;
-    if (savedLanguage && ['en', 'pt'].includes(savedLanguage)) {
-      setLanguage(savedLanguage);
-    }
+    const initializeLanguage = () => {
+      const savedLanguage = getSecureStorage('language') as Language;
+      const wasManuallySet = getSecureStorage('language_manual_set') === 'true';
+      
+      if (savedLanguage && ['en', 'pt'].includes(savedLanguage)) {
+        setLanguage(savedLanguage);
+      } else {
+        const browserLang = typeof window !== 'undefined' ? 
+          (navigator.language || navigator.languages?.[0] || 'en').toLowerCase() : 'en';
+        
+        const detectedLang: Language = browserLang.startsWith('pt') ? 'pt' : 'en';
+        setLanguage(detectedLang);
+        setSecureStorage('language', detectedLang);
+      }
+      
+      setIsInitialized(true);
+    };
+
+    const timer = setTimeout(initializeLanguage, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
@@ -83,7 +100,7 @@ export const TranslationsProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <I18nContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
-      {children}
+      {isInitialized ? children : <div className="animate-pulse">Loading...</div>}
     </I18nContext.Provider>
   );
 };

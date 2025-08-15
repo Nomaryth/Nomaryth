@@ -32,7 +32,6 @@ export function BannerButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Background Image */}
       <OptimizedImage
         src={imageSrc}
         alt={imageAlt}

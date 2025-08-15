@@ -115,27 +115,3 @@
     stripe-move 8s linear infinite,
     stripe-move-reverse 12s linear infinite;
 }
-
-/* Adicione ao seu tailwind.config.js:
-extend: {
-  animation: {
-    'scan': 'scan 2s linear infinite',
-    'pulse-slow': 'pulse 3s infinite',
-    'pulse-slower': 'pulse 4s infinite',
-    'glitch': 'glitch 4s infinite',
-    'glitch-2': 'glitch 4s infinite reverse',
-    'gradient': 'gradient 6s linear infinite',
-  },
-  keyframes: {
-    gradient: {
-      '0%, 100%': {
-        'background-size': '200% 200%',
-        'background-position': 'left center',
-      },
-      '50%': {
-        'background-size': '200% 200%',
-        'background-position': 'right center',
-      },
-    },
-  },
-}

@@ -13,6 +13,7 @@ import {
   PenSquare,
   Megaphone,
   BarChart3,
+  MessageCircle,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ import { AdminGuard } from '@/components/admin-guard';
 const navLinks = [
   { href: '/admin', label: 'Dashboard', icon: <Home className="h-5 w-5" /> },
   { href: '/admin/users', label: 'Users', icon: <Users className="h-5 w-5" /> },
+  { href: '/admin/feedback', label: 'Feedback', icon: <MessageCircle className="h-5 w-5" /> },
   { href: '/admin/content', label: 'Content Guide', icon: <FileText className="h-5 w-5" /> },
   { href: '/admin/badges', label: 'Badges', icon: <PenSquare className="h-5 w-5" /> },
   { href: '/admin/content-editor', label: 'Doc Editor', icon: <PenSquare className="h-5 w-5" /> },
