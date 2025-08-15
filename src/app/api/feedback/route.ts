@@ -4,24 +4,27 @@ import { rateLimiters, getClientIP, createRateLimitResponse } from '@/lib/rate-l
 import { z } from 'zod';
 import { FieldValue } from 'firebase-admin/firestore';
 
+const secureStringSchema = (min: number, max: number) => 
+  z.string()
+    .min(min)
+    .max(max)
+    .trim()
+    .refine(val => !/<[^>]*>/g.test(val), 'HTML tags not allowed')
+    .refine(val => !/javascript:|data:|vbscript:/gi.test(val), 'Dangerous URLs not allowed')
+    .refine(val => !/on\w+\s*=/gi.test(val), 'Event handlers not allowed')
+    .refine(val => !/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g.test(val), 'Control characters not allowed');
+
 const feedbackSchema = z.object({
   type: z.enum(['bug', 'feature', 'improvement', 'ui', 'content', 'general']),
   category: z.enum(['gameplay', 'technical', 'content', 'community', 'accessibility', 'performance']),
   priority: z.enum(['low', 'medium', 'high', 'critical']),
-  title: z.string()
-    .min(5, 'Title must be at least 5 characters')
-    .max(100, 'Title must be less than 100 characters')
-    .trim(),
-  description: z.string()
-    .min(20, 'Description must be at least 20 characters')
-    .max(2000, 'Description must be less than 2000 characters')
-    .trim(),
+  title: secureStringSchema(5, 100),
+  description: secureStringSchema(20, 2000),
   email: z.string()
     .email('Invalid email format')
-    .max(255, 'Email too long'),
-  reproduction: z.string()
-    .max(1000, 'Reproduction steps too long')
-    .optional(),
+    .max(255, 'Email too long')
+    .refine(val => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val), 'Invalid email format'),
+  reproduction: secureStringSchema(0, 1000).optional(),
   includeSystemInfo: z.boolean().default(false),
   allowContact: z.boolean().default(false),
   subscribe: z.boolean().default(false),
@@ -35,36 +38,77 @@ function detectSpam(data: any): boolean {
     /viagra|casino|lottery|winner|prize/i,
     /click here|visit now|act now/i,
     /\$\d+|\$\$\$|money|cash|free/i,
-    /http[s]?:\/\//g
+    /(?:https?|ftp|file):\/\/[^\s]+/gi,
+    /\b(?:bit\.ly|tinyurl|t\.co|short\.link)\b/i,
+    /urgent|immediate|verify.*account|suspended.*account/i
   ];
   
   const text = `${data.title} ${data.description}`.toLowerCase();
   
-  const urlMatches = text.match(/http[s]?:\/\//g);
+  const urlPattern = /(?:https?|ftp|file):\/\/[^\s]+/gi;
+  const urlMatches = text.match(urlPattern);
+  
   if (urlMatches && urlMatches.length > 2) return true;
   
   return suspiciousPatterns.some(pattern => pattern.test(text));
 }
 
 function sanitizeInput(data: any) {
-  const basicSanitize = (str: string) => {
-    return str
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+  const secureSanitize = (str: string): string => {
+    if (!str || typeof str !== 'string') return '';
+    
+    let sanitized = str
       .replace(/<[^>]*>/g, '')
-      .replace(/javascript:/gi, '')
-      .replace(/on\w+\s*=/gi, '')
+      .replace(/&[#\w]+;/g, '')
+      .replace(/\b(?:javascript|data|vbscript|file|ftp|mailto|tel):\s*/gi, '')
+      .replace(/\bon\w+\s*=\s*['"]/gi, '')
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      .replace(/\\[xu][0-9a-fA-F]+/g, '')
+      .replace(/\s+/g, ' ')
       .trim();
+    
+    if (sanitized.length > 5000) {
+      sanitized = sanitized.substring(0, 5000);
+    }
+    
+    const maliciousPatterns = [
+      /script/gi,
+      /eval\s*\(/gi,
+      /expression\s*\(/gi,
+      /import\s*\(/gi,
+      /document\./gi,
+      /window\./gi,
+      /<\s*\/?\s*\w/gi
+    ];
+    
+    for (const pattern of maliciousPatterns) {
+      if (pattern.test(sanitized)) {
+        sanitized = sanitized.replace(pattern, '');
+      }
+    }
+    
+    return sanitized;
+  };
+
+  const sanitizeEmail = (email: string): string => {
+    if (!email || typeof email !== 'string') return '';
+    
+    return email
+      .toLowerCase()
+      .replace(/[^a-z0-9@.\-_+]/g, '')
+      .trim()
+      .substring(0, 255);
   };
 
   return {
     ...data,
-    title: basicSanitize(data.title),
-    description: basicSanitize(data.description),
-    reproduction: data.reproduction ? basicSanitize(data.reproduction) : undefined,
-    email: data.email.toLowerCase().trim(),
-    userAgent: data.userAgent ? data.userAgent.substring(0, 500) : undefined,
-    browser: data.browser ? data.browser.substring(0, 200) : undefined,
-    device: data.device ? data.device.substring(0, 50) : undefined
+    title: secureSanitize(data.title),
+    description: secureSanitize(data.description),
+    reproduction: data.reproduction ? secureSanitize(data.reproduction) : undefined,
+    email: sanitizeEmail(data.email),
+    userAgent: data.userAgent ? secureSanitize(data.userAgent).substring(0, 500) : undefined,
+    browser: data.browser ? secureSanitize(data.browser).substring(0, 200) : undefined,
+    device: data.device ? secureSanitize(data.device).substring(0, 50) : undefined
   };
 }
 
