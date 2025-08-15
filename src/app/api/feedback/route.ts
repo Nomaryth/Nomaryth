@@ -54,18 +54,53 @@ function detectSpam(data: any): boolean {
 }
 
 function sanitizeInput(data: any) {
+  const whitelistSanitize = (str: string): string => {
+    if (!str || typeof str !== 'string') return '';
+    
+    let safe = str
+      .replace(/[<>]/g, '')
+      .replace(/[&]/g, '')
+      .replace(/[`]/g, '')
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      .trim();
+    
+    safe = safe.replace(/[^\w\s\-.,!?@#$%*()+=\[\]{}|\\:";']/g, '');
+    
+    const dangerousWords = [
+      'script', 'javascript', 'vbscript', 'onload', 'onerror', 'onclick', 
+      'onmouseover', 'onfocus', 'onblur', 'eval', 'expression', 'import',
+      'document', 'window', 'alert', 'confirm', 'prompt'
+    ];
+    
+    for (const word of dangerousWords) {
+      const regex = new RegExp(word, 'gi');
+      safe = safe.replace(regex, '');
+    }
+    
+    return safe.substring(0, 5000);
+  };
+
   const secureSanitize = (str: string): string => {
     if (!str || typeof str !== 'string') return '';
     
-    let sanitized = str
-      .replace(/<[^>]*>/g, '')
-      .replace(/&[#\w]+;/g, '')
-      .replace(/\b(?:javascript|data|vbscript|file|ftp|mailto|tel):\s*/gi, '')
-      .replace(/\bon\w+\s*=\s*['"]/gi, '')
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-      .replace(/\\[xu][0-9a-fA-F]+/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    let sanitized = str;
+    let previousLength = 0;
+    
+    while (sanitized.length !== previousLength) {
+      previousLength = sanitized.length;
+      
+      sanitized = sanitized
+        .replace(/<[^>]*>/g, '')
+        .replace(/<\s*\/?\s*\w[^>]*>/g, '')
+        .replace(/&[#\w]+;/g, '')
+        .replace(/\b(?:javascript|data|vbscript|file|ftp|mailto|tel):\s*/gi, '')
+        .replace(/\bon\w+\s*=\s*['"]/gi, '')
+        .replace(/\bon\w+\s*=/gi, '')
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+        .replace(/\\[xu][0-9a-fA-F]+/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
     
     if (sanitized.length > 5000) {
       sanitized = sanitized.substring(0, 5000);
@@ -78,13 +113,18 @@ function sanitizeInput(data: any) {
       /import\s*\(/gi,
       /document\./gi,
       /window\./gi,
-      /<\s*\/?\s*\w/gi
+      /<\s*\/?\s*\w/gi,
+      /javascript:/gi,
+      /vbscript:/gi,
+      /data:/gi
     ];
     
     for (const pattern of maliciousPatterns) {
-      if (pattern.test(sanitized)) {
-        sanitized = sanitized.replace(pattern, '');
-      }
+      let tempSanitized = sanitized;
+      do {
+        sanitized = tempSanitized;
+        tempSanitized = sanitized.replace(pattern, '');
+      } while (tempSanitized !== sanitized);
     }
     
     return sanitized;
@@ -102,13 +142,13 @@ function sanitizeInput(data: any) {
 
   return {
     ...data,
-    title: secureSanitize(data.title),
-    description: secureSanitize(data.description),
-    reproduction: data.reproduction ? secureSanitize(data.reproduction) : undefined,
+    title: secureSanitize(whitelistSanitize(data.title)),
+    description: secureSanitize(whitelistSanitize(data.description)),
+    reproduction: data.reproduction ? secureSanitize(whitelistSanitize(data.reproduction)) : undefined,
     email: sanitizeEmail(data.email),
-    userAgent: data.userAgent ? secureSanitize(data.userAgent).substring(0, 500) : undefined,
-    browser: data.browser ? secureSanitize(data.browser).substring(0, 200) : undefined,
-    device: data.device ? secureSanitize(data.device).substring(0, 50) : undefined
+    userAgent: data.userAgent ? whitelistSanitize(data.userAgent).substring(0, 500) : undefined,
+    browser: data.browser ? whitelistSanitize(data.browser).substring(0, 200) : undefined,
+    device: data.device ? whitelistSanitize(data.device).substring(0, 50) : undefined
   };
 }
 
