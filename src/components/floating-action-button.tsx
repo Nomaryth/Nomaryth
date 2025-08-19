@@ -116,7 +116,7 @@ export function FloatingActionButton({ onCommandMenuOpen }: FloatingActionButton
                 onClick={scrollToTop}
                 className={cn(
                   "h-12 w-12 rounded-full shadow-lg transition-all duration-300 transform",
-                  "bg-muted/80 backdrop-blur-sm border border-border/50 hover:bg-accent hover:scale-110",
+                  "bg-gradient-to-br from-accent/90 to-primary/90 hover:from-accent hover:to-primary text-white border border-accent/30 hover:scale-110 hover:shadow-xl hover:shadow-accent/25",
                   "animate-in slide-in-from-bottom-5 fade-in-0"
                 )}
               >

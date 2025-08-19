@@ -1,3 +1,7 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/auth-context';
 import {
   Card,
   CardContent,
@@ -5,221 +9,362 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { FileText, PenSquare, Link as LinkIcon, AlertCircle, Type, Palette, Image as ImageIcon } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Save, RefreshCw, FileText, MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface ContentData {
+  explore_title?: string;
+  explore_subtitle?: string;
+  testimonials?: Array<{
+    name: string;
+    role: string;
+    content: string;
+    avatar: string;
+    rating: number;
+  }>;
+}
 
 export default function ContentPage() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [homeContent, setHomeContent] = useState<ContentData>({});
+  const [testimonialsContent, setTestimonialsContent] = useState<ContentData>({});
+
+  const fetchContent = async (type: string) => {
+    if (!user) return null;
+    
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`/api/admin/content?type=${type}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch content');
+      }
+
+      const data = await response.json();
+      return data.data || {};
+    } catch (error) {
+      console.error('Error fetching content:', error);
+      return {};
+    }
+  };
+
+  const saveContent = async (type: string, data: ContentData) => {
+    if (!user) return;
+
+    setSaving(true);
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch('/api/admin/content', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ type, data })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save content');
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Conteúdo salvo com sucesso!",
+      });
+    } catch (error) {
+      console.error('Error saving content:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar conteúdo. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [homeData, testimonialsData] = await Promise.all([
+        fetchContent('home-cards'),
+        fetchContent('testimonials')
+      ]);
+      
+      setHomeContent(homeData || {
+        explore_title: "Understand the elements that define this continent on the brink of collapse.",
+        explore_subtitle: "Nomaryth is defined by immutable rules, where every choice hides a consequence and every step shapes how your end will be."
+      });
+      
+      setTestimonialsContent(testimonialsData || {
+        testimonials: [
+          {
+            name: "Aether Walker",
+            role: "Twilight Guild Leader",
+            content: "The depth of mechanics surprised me. Every decision truly matters.",
+            avatar: "⚔️",
+            rating: 5
+          },
+          {
+            name: "Storm Rider", 
+            role: "Solo Explorer",
+            content: "The evolving magic system is revolutionary. My journey is unique.",
+            avatar: "🌪️",
+            rating: 5
+          },
+          {
+            name: "Crystal Sage",
+            role: "Northern Alliance Diplomat", 
+            content: "Political negotiations are as intense as any battle.",
+            avatar: "🔮",
+            rating: 5
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user]);
+
+  const updateTestimonial = (index: number, field: string, value: any) => {
+    if (index < 0 || index >= (testimonialsContent.testimonials?.length || 0)) {
+      return;
+    }
+    
+    const allowedFields = ['name', 'role', 'content', 'avatar', 'rating'];
+    if (!allowedFields.includes(field)) {
+      return;
+    }
+    
+    let sanitizedValue = value;
+    if (typeof value === 'string') {
+      sanitizedValue = value.slice(0, field === 'content' ? 500 : 100);
+    }
+    if (field === 'rating') {
+      sanitizedValue = Math.max(1, Math.min(5, parseInt(value) || 5));
+    }
+    
+    setTestimonialsContent(prev => ({
+      ...prev,
+      testimonials: prev.testimonials?.map((testimonial, i) => 
+        i === index ? { ...testimonial, [field]: sanitizedValue } : testimonial
+      ) || []
+    }));
+  };
+
+  const addTestimonial = () => {
+    const currentCount = testimonialsContent.testimonials?.length || 0;
+    if (currentCount >= 10) {
+      toast({
+        title: "Limite atingido",
+        description: "Máximo de 10 depoimentos permitidos.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setTestimonialsContent(prev => ({
+      ...prev,
+      testimonials: [
+        ...(prev.testimonials || []),
+        {
+          name: "",
+          role: "",
+          content: "",
+          avatar: "👤",
+          rating: 5
+        }
+      ]
+    }));
+  };
+
+  const removeTestimonial = (index: number) => {
+    setTestimonialsContent(prev => ({
+      ...prev,
+      testimonials: prev.testimonials?.filter((_, i) => i !== index) || []
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Content Management Guide</CardTitle>
+          <CardTitle>Gerenciamento de Conteúdo</CardTitle>
           <CardDescription>
-            How to manage the static and dynamic content of the website.
+            Gerencie o conteúdo dos cards e seções da página principal
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="p-6 border rounded-lg bg-card-foreground/5">
-              <div className="flex items-center gap-3">
-                  <PenSquare className="h-8 w-8 text-accent" />
-                  <div>
-                      <h3 className="text-lg font-semibold">Content Editor</h3>
-                      <p className="text-sm text-muted-foreground">A user-friendly editor to manage documentation.</p>
-                  </div>
-              </div>
-              <div className="mt-4 text-sm space-y-2">
-                  <p>
-                    You can now use the Content Editor to visually manage the <code className="bg-muted px-1 py-0.5 rounded text-primary font-mono">docs-data.json</code> file. This interface allows for creating, editing, and deleting categories and documents without needing to touch the JSON file directly.
-                  </p>
-                  <Button asChild variant="default" className="mt-2">
-                      <Link href="/admin/content-editor">
-                          <LinkIcon className="mr-2 h-4 w-4" />
-                          Go to Content Editor
-                      </Link>
-                  </Button>
-              </div>
-          </div>
-          
-          <div className="p-6 border rounded-lg bg-card-foreground/5">
-              <div className="flex items-center gap-3">
-                  <FileText className="h-8 w-8 text-accent" />
-                  <div>
-                      <h3 className="text-lg font-semibold">Documentation Data File</h3>
-                      <p className="text-sm text-muted-foreground">All documentation pages are managed via a single JSON file.</p>
-                  </div>
-              </div>
-              <div className="mt-4 text-sm space-y-2">
-                  <p>
-                      The file responsible for all documentation content is located at <code className="bg-muted px-1 py-0.5 rounded text-primary font-mono">src/lib/docs-data.json</code>.
-                  </p>
-                  <Alert>
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Manual Edits</AlertTitle>
-                      <AlertDescription>
-                          While manual editing is possible, it is recommended to use the Content Editor to avoid syntax errors in the JSON file. Always make a backup before manual changes.
-                      </AlertDescription>
-                  </Alert>
-              </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-       <Card>
-        <CardHeader>
-            <div className="flex items-center gap-3">
-                <Type className="h-8 w-8 text-accent" />
-                <div>
-                     <CardTitle>Markdown Styling Guide</CardTitle>
-                     <CardDescription>Available syntax for documentation content.</CardDescription>
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent>
-           <p className="text-sm text-muted-foreground mb-4">
-            Our documentation pages are rendered from Markdown, including support for GitHub Flavored Markdown (GFM).
-           </p>
-           <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border p-4 bg-card-foreground/5">
-            <h3>Basic Formatting</h3>
-            <ul>
-                <li><code>**Bold Text**</code> renders as <strong>Bold Text</strong></li>
-                <li><code>*Italic Text*</code> renders as <em>Italic Text</em></li>
-                <li><code>~~Strikethrough~~</code> renders as <del>Strikethrough</del></li>
-                <li><code>`Inline Code`</code> renders as <code>Inline Code</code></li>
-            </ul>
-
-            <h3>Headings</h3>
-            <pre className="bg-muted p-2 rounded-md"><code>
-                # Heading 1<br/>
-                ## Heading 2<br/>
-                ### Heading 3
-            </code></pre>
-
-            <h3>Lists</h3>
-            <p>Unordered List:</p>
-            <pre className="bg-muted p-2 rounded-md"><code>
-                - Item 1<br/>
-                - Item 2<br/>
-                &nbsp;&nbsp;- Nested Item
-            </code></pre>
-            <p>Ordered List:</p>
-            <pre className="bg-muted p-2 rounded-md"><code>
-                1. First Item<br/>
-                2. Second Item
-            </code></pre>
-             <p>Task List:</p>
-            <pre className="bg-muted p-2 rounded-md"><code>
-                - [x] Completed task<br/>
-                - [ ] Incomplete task
-            </code></pre>
-
-
-            <h3>Blockquotes</h3>
-            <pre className="bg-muted p-2 rounded-md"><code>
-                &gt; This is a blockquote. It's great for highlighting important information.
-            </code></pre>
-            <blockquote>This is a blockquote. It's great for highlighting important information.</blockquote>
-
-            <h3>Code Blocks</h3>
-            <pre className="bg-muted p-2 rounded-md"><code>
-            ```javascript<br/>
-            // Your code here<br/>
-            ```
-            </code></pre>
-            
-            <h3>Tables</h3>
-            <pre className="bg-muted p-2 rounded-md"><code>
-                | Header 1 | Header 2 |<br/>
-                |----------|----------|<br/>
-                | Cell 1   | Cell 2   |<br/>
-                | Cell 3   | Cell 4   |
-            </code></pre>
-             <div className="overflow-x-auto">
-                <table>
-                    <thead>
-                        <tr><th>Header 1</th><th>Header 2</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Cell 1</td><td>Cell 2</td></tr>
-                        <tr><td>Cell 3</td><td>Cell 4</td></tr>
-                    </tbody>
-                </table>
-             </div>
-           </div>
-        </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-            <div className="flex items-center gap-3">
-                <Palette className="h-8 w-8 text-accent" />
-                <div>
-                     <CardTitle>Advanced Styling (HTML)</CardTitle>
-                     <CardDescription>You can embed HTML directly in your Markdown for more advanced styling.</CardDescription>
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent>
-           <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border p-4 bg-card-foreground/5 space-y-4">
-               
-                <div>
-                  <h4 className="not-prose text-foreground font-semibold mb-2">Colored Text</h4>
-                  <p className="text-sm">Use `span` tags with our theme's CSS variables to apply colors.</p>
-                  <div className="p-4 border rounded-lg bg-card mt-2">
-                    <p>This is <span style={{ color: 'hsl(var(--primary))' }}>primary color</span> text.</p>
-                    <p>This is <span style={{ color: 'hsl(var(--accent))' }}>accent color</span> text.</p>
-                    <p>This is <span style={{ color: 'hsl(var(--destructive))' }}>destructive color</span> text.</p>
+      <Tabs defaultValue="home-cards" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="home-cards">
+            <FileText className="h-4 w-4 mr-2" />
+            Cards da Home
+          </TabsTrigger>
+          <TabsTrigger value="testimonials">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Community Voices
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="home-cards">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cards da Página Principal</CardTitle>
+              <CardDescription>
+                Edite o título e subtítulo dos cards "Understand the elements..."
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="explore-title">Título Principal</Label>
+                <Input
+                  id="explore-title"
+                  value={homeContent.explore_title || ''}
+                  onChange={(e) => setHomeContent(prev => ({ ...prev, explore_title: e.target.value.slice(0, 200) }))}
+                  placeholder="Título dos cards..."
+                  maxLength={200}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="explore-subtitle">Subtítulo</Label>
+                <Textarea
+                  id="explore-subtitle"
+                  value={homeContent.explore_subtitle || ''}
+                  onChange={(e) => setHomeContent(prev => ({ ...prev, explore_subtitle: e.target.value.slice(0, 1000) }))}
+                  placeholder="Subtítulo dos cards..."
+                  rows={3}
+                  maxLength={1000}
+                />
+              </div>
+
+              <Button 
+                onClick={() => saveContent('home-cards', homeContent)}
+                disabled={saving}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {saving ? 'Salvando...' : 'Salvar Cards'}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="testimonials">
+          <Card>
+            <CardHeader>
+              <CardTitle>Community Voices</CardTitle>
+              <CardDescription>
+                Gerencie os depoimentos da seção Community Voices
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {testimonialsContent.testimonials?.map((testimonial, index) => (
+                <div key={index} className="p-4 border rounded-lg space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Depoimento {index + 1}</h3>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTestimonial(index)}
+                    >
+                      Remover
+                    </Button>
                   </div>
-                  <pre className="bg-muted p-2 rounded-md mt-2 text-xs"><code>
-                    &lt;span style="color: hsl(var(--primary))"&gt;primary color&lt;/span&gt;
-                  </code></pre>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nome</Label>
+                      <Input
+                        value={testimonial.name}
+                        onChange={(e) => updateTestimonial(index, 'name', e.target.value)}
+                        placeholder="Nome do usuário"
+                        maxLength={100}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Cargo/Função</Label>
+                      <Input
+                        value={testimonial.role}
+                        onChange={(e) => updateTestimonial(index, 'role', e.target.value)}
+                        placeholder="Cargo ou função"
+                        maxLength={100}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="space-y-2 md:col-span-1">
+                      <Label>Avatar (Emoji)</Label>
+                      <Input
+                        value={testimonial.avatar}
+                        onChange={(e) => updateTestimonial(index, 'avatar', e.target.value)}
+                        placeholder="🎮"
+                        maxLength={10}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2 md:col-span-3">
+                      <Label>Conteúdo do Depoimento</Label>
+                      <Textarea
+                        value={testimonial.content}
+                        onChange={(e) => updateTestimonial(index, 'content', e.target.value)}
+                        placeholder="Depoimento do usuário..."
+                        rows={3}
+                        maxLength={500}
+                      />
+                    </div>
+                  </div>
                 </div>
+              ))}
 
-                <div>
-                  <h4 className="not-prose text-foreground font-semibold mb-2">Images with Captions</h4>
-                  <p className="text-sm">Use the `figure` and `figcaption` tags for better image presentation.</p>
-                   <div className="p-4 border rounded-lg bg-card mt-2">
-                      <figure>
-                          <img src="https://placehold.co/600x400.png" alt="Placeholder" className="w-full rounded-md" data-ai-hint="fantasy landscape"/>
-                          <figcaption className="text-center text-xs text-muted-foreground mt-2">This is a caption for the image above.</figcaption>
-                      </figure>
-                   </div>
-                  <pre className="bg-muted p-2 rounded-md mt-2 text-xs"><code>
-                    &lt;figure&gt;<br/>
-                    &nbsp;&nbsp;&lt;img src="image_url.png" alt="description" /&gt;<br/>
-                    &nbsp;&nbsp;&lt;figcaption&gt;This is a caption.&lt;/figcaption&gt;<br/>
-                    &lt;/figure&gt;
-                  </code></pre>
-                </div>
-
-                 <div>
-                  <h4 className="not-prose text-foreground font-semibold mb-2">Alerts & Callouts</h4>
-                  <p className="text-sm">Use styled `div` elements to create callouts for important information.</p>
-                   <div className="space-y-4 mt-2">
-                      <div className="p-4 rounded-lg border bg-secondary">
-                          <strong className="text-secondary-foreground">Tip:</strong> This is a helpful tip to guide the user.
-                      </div>
-                      <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive-foreground">
-                          <strong className="text-destructive">Warning:</strong> Be careful with this action as it cannot be undone.
-                      </div>
-                   </div>
-                  <pre className="bg-muted p-2 rounded-md mt-2 text-xs"><code>
-                    {`<!-- Tip Box -->
-<div class="p-4 rounded-lg border bg-secondary">
-  <strong>Tip:</strong> This is a helpful tip.
-</div>
-
-<!-- Warning Box -->
-<div class="p-4 rounded-lg border border-destructive/50 bg-destructive/10">
-  <strong style="color:hsl(var(--destructive))">Warning:</strong> Be careful.
-</div>`}
-                  </code></pre>
-                </div>
-
-           </div>
-        </CardContent>
-      </Card>
+              <div className="flex gap-4">
+                <Button onClick={addTestimonial} variant="outline">
+                  Adicionar Depoimento
+                </Button>
+                
+                <Button 
+                  onClick={() => saveContent('testimonials', testimonialsContent)}
+                  disabled={saving}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {saving ? 'Salvando...' : 'Salvar Depoimentos'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

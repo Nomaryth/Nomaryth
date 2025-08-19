@@ -38,6 +38,44 @@
   },
   "home": {
     "tagline": "Determine seu destino em um mundo envolto de crueldade e conflitos.",
+    "hero": {
+      "active_explorers": "Exploradores Ativos",
+      "growing_community": "Comunidade Crescendo",
+      "title_line1": "Descubra as",
+      "title_line2": "Histórias Não Contadas",
+      "explore_lore": "Explorar a História",
+      "join_faction": "Juntar-se a Facção",
+      "open_launcher": "Abrir Launcher"
+    },
+    "stats": {
+      "world_progress": "Progresso do Mundo",
+      "active_factions": "Facções Ativas",
+      "documentation": "Documentação",
+      "available": "Disponível",
+      "community": "Comunidade",
+      "community_desc": "Exploradores ativos descobrindo novos mundos",
+      "factions_desc": "Guildas forjando seus destinos",
+      "progress_desc": "Histórias esperando para serem contadas"
+    },
+    "testimonials": {
+      "title": "Vozes da Comunidade",
+      "subtitle": "Descubra o que outros exploradores estão dizendo sobre suas jornadas épicas",
+      "aether_walker": {
+        "name": "Caminhante do Aether",
+        "role": "Líder da Guilda Crepúsculo",
+        "content": "A profundidade das mecânicas me surpreendeu. Cada decisão realmente importa."
+      },
+      "storm_rider": {
+        "name": "Cavaleiro da Tempestade",
+        "role": "Explorador Solitário",
+        "content": "O sistema de magia evolutivo é revolucionário. Minha jornada é única."
+      },
+      "crystal_sage": {
+        "name": "Sábio de Cristal",
+        "role": "Diplomata da Aliança do Norte",
+        "content": "As negociações políticas são tão intensas quanto qualquer batalha."
+      }
+    },
     "explore_lore": "Explore a História",
     "discover_projects": "Descubra nossos Projetos",
     "download_launcher": "Baixar Launcher do Jogo",
@@ -83,6 +121,14 @@
     "stats": {
       "title": "Estatísticas do Mundo",
       "subtitle": "Acompanhe o progresso da comunidade e descubra como o mundo de Nomaryth evolui",
+      "world_progress": "Progresso do Mundo",
+      "active_factions": "Facções Ativas",
+      "documentation": "Documentação",
+      "available": "Disponível",
+      "community": "Comunidade",
+      "community_desc": "Exploradores ativos descobrindo novos mundos",
+      "factions_desc": "Guildas forjando seus destinos",
+      "progress_desc": "Histórias esperando para serem contadas",
       "items": {
         "users": "Usuários Ativos",
         "factions": "Facções Ativas",

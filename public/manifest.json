@@ -1,0 +1,83 @@
+{
+  "name": "Nomaryth - Ordain",
+  "short_name": "Nomaryth",
+  "description": "Universo interativo de fantasia onde suas escolhas moldam o mundo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#fbbf24",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "entertainment", "social"],
+  "icons": [
+    {
+      "src": "/NomaIcon1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/NomaIcon1.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/NomaIcon1-nobc.png",
+      "sizes": "192x192", 
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/NomaBanner1.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Página inicial do Nomaryth"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Facções",
+      "short_name": "Facções", 
+      "description": "Explore as facções de Nomaryth",
+      "url": "/factions",
+      "icons": [
+        {
+          "src": "/NomaIcon1.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mapa",
+      "short_name": "Mapa",
+      "description": "Navegue pelo mapa interativo",
+      "url": "/map", 
+      "icons": [
+        {
+          "src": "/NomaIcon1.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Sobre",
+      "short_name": "Sobre",
+      "description": "Conheça o projeto Nomaryth",
+      "url": "/sobre",
+      "icons": [
+        {
+          "src": "/NomaIcon1.png", 
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

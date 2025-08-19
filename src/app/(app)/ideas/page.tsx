@@ -3,10 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAdminContent } from '@/hooks/use-admin-content';
 import { 
-  Wand2, 
-  Scroll, 
-  Gem,
   Star,
   Crown,
   Globe,
@@ -18,22 +16,14 @@ import {
   Shield,
   TrendingUp
 } from "lucide-react";
-import { useAdminContent } from '@/hooks/use-admin-content';
 import { useTranslation } from "@/context/i18n-context";
-import { StructuredData, websiteSchema, organizationSchema, creativeWorkSchema, faqSchema } from "@/components/structured-data";
-import { GoogleBusinessSchema } from "@/components/google-business-schema";
-import { AxulogicSchema } from "@/components/axulogic-schema";
-import { MinimalNews } from "@/components/minimal-news";
+import { StructuredData, websiteSchema, organizationSchema, creativeWorkSchema } from "@/components/structured-data";
 import { SectionDivider } from "@/components/section-divider";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { CloudinaryImage } from "@/components/cloudinary-image";
 import { Particles } from "@/components/particles";
-import { HeroFloatingParticles } from "@/components/floating-particles";
-import { TwinklingStars } from "@/components/minimal-particles";
-import { SimpleTextFill, ContinuousTextFill } from "@/components/animated-text-fill";
-import { CharacterShowcase } from "@/components/character-showcase";
 
 interface WorldStats {
   totalUsers: number;
@@ -90,10 +80,8 @@ function EnhancedHero() {
     <motion.div 
       ref={heroRef}
       style={{ y }}
-      className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background/95 to-primary/5 z-10"
+      className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background/95 to-primary/5"
     >
-      <HeroFloatingParticles />
-      
       <div className="absolute inset-0">
         <div 
           className="absolute w-96 h-96 bg-gradient-to-r from-accent/40 to-primary/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float transition-transform duration-1000"
@@ -151,7 +139,7 @@ function EnhancedHero() {
                 />
               </div>
               <span className="font-semibold text-foreground">
-                {!isLoading && stats ? `${formatNumber(stats.totalUsers)}+ ${t('home.hero.active_explorers') || 'Active Explorers'}` : t('home.hero.growing_community') || 'Growing Community'}
+                {!isLoading && stats ? `${formatNumber(stats.totalUsers)}+ Exploradores Online` : 'Comunidade Crescendo'}
               </span>
               <motion.div 
                 className="w-3 h-3 bg-green-500 rounded-full"
@@ -160,17 +148,30 @@ function EnhancedHero() {
               />
             </motion.div>
 
-
             <motion.h1 
               className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[0.9] tracking-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <SimpleTextFill 
-                text1={t('home.hero.title_line1') || 'Discover the'}
-                text2={t('home.hero.title_line2') || 'Untold Stories'}
-              />
+              <motion.span 
+                className="block text-foreground"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                Forje Seu
+              </motion.span>
+              <motion.span 
+                className="block"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+              >
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-accent bg-[length:300%_auto] animate-gradient-x">
+                  Destino Épico
+                </span>
+              </motion.span>
             </motion.h1>
 
             <motion.p 
@@ -179,67 +180,84 @@ function EnhancedHero() {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              {t('home.tagline')}
+              Mergulhe em um universo onde cada escolha molda o futuro. Junte-se a milhares de exploradores em uma jornada épica.
             </motion.p>
 
             <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-4xl"
+              className="flex flex-col sm:flex-row gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
               <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                className="group"
               >
                 <Button 
                   asChild 
-                  className="relative w-full h-16 bg-gradient-to-br from-accent/90 to-primary/90 hover:from-accent hover:to-primary text-white border-0 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-accent/25 transition-all duration-500 overflow-hidden"
+                  size="lg" 
+                  className="group relative overflow-hidden rounded-3xl px-10 py-6 text-lg font-bold bg-gradient-to-r from-accent via-primary to-accent bg-[length:300%_auto] text-white hover:bg-pos-100 hover:shadow-2xl hover:shadow-accent/40 transition-all duration-700"
                 >
-                  <Link href="/docs" className="flex items-center justify-center gap-3">
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <BookOpen className="h-5 w-5 relative z-10" />
-                    <span className="font-semibold relative z-10">{t('home.hero.explore_lore') || 'Explore the Lore'}</span>
+                  <Link href="/docs" className="flex items-center">
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <BookOpen className="relative mr-3 h-6 w-6 drop-shadow-lg" />
+                    <span className="relative drop-shadow-lg">Explorar Lore</span>
+                    <motion.div
+                      className="ml-2"
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      <ArrowRight className="h-5 w-5" />
+                    </motion.div>
                   </Link>
                 </Button>
               </motion.div>
-
+              
               <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                className="group"
               >
                 <Button 
                   asChild 
-                  className="relative w-full h-16 bg-card/80 hover:bg-card border-2 border-primary/30 hover:border-accent/50 text-foreground rounded-2xl shadow-lg hover:shadow-xl hover:shadow-primary/15 transition-all duration-500 backdrop-blur-sm overflow-hidden"
+                  size="lg" 
+                  className="group relative overflow-hidden rounded-3xl px-10 py-6 text-lg font-bold bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30 backdrop-blur-md border-2 border-primary/40 text-foreground hover:border-accent/60 hover:bg-gradient-to-r hover:from-accent/40 hover:to-primary/40 transition-all duration-700"
                 >
-                  <Link href="/factions" className="flex items-center justify-center gap-3">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <Crown className="h-5 w-5 relative z-10 text-primary" />
-                    <span className="font-semibold relative z-10">{t('home.hero.join_faction') || 'Join a Faction'}</span>
+                  <Link href="/factions" className="flex items-center">
+                    <Crown className="relative mr-3 h-6 w-6" />
+                    <span className="relative">Unir-se a Facção</span>
                   </Link>
                 </Button>
               </motion.div>
+            </motion.div>
 
+            <motion.div 
+              className="flex justify-center sm:justify-start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1 }}
+            >
               <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="group"
               >
                 <Button 
                   asChild 
-                  className="relative w-full h-16 bg-gradient-to-br from-emerald-600/90 to-green-600/90 hover:from-emerald-600 hover:to-green-600 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-500 overflow-hidden"
+                  size="lg" 
+                  className="group relative overflow-hidden rounded-3xl px-10 py-6 text-lg font-bold bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-600 text-white hover:shadow-2xl hover:shadow-emerald-500/40 transition-all duration-700"
                 >
                   <Link
                     href="https://launcher.gghorizon.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3"
+                    className="relative flex items-center"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <Play className="h-5 w-5 relative z-10" />
-                    <span className="font-semibold relative z-10">{t('home.hero.open_launcher') || 'Open Launcher'}</span>
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      animate={{ x: [-100, 300] }}
+                      transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+                    />
+                    <Play className="relative mr-3 h-6 w-6 drop-shadow-lg" />
+                    <span className="relative drop-shadow-lg">Abrir Launcher</span>
                   </Link>
                 </Button>
               </motion.div>
@@ -282,7 +300,7 @@ function EnhancedHero() {
                 <div className="text-3xl font-bold mb-1">
                   {!isLoading && stats ? `${stats.worldProgress}%` : '98%'}
                 </div>
-                <div className="text-sm opacity-90 font-medium">{t('home.stats.world_progress') || 'World Progress'}</div>
+                <div className="text-sm opacity-90 font-medium">Progresso do Mundo</div>
                 <div className="w-full bg-primary-foreground/20 rounded-full h-2 mt-2">
                   <motion.div 
                     className="bg-primary-foreground rounded-full h-2"
@@ -329,7 +347,7 @@ function EnhancedHero() {
                     <div className="text-2xl font-bold text-foreground">
                       {!isLoading && stats ? formatNumber(stats.activeFactions) : '8.5K+'}
                     </div>
-                    <div className="text-sm text-muted-foreground font-medium">{t('home.stats.active_factions') || 'Active Factions'}</div>
+                    <div className="text-sm text-muted-foreground font-medium">Facções Ativas</div>
                   </div>
                 </div>
               </div>
@@ -348,8 +366,8 @@ function EnhancedHero() {
                     <Sparkles className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground">{t('home.stats.documentation') || 'Documentation'}</div>
-                    <div className="text-lg font-bold text-foreground">{t('home.stats.available') || 'Available'}</div>
+                    <div className="text-sm font-medium text-muted-foreground">Documentação</div>
+                    <div className="text-lg font-bold text-foreground">Completa</div>
                   </div>
                 </div>
               </div>
@@ -366,25 +384,25 @@ function EnhancedHero() {
           {[
             {
               icon: Globe,
-              title: t('home.stats.community') || 'Community',
+              title: "Comunidade",
               value: !isLoading && stats ? formatNumber(stats.totalUsers) : '2.5K+',
-              description: t('home.stats.community_desc') || 'Active explorers discovering new worlds',
+              description: "Exploradores ativos descobrindo novos mundos",
               color: "from-blue-500/20 to-blue-500/10",
               iconColor: "text-blue-500"
             },
             {
               icon: Shield,
-              title: t('home.stats.active_factions') || 'Active Factions',
+              title: "Facções Ativas",
               value: !isLoading && stats ? formatNumber(stats.activeFactions) : '150+',
-              description: t('home.stats.factions_desc') || 'Guilds forging their destinies',
+              description: "Guildas forjando seus destinos",
               color: "from-purple-500/20 to-purple-500/10",
               iconColor: "text-purple-500"
             },
             {
               icon: TrendingUp,
-              title: t('home.stats.world_progress') || 'World Progress',
+              title: "Progresso Mundial",
               value: !isLoading && stats ? `${stats.worldProgress}%` : '94%',
-              description: t('home.stats.progress_desc') || 'Stories waiting to be told',
+              description: "Histórias esperando para serem contadas",
               color: "from-emerald-500/20 to-emerald-500/10",
               iconColor: "text-emerald-500"
             }
@@ -424,17 +442,6 @@ function EnhancedHero() {
           ))}
         </motion.div>
 
-        {/* Character Showcase Gallery */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="mt-32"
-        >
-          <CharacterShowcase />
-        </motion.div>
-
         <motion.div 
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           initial={{ opacity: 0 }}
@@ -449,162 +456,36 @@ function EnhancedHero() {
           </motion.div>
         </motion.div>
       </div>
-      
-      <div className="h-20"></div>
     </motion.div>
   );
 }
 
-function Enhanced3DFeatures() {
-  const { t } = useTranslation();
-  const { content: homeContent } = useAdminContent('home-cards');
 
-  const features = [
-    {
-      icon: <Wand2 className="w-10 h-10 text-accent" />,
-      title: t('features.magic.title'),
-      description: t('features.magic.description'),
-      color: "from-violet-500/20 to-purple-500/20",
-      hoverColor: "hover:from-violet-500/30 hover:to-purple-500/30"
-    },
-    {
-      icon: <Scroll className="w-10 h-10 text-accent" />,
-      title: t('features.factions.title'),
-      description: t('features.factions.description'),
-      color: "from-amber-500/20 to-yellow-500/20",
-      hoverColor: "hover:from-amber-500/30 hover:to-yellow-500/30"
-    },
-    {
-      icon: <Gem className="w-10 h-10 text-accent" />,
-      title: t('features.aetherium.title'),
-      description: t('features.aetherium.description'),
-      color: "from-emerald-500/20 to-green-500/20",
-      hoverColor: "hover:from-emerald-500/30 hover:to-green-500/30"
-    }
-  ];
 
-  return (
-    <section className="py-24 bg-gradient-to-b from-background to-background/80">
-        <div className="container mx-auto px-4">
-        <motion.div 
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <motion.h2 
-            className="text-5xl font-bold font-headline text-primary mb-6"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-              {homeContent?.explore_title || t('home.explore_title')}
-          </motion.h2>
-          <motion.p 
-            className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-              {homeContent?.explore_subtitle || t('home.explore_subtitle')}
-          </motion.p>
-        </motion.div>
-        
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              className={`group relative bg-gradient-to-br ${feature.color} backdrop-blur-md border border-border/50 rounded-3xl p-8 text-center transition-all duration-700 ${feature.hoverColor} hover:border-accent/50 hover:shadow-2xl hover:shadow-accent/10 overflow-hidden`}
-              initial={{ opacity: 0, y: 50, rotateX: 45 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              whileHover={{ 
-                scale: 1.05, 
-                y: -10,
-                rotateY: 5,
-                rotateX: 5
-              }}
-              viewport={{ once: true }}
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              <motion.div 
-                className="relative z-10"
-                style={{ transform: 'translateZ(20px)' }}
-              >
-                <motion.div 
-                  className="p-6 bg-card/30 rounded-3xl mb-6 mx-auto w-fit backdrop-blur-sm"
-                  whileHover={{ 
-                    rotateY: 360,
-                    scale: 1.1 
-                  }}
-                  transition={{ duration: 0.8 }}
-                >
-                    {feature.icon}
-                </motion.div>
-                
-                <motion.h3 
-                  className="text-2xl font-bold font-headline mb-4 text-foreground"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  {feature.title}
-                </motion.h3>
-                
-                <motion.p 
-                  className="text-muted-foreground leading-relaxed"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  {feature.description}
-                </motion.p>
-              </motion.div>
-              
-              <motion.div
-                className="absolute top-4 right-4 w-2 h-2 bg-accent/50 rounded-full"
-                animate={{ 
-                  scale: [1, 1.5, 1],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 2,
-                  delay: index * 0.3
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+
 
 function TestimonialsSection() {
-  const { t } = useTranslation();
   const { content: testimonialsContent } = useAdminContent('testimonials');
   
   const defaultTestimonials = [
     {
-      name: t('home.testimonials.aether_walker.name') || 'Aether Walker',
-      role: t('home.testimonials.aether_walker.role') || 'Twilight Guild Leader',
-      content: t('home.testimonials.aether_walker.content') || 'The depth of mechanics surprised me. Every decision truly matters.',
+      name: "Aether Walker",
+      role: "Líder da Guilda Crepúsculo",
+      content: "A profundidade das mecânicas me surpreendeu. Cada decisão realmente importa.",
       avatar: "🧙‍♂️",
       rating: 5
     },
     {
-      name: t('home.testimonials.storm_rider.name') || 'Storm Rider', 
-      role: t('home.testimonials.storm_rider.role') || 'Solo Explorer',
-      content: t('home.testimonials.storm_rider.content') || 'The evolving magic system is revolutionary. My journey is unique.',
+      name: "Storm Rider",
+      role: "Explorador Solitário",
+      content: "O sistema de magia evolutivo é revolucionário. Minha jornada é única.",
       avatar: "⚡",
       rating: 5
     },
     {
-      name: t('home.testimonials.crystal_sage.name') || 'Crystal Sage',
-      role: t('home.testimonials.crystal_sage.role') || 'Northern Alliance Diplomat',
-      content: t('home.testimonials.crystal_sage.content') || 'Political negotiations are as intense as any battle.',
+      name: "Crystal Sage", 
+      role: "Diplomata da Aliança do Norte",
+      content: "As negociações políticas são tão intensas quanto qualquer batalha.",
       avatar: "💎",
       rating: 5
     }
@@ -623,10 +504,10 @@ function TestimonialsSection() {
           viewport={{ once: true }}
         >
           <h2 className="text-5xl font-bold font-headline text-primary mb-6">
-            {t('home.testimonials.title') || 'Community Voices'}
+            Vozes da Comunidade
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {t('home.testimonials.subtitle') || 'Discover what other explorers are saying about their epic journeys'}
+            Descubra o que outros exploradores estão dizendo sobre suas jornadas épicas
           </p>
         </motion.div>
 
@@ -665,59 +546,40 @@ function TestimonialsSection() {
                     <Star className="w-5 h-5 text-yellow-400 fill-current" />
                   </motion.div>
                 ))}
-                  </div>
+              </div>
             </motion.div>
-            ))}
-          </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
   );
 }
 
-function HomeContent() {
+function IdeasPageContent() {
   return (
     <div className="flex flex-col">
       <EnhancedHero />
       
-      <div className="h-24 bg-background"></div>
-      
-      <div className="relative z-10">
-        <SectionDivider variant="arknights" />
-      </div>
-
-      <section className="relative bg-background py-20 z-30 border-t border-border/10">
-        <div className="container mx-auto px-4">
-          <MinimalNews />
-        </div>
-      </section>
-
-      <div className="relative z-10">
-        <SectionDivider variant="hologram" />
-      </div>
-      
-      <Enhanced3DFeatures />
-
       <SectionDivider variant="arknights" />
       
       <TestimonialsSection />
+      
+
     </div>
   );
 }
 
-export default function Home() {
+export default function IdeasPage() {
   const combinedSchema = [
     websiteSchema,
     organizationSchema,
-    creativeWorkSchema,
-    faqSchema
+    creativeWorkSchema
   ];
 
   return (
     <>
       <StructuredData data={combinedSchema} />
-      <GoogleBusinessSchema />
-      <AxulogicSchema />
-      <HomeContent />
+      <IdeasPageContent />
     </>
   );
 }

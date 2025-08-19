@@ -406,3 +406,109 @@ canvas {
   background: radial-gradient(800px 500px at 15% 15%, hsl(48 96% 53% / 0.12), transparent 60%),
               radial-gradient(900px 600px at 85% 85%, hsl(26 83% 14% / 0.18), transparent 60%);
 }
+
+.animated-text-fill {
+  display: block;
+  text-shadow: 0 0 80px rgba(255, 255, 255, 0.5);
+  
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.9) 20%,
+    rgb(251, 191, 36) 25%,
+    rgb(251, 146, 60) 35%,
+    rgb(251, 191, 36) 45%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.9) 70%,
+    rgb(251, 191, 36) 75%,
+    rgb(251, 146, 60) 85%,
+    rgb(251, 191, 36) 95%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+  
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  animation: animatedTextFill 12s linear infinite;
+  
+  -webkit-transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.animated-text-fill-reverse {
+  display: block;
+  text-shadow: 0 0 80px rgba(251, 191, 36, 0.5);
+  
+  background: linear-gradient(90deg, 
+    rgb(251, 191, 36) 0%,
+    rgb(251, 146, 60) 10%,
+    rgb(251, 191, 36) 20%,
+    rgba(255, 255, 255, 0.9) 25%,
+    rgba(255, 255, 255, 0.9) 45%,
+    rgb(251, 191, 36) 50%,
+    rgb(251, 146, 60) 60%,
+    rgb(251, 191, 36) 70%,
+    rgba(255, 255, 255, 0.9) 75%,
+    rgba(255, 255, 255, 0.9) 95%,
+    rgb(251, 191, 36) 100%
+  );
+  
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  animation: animatedTextFillReverse 12s linear infinite;
+  
+  -webkit-transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+@keyframes animatedTextFill {
+  0% { 
+    background-position: 0% 50%; 
+  }
+  100% { 
+    background-position: 100% 50%; 
+  }
+}
+
+@keyframes animatedTextFillReverse {
+  0% { 
+    background-position: 100% 50%; 
+  }
+  100% { 
+    background-position: 0% 50%; 
+  }
+}
+
+.animated-text-fill-sync {
+  animation: animatedTextFillSync 15s linear infinite;
+}
+
+.animated-text-fill-reverse-sync {
+  animation: animatedTextFillReverseSync 15s linear infinite;
+}
+
+@keyframes animatedTextFillSync {
+  0%, 10% { 
+    background-position: 0% 50%; 
+  }
+  90%, 100% { 
+    background-position: 100% 50%; 
+  }
+}
+
+@keyframes animatedTextFillReverseSync {
+  0%, 10% { 
+    background-position: 100% 50%; 
+  }
+  90%, 100% { 
+    background-position: 0% 50%; 
+  }
+}

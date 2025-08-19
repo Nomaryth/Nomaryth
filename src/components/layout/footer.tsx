@@ -33,7 +33,7 @@ export function Footer() {
     };
     
     checkStatus();
-    const interval = setInterval(checkStatus, 60000); // Check every minute
+    const interval = setInterval(checkStatus, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -242,9 +242,9 @@ export function Footer() {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span>© 2024 Nomaryth. All rights reserved.</span>
+            <span>© 2025 Nomaryth. All rights reserved.</span>
             <Separator orientation="vertical" className="h-4 hidden md:block" />
-            <span className="hidden md:block">Crafted with modern web technologies</span>
+            <span className="hidden md:block">Created with modern web technologies</span>
           </div>
           <div className="flex items-center gap-4">
             <Link 

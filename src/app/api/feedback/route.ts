@@ -54,80 +54,31 @@ function detectSpam(data: any): boolean {
 }
 
 function sanitizeInput(data: any) {
-  const whitelistSanitize = (str: string): string => {
+  const ultraSecureSanitize = (str: string): string => {
     if (!str || typeof str !== 'string') return '';
     
-    let safe = str
-      .replace(/[<>]/g, '')
-      .replace(/[&]/g, '')
-      .replace(/[`]/g, '')
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-      .trim();
+    const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?@#$%*()+=[]{}|\\:";\'_-';
+    let result = '';
     
-    safe = safe.replace(/[^\w\s\-.,!?@#$%*()+=\[\]{}|\\:";']/g, '');
-    
-    const dangerousWords = [
-      'script', 'javascript', 'vbscript', 'onload', 'onerror', 'onclick', 
-      'onmouseover', 'onfocus', 'onblur', 'eval', 'expression', 'import',
-      'document', 'window', 'alert', 'confirm', 'prompt'
-    ];
-    
-    for (const word of dangerousWords) {
-      const regex = new RegExp(word, 'gi');
-      safe = safe.replace(regex, '');
+    for (let i = 0; i < str.length && result.length < 5000; i++) {
+      if (allowedChars.includes(str[i])) {
+        result += str[i];
+      }
     }
     
-    return safe.substring(0, 5000);
-  };
-
-  const secureSanitize = (str: string): string => {
-    if (!str || typeof str !== 'string') return '';
+    result = result.replace(/\s+/g, ' ').trim();
     
-    let sanitized = str;
-    let previousLength = 0;
+    const forbiddenWords = ['script', 'javascript', 'vbscript', 'eval', 'expression', 'import', 'document', 'window', 'alert', 'confirm', 'prompt', 'onload', 'onerror', 'onclick', 'onmouseover', 'onfocus', 'onblur'];
     
-    while (sanitized.length !== previousLength) {
-      previousLength = sanitized.length;
-      
-      sanitized = sanitized
-        .replace(/<[^>]*>/g, '')
-        .replace(/<\s*\/?\s*\w[^>]*>/g, '')
-        .replace(/&[#\w]+;/g, '')
-        .replace(/\b(?:javascript|data|vbscript|file|ftp|mailto|tel):\s*/gi, '')
-        .replace(/\bon\w+\s*=\s*['"]/gi, '')
-        .replace(/\bon\w+\s*=/gi, '')
-        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-        .replace(/\\[xu][0-9a-fA-F]+/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-    
-    if (sanitized.length > 5000) {
-      sanitized = sanitized.substring(0, 5000);
-    }
-    
-    const maliciousPatterns = [
-      /script/gi,
-      /eval\s*\(/gi,
-      /expression\s*\(/gi,
-      /import\s*\(/gi,
-      /document\./gi,
-      /window\./gi,
-      /<\s*\/?\s*\w/gi,
-      /javascript:/gi,
-      /vbscript:/gi,
-      /data:/gi
-    ];
-    
-    for (const pattern of maliciousPatterns) {
-      let tempSanitized = sanitized;
+    for (const word of forbiddenWords) {
+      let previous;
       do {
-        sanitized = tempSanitized;
-        tempSanitized = sanitized.replace(pattern, '');
-      } while (tempSanitized !== sanitized);
+        previous = result;
+        result = result.replace(new RegExp(word, 'gi'), '');
+      } while (result !== previous);
     }
     
-    return sanitized;
+    return result;
   };
 
   const sanitizeEmail = (email: string): string => {
@@ -142,13 +93,13 @@ function sanitizeInput(data: any) {
 
   return {
     ...data,
-    title: secureSanitize(whitelistSanitize(data.title)),
-    description: secureSanitize(whitelistSanitize(data.description)),
-    reproduction: data.reproduction ? secureSanitize(whitelistSanitize(data.reproduction)) : undefined,
+    title: ultraSecureSanitize(data.title),
+    description: ultraSecureSanitize(data.description),
+    reproduction: data.reproduction ? ultraSecureSanitize(data.reproduction) : undefined,
     email: sanitizeEmail(data.email),
-    userAgent: data.userAgent ? whitelistSanitize(data.userAgent).substring(0, 500) : undefined,
-    browser: data.browser ? whitelistSanitize(data.browser).substring(0, 200) : undefined,
-    device: data.device ? whitelistSanitize(data.device).substring(0, 50) : undefined
+    userAgent: data.userAgent ? ultraSecureSanitize(data.userAgent).substring(0, 500) : undefined,
+    browser: data.browser ? ultraSecureSanitize(data.browser).substring(0, 200) : undefined,
+    device: data.device ? ultraSecureSanitize(data.device).substring(0, 50) : undefined
   };
 }
 

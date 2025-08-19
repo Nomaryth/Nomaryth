@@ -87,7 +87,8 @@ export const rateLimiters = {
   public: new RateLimiter({ windowMs: 60000, maxRequests: 100 }),
   upload: new RateLimiter({ windowMs: 300000, maxRequests: 10 }),
   verify: new RateLimiter({ windowMs: 60000, maxRequests: 100 }),
-  feedback: new RateLimiter({ windowMs: 60000, maxRequests: 5 })
+  feedback: new RateLimiter({ windowMs: 60000, maxRequests: 5 }),
+  bot: new RateLimiter({ windowMs: 60000, maxRequests: 20 })
 };
 
 export function getClientIP(req: Request): string {

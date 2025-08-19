@@ -38,6 +38,44 @@
   },
   "home": {
     "tagline": "Determine your destiny in a world shrouded in cruelty and conflict.",
+    "hero": {
+      "active_explorers": "Active Explorers",
+      "growing_community": "Growing Community",
+      "title_line1": "Discover the",
+      "title_line2": "Untold Stories",
+      "explore_lore": "Explore the Lore",
+      "join_faction": "Join a Faction",
+      "open_launcher": "Open Launcher"
+    },
+    "stats": {
+      "world_progress": "World Progress",
+      "active_factions": "Active Factions",
+      "documentation": "Documentation",
+      "available": "Available",
+      "community": "Community", 
+      "community_desc": "Active explorers discovering new worlds",
+      "factions_desc": "Guilds forging their destinies",
+      "progress_desc": "Stories waiting to be told"
+    },
+    "testimonials": {
+      "title": "Community Voices",
+      "subtitle": "Discover what other explorers are saying about their epic journeys",
+      "aether_walker": {
+        "name": "Aether Walker",
+        "role": "Twilight Guild Leader",
+        "content": "The depth of mechanics surprised me. Every decision truly matters."
+      },
+      "storm_rider": {
+        "name": "Storm Rider",
+        "role": "Solo Explorer", 
+        "content": "The evolving magic system is revolutionary. My journey is unique."
+      },
+      "crystal_sage": {
+        "name": "Crystal Sage",
+        "role": "Northern Alliance Diplomat",
+        "content": "Political negotiations are as intense as any battle."
+      }
+    },
     "explore_lore": "Explore the History",
     "discover_projects": "Discover our Projects",
     "download_launcher": "Download Game Launcher",
@@ -83,6 +121,14 @@
     "stats": {
       "title": "World Statistics",
       "subtitle": "Track community progress and discover how the world of Nomaryth evolves",
+      "world_progress": "World Progress",
+      "active_factions": "Active Factions",
+      "documentation": "Documentation",
+      "available": "Available",
+      "community": "Community",
+      "community_desc": "Active explorers discovering new worlds",
+      "factions_desc": "Guilds forging their destinies",
+      "progress_desc": "Stories waiting to be told",
       "items": {
         "users": "Active Users",
         "factions": "Active Factions",

@@ -8,18 +8,24 @@ import { TranslationsProvider } from "@/context/i18n-context";
 import { AuthProvider } from "@/context/auth-context";
 import { Exo_2, Teko } from "next/font/google";
 import { AnalyticsWrapper } from "@/components/analytics-wrapper";
+import MusicPlayer from "@/components/music-player";
 import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Nomaryth",
+    default: "Nomaryth - Organização de Jogos Indie | MMORPG com Permadeath",
     template: "%s | Nomaryth"
   },
-  description: "An interactive world presentation and documentation for the Nomaryth universe. Explore factions, magic, and the mystical realm of Nomaryth.",
-  keywords: ["fantasy", "interactive", "world", "nomaryth", "factions", "magic", "documentation", "universe"],
-  authors: [{ name: "Nomaryth Team" }],
-  creator: "Nomaryth Team",
+  description: "Nomaryth é uma organização brasileira de jogos indie criada pela Axulogic. Desenvolvemos Nomaryth Ordain, um MMORPG inovador com permadeath onde jogadores moldam permanentemente o mundo através de suas escolhas.",
+  keywords: [
+    "nomaryth", "nomaryth ordain", "linwaru", "axulogic", "mmorpg", "permadeath", "indie games",
+    "jogos indie brasileiros", "fantasy", "interactive", "world building", "player choice",
+    "narrativa emergente", "consequências permanentes", "facções", "magia", "sobrevivência",
+    "comunidade", "mundo persistente", "escolhas", "estratégia", "aventura", "brasil"
+  ],
+  authors: [{ name: "Axulogic", url: "https://gghorizon.com" }],
+  creator: "Axulogic",
   publisher: "Nomaryth",
   formatDetection: {
     email: false,
@@ -32,17 +38,18 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'pt_BR',
+    alternateLocale: 'en_US',
     url: 'https://gghorizon.com',
-    title: 'Nomaryth - Interactive Fantasy World',
-    description: 'An interactive world presentation and documentation for the Nomaryth universe. Explore factions, magic, and the mystical realm of Nomaryth.',
+    title: 'Nomaryth - Organização de Jogos Indie | MMORPG com Permadeath',
+    description: 'Nomaryth é uma organização brasileira de jogos indie criada pela Axulogic. Desenvolvemos Nomaryth Ordain, um MMORPG inovador com permadeath onde jogadores moldam permanentemente o mundo.',
     siteName: 'Nomaryth',
     images: [
       {
         url: '/assets/NomaBanner1.png',
         width: 1200,
         height: 630,
-        alt: 'Nomaryth - Interactive Fantasy World',
+        alt: 'Nomaryth - Universo Interativo de Fantasia MMORPG',
       },
     ],
   },
@@ -88,7 +95,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${exo2.variable} ${teko.variable}`}>
+    <html lang="pt-BR" suppressHydrationWarning className={`${exo2.variable} ${teko.variable}`}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#fbbf24" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Nomaryth" />
+        <link rel="apple-touch-icon" href="/assets/NomaIcon1.png" />
+      </head>
       <body className="font-sans antialiased">
         {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
           <Script
@@ -97,6 +113,17 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
         )}
+        
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered:', reg))
+                .catch(err => console.log('SW registration failed:', err));
+            }
+          `}
+        </Script>
+        
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -179,6 +206,7 @@ export default async function RootLayout({
               <CookieBanner />
               <Toaster />
               <AnalyticsWrapper />
+              <MusicPlayer />
             </ThemeProvider>
           </AuthProvider>
         </TranslationsProvider>

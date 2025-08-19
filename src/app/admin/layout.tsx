@@ -14,6 +14,8 @@ import {
   Megaphone,
   BarChart3,
   MessageCircle,
+  Edit3,
+  MessageSquare,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -33,7 +35,10 @@ const navLinks = [
   { href: '/admin', label: 'Dashboard', icon: <Home className="h-5 w-5" /> },
   { href: '/admin/users', label: 'Users', icon: <Users className="h-5 w-5" /> },
   { href: '/admin/feedback', label: 'Feedback', icon: <MessageCircle className="h-5 w-5" /> },
-  { href: '/admin/content', label: 'Content Guide', icon: <FileText className="h-5 w-5" /> },
+  { href: '/admin/content', label: 'Content Manager', icon: <FileText className="h-5 w-5" /> },
+  { href: '/admin/home-cards', label: 'Home Cards', icon: <Edit3 className="h-5 w-5" /> },
+  { href: '/admin/community-voices', label: 'Community Voices', icon: <MessageSquare className="h-5 w-5" /> },
+  { href: '/admin/characters', label: 'Characters', icon: <User className="h-5 w-5" /> },
   { href: '/admin/badges', label: 'Badges', icon: <PenSquare className="h-5 w-5" /> },
   { href: '/admin/content-editor', label: 'Doc Editor', icon: <PenSquare className="h-5 w-5" /> },
   { href: '/admin/announcements', label: 'Announcements', icon: <Megaphone className="h-5 w-5" /> },

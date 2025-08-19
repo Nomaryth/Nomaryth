@@ -90,8 +90,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         try { await fetch('/api/session', { method: 'DELETE' }); } catch {}
         setTheme('system'); 
-        removeSecureStorage('language_manual_set');
-        setLanguage('en'); 
       }
       setLoading(false);
     });
@@ -102,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         profileUnsubscribe.current();
       }
     };
-  }, [setTheme, setLanguage]);
+  }, [setTheme]);
 
   const totalLoading = loading || adminLoading;
 
