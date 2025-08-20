@@ -1,50 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminDb } from '@/lib/firebase-admin'
 import { rateLimiters } from '@/lib/rate-limiter'
-import { timingSafeEqual } from 'crypto'
 
-const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || process.env.NOMARYTH_API_TOKEN
+const PUBLIC_RATE_LIMIT = {
+  windowMs: 30000, // 30 segundos
+  maxRequests: 3   // 3 requisições por 30s = 6 req/min
+}
 
-function constantTimeEquals(a: string, b: string): boolean {
-  try {
-    const aBuf = Buffer.from(a)
-    const bBuf = Buffer.from(b)
-    if (aBuf.length !== bBuf.length) return false
-    return timingSafeEqual(aBuf, bBuf)
-  } catch {
-    return false
+class PublicRateLimiter {
+  private cache = new Map<string, { count: number; expires: number; lastRequest: number }>()
+
+  isLimited(ip: string): boolean {
+    const now = Date.now()
+    let entry = this.cache.get(ip)
+    
+    if (!entry || entry.expires < now) {
+      entry = { count: 1, expires: now + PUBLIC_RATE_LIMIT.windowMs, lastRequest: now }
+      this.cache.set(ip, entry)
+      return false
+    }
+
+    const timeSinceLastRequest = now - entry.lastRequest
+    if (timeSinceLastRequest < 1000) return true // 1s cooldown mínimo
+
+    entry.count++
+    entry.lastRequest = now
+    
+    return entry.count > PUBLIC_RATE_LIMIT.maxRequests
+  }
+
+  getResetTime(ip: string): number {
+    const entry = this.cache.get(ip)
+    return entry ? entry.expires : Date.now()
+  }
+
+  cleanup(): void {
+    const now = Date.now()
+    for (const [key, entry] of this.cache.entries()) {
+      if (entry.expires < now) {
+        this.cache.delete(key)
+      }
+    }
   }
 }
 
-function validateBotToken(request: NextRequest): boolean {
-  if (!BOT_TOKEN) {
-    console.warn('[BOT API] Missing bot token env (DISCORD_BOT_TOKEN/NOMARYTH_API_TOKEN)')
-  }
+const publicRateLimiter = new PublicRateLimiter()
 
-  const authHeader = request.headers.get('authorization') || ''
-  const altHeader = request.headers.get('x-bot-token') || request.headers.get('x-api-key')
-  const host = request.headers.get('host') || ''
-  const devBypass = process.env.NODE_ENV !== 'production' && process.env.ALLOW_DEV_BOT === 'true' && (host.includes('localhost') || host.startsWith('127.0.0.1'))
-
-  if (devBypass) return true
-
-  let token = ''
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.replace('Bearer ', '').trim()
-  } else if (altHeader) {
-    token = String(altHeader).trim()
-  }
-
-  if (BOT_TOKEN) {
-    return !!token && constantTimeEquals(token, String(BOT_TOKEN))
-  }
-  return false
-}
-
-function computeDevBypass(request: NextRequest): boolean {
-  const host = request.headers.get('host') || ''
-  return process.env.NODE_ENV !== 'production' && process.env.ALLOW_DEV_BOT === 'true' && (host.includes('localhost') || host.startsWith('127.0.0.1'))
-}
+setInterval(() => {
+  publicRateLimiter.cleanup()
+}, 30000)
 
 async function handleStatus() {
   const [usersSnapshot, factionsSnapshot, charactersSnapshot, contentSnapshot] = await Promise.all([
@@ -210,77 +214,60 @@ async function handleHealth(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const clientIP = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-    if (rateLimiters.bot.isLimited(clientIP)) {
-      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
-    }
-
-    if (!validateBotToken(request)) {
-      const host = request.headers.get('host') || ''
-      const isLocalDev = process.env.NODE_ENV !== 'production' && (host.includes('localhost') || host.startsWith('127.0.0.1'))
-      if (isLocalDev) {
-        const diag = {
-          hasEnvToken: Boolean(BOT_TOKEN),
-          authHeaderPresent: Boolean(request.headers.get('authorization')),
-          altHeaderPresent: Boolean(request.headers.get('x-bot-token') || request.headers.get('x-api-key')),
-          devBypass: computeDevBypass(request),
+    
+    if (publicRateLimiter.isLimited(clientIP)) {
+      const resetTime = publicRateLimiter.getResetTime(clientIP)
+      return NextResponse.json(
+        { 
+          error: 'Rate limit exceeded', 
+          retryAfter: Math.ceil((resetTime - Date.now()) / 1000),
+          limit: '3 requests per 30 seconds'
+        }, 
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((resetTime - Date.now()) / 1000).toString(),
+            'X-RateLimit-Reset': resetTime.toString()
+          }
         }
-        return NextResponse.json({ error: 'Unauthorized', diagnostics: diag }, { status: 401 })
-      }
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      )
     }
 
     const action = request.nextUrl.searchParams.get('action') || 'status'
 
     if (action === 'status') {
       const data = await handleStatus()
-      console.log(`[BOT API] Status request from IP: ${clientIP} at ${new Date().toISOString()}`)
+      console.log(`[PUBLIC BOT API] Status request from IP: ${clientIP} at ${new Date().toISOString()}`)
       return NextResponse.json(data)
     }
 
     if (action === 'health') {
       const data = await handleHealth(request)
-      console.log(`[BOT API] Health request from IP: ${clientIP} at ${new Date().toISOString()}`)
+      console.log(`[PUBLIC BOT API] Health request from IP: ${clientIP} at ${new Date().toISOString()}`)
       return NextResponse.json(data)
     }
 
     if (action === 'content') {
       const data = await handleContent()
-      console.log(`[BOT API] Content request from IP: ${clientIP} at ${new Date().toISOString()}`)
+      console.log(`[PUBLIC BOT API] Content request from IP: ${clientIP} at ${new Date().toISOString()}`)
       return NextResponse.json(data)
     }
 
     if (action === 'characters') {
       const data = await handleCharacters()
-      console.log(`[BOT API] Characters request from IP: ${clientIP} at ${new Date().toISOString()}`)
+      console.log(`[PUBLIC BOT API] Characters request from IP: ${clientIP} at ${new Date().toISOString()}`)
       return NextResponse.json(data)
     }
 
     if (action === 'factions') {
       const data = await handleFactions()
-      console.log(`[BOT API] Factions request from IP: ${clientIP} at ${new Date().toISOString()}`)
-      return NextResponse.json(data)
-    }
-
-    if (action === 'debug') {
-      const host = request.headers.get('host') || ''
-      const isLocalDev = process.env.NODE_ENV !== 'production' && (host.includes('localhost') || host.startsWith('127.0.0.1'))
-      const data = {
-        hasEnvToken: Boolean(BOT_TOKEN),
-        tokenLength: BOT_TOKEN ? BOT_TOKEN.length : 0,
-        env: process.env.NODE_ENV,
-        host,
-        devBypass: computeDevBypass(request),
-        authHeaderPresent: Boolean(request.headers.get('authorization')),
-        altHeaderPresent: Boolean(request.headers.get('x-bot-token') || request.headers.get('x-api-key')),
-        timestamp: new Date().toISOString(),
-      }
-      console.log(`[BOT API] Debug request from IP: ${clientIP} at ${new Date().toISOString()}`)
+      console.log(`[PUBLIC BOT API] Factions request from IP: ${clientIP} at ${new Date().toISOString()}`)
       return NextResponse.json(data)
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
-    console.error('Error in bot unified API:', error)
+    console.error('Error in public bot API:', error)
     return NextResponse.json({ error: 'Internal server error', timestamp: new Date().toISOString() }, { status: 500 })
   }
 }
