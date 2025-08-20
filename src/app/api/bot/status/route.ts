@@ -1,16 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { adminDb } from '@/lib/firebase-admin';
 import { rateLimiters } from '@/lib/rate-limiter';
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || process.env.NOMARYTH_API_TOKEN;
 
-function validateBotToken(authHeader: string): boolean {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+function constantTimeEquals(a: string, b: string): boolean {
+  try {
+    const aBuf = Buffer.from(a);
+    const bBuf = Buffer.from(b);
+    if (aBuf.length !== bBuf.length) return false;
+    return timingSafeEqual(aBuf, bBuf);
+  } catch {
     return false;
   }
-  
-  const token = authHeader.replace('Bearer ', '');
-  return token === BOT_TOKEN;
+}
+
+function validateBotToken(authHeader: string, altHeader: string | null, devBypass: boolean): boolean {
+  if (!BOT_TOKEN) {
+    console.warn('[BOT API] Missing bot token env (DISCORD_BOT_TOKEN/NOMARYTH_API_TOKEN)');
+  }
+
+  let token = '';
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.replace('Bearer ', '').trim();
+  } else if (altHeader) {
+    token = String(altHeader).trim();
+  }
+
+  if (BOT_TOKEN) {
+    return !!token && constantTimeEquals(token, String(BOT_TOKEN));
+  }
+
+  if (devBypass) return true;
+  return false;
 }
 
 export async function GET(request: NextRequest) {
@@ -20,8 +43,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
 
-    const authHeader = request.headers.get('authorization');
-    if (!validateBotToken(authHeader || '')) {
+    const authHeader = request.headers.get('authorization') || '';
+    const altHeader = request.headers.get('x-bot-token') || request.headers.get('x-api-key');
+    const host = request.headers.get('host') || '';
+    const devBypass = process.env.NODE_ENV !== 'production'
+      && process.env.ALLOW_DEV_BOT === 'true'
+      && (host.includes('localhost') || host.startsWith('127.0.0.1'));
+
+    if (!validateBotToken(authHeader, altHeader, devBypass)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
