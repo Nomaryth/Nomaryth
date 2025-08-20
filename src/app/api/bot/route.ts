@@ -261,6 +261,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(data)
     }
 
+    if (action === 'debug') {
+      const host = request.headers.get('host') || ''
+      const isLocalDev = process.env.NODE_ENV !== 'production' && (host.includes('localhost') || host.startsWith('127.0.0.1'))
+      const data = {
+        hasEnvToken: Boolean(BOT_TOKEN),
+        tokenLength: BOT_TOKEN ? BOT_TOKEN.length : 0,
+        env: process.env.NODE_ENV,
+        host,
+        devBypass: computeDevBypass(request),
+        authHeaderPresent: Boolean(request.headers.get('authorization')),
+        altHeaderPresent: Boolean(request.headers.get('x-bot-token') || request.headers.get('x-api-key')),
+        timestamp: new Date().toISOString(),
+      }
+      console.log(`[BOT API] Debug request from IP: ${clientIP} at ${new Date().toISOString()}`)
+      return NextResponse.json(data)
+    }
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
     console.error('Error in bot unified API:', error)
